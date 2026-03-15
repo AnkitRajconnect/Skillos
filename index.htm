@@ -461,7 +461,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   opacity: 0;
   background: rgba(0,0,0,.55);
 }
-#spotlight-overlay.active { opacity: 1; pointer-events: all; }
+#spotlight-overlay.active { opacity: 1; pointer-events: none; }
 
 /* The spotlight hole — a transparent ring cut out using clip-path */
 /* We use JS to set --sx --sy --sw --sh as CSS vars for the hole */
@@ -537,7 +537,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 }
 .coach-close:hover { background: rgba(255,255,255,.1); color: var(--teach-text); }
 
-.coach-body { padding: 16px; }
+.coach-body { padding: 16px; max-height: calc(100vh - 240px); overflow-y: auto; }
 .coach-stage-tag {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(0,212,255,.1); color: var(--teach-cyan);
@@ -632,7 +632,10 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   background: var(--teach-green); color: #0a0a0a; font-weight: 600;
 }
 .coach-btn-success:hover { background: #2ecc87; }
-.coach-btn:disabled { opacity: .4; cursor: not-allowed; }
+.coach-btn-success {
+  background: var(--teach-green); color: #0a0a0a; font-weight: 600;
+}
+.coach-btn-success:hover { background: #2ecc87; }
 
 /* ─── LESSON HUD (top of screen) ─────────────── */
 #lesson-hud {
@@ -1239,7 +1242,21 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   </div>
 </div>
 
-<!-- CERTIFICATE -->
+<!-- ELEMENT TOOLTIP -->
+<div id="ga-tooltip" style="
+  position:fixed; z-index:20000; pointer-events:none;
+  background:#202124; color:#e8eaed;
+  border:1px solid #3c4043; border-radius:8px;
+  padding:10px 14px; max-width:280px;
+  box-shadow:0 4px 20px rgba(0,0,0,.4);
+  font-size:12px; line-height:1.5;
+  opacity:0; transition:opacity .15s;
+  display:none;
+">
+  <div id="ga-tooltip-title" style="font-weight:600;color:#8ab4f8;margin-bottom:4px;font-size:11px;text-transform:uppercase;letter-spacing:.05em"></div>
+  <div id="ga-tooltip-body" style="color:#bdc1c6"></div>
+  <div id="ga-tooltip-value" style="margin-top:6px;font-size:13px;color:#e8eaed;font-weight:500"></div>
+</div>
 <div id="cert-screen">
   <div class="cert-card">
     <div class="cert-badge">🏆</div>
@@ -1383,6 +1400,7 @@ const LESSONS = [
         type:'practice',
         task:'The metrics panel above shows your website\'s key numbers. Click on the <strong>Sessions</strong> metric card — the one that shows total visits.',
         clickTarget:'metric-sessions',
+        hint:'Sessions is the first metric card in the top row of Traffic Acquisition. Its label says "Sessions" and shows the number 8,420.',
         successTitle:'You found Sessions!',
         successText:'Sessions (8,420) tells you your site was visited 8,420 times this period. Every lesson in this course will use this number as a starting point.',
         xp:100,
@@ -1430,6 +1448,7 @@ const LESSONS = [
         type:'practice',
         task:'Look at the traffic table below. Which channel brought the MOST sessions this month? Click on that row.',
         clickTarget:'channel-row-0',
+        hint:'Look at the Sessions column in the table below. The channel with the highest number is in the first row.',
         successTitle:'Organic Search is #1!',
         successText:'With 3,368 sessions (40% of all traffic), Organic Search is your top channel. People are finding Nova Coffee Roasters through Google — without paying for ads. This is extremely valuable.',
         xp:120,
@@ -1477,6 +1496,7 @@ const LESSONS = [
         task:'The engagement rate for this site is 38%. What is the <strong>bounce rate</strong>? Type the answer (just the number, no % sign).',
         inputTask:true,
         correctAnswer:'62',
+        hint:'Engagement Rate is shown as 38% in the metric cards. Bounce Rate = 100 - 38 = ?',
         successTitle:'Correct! 62% bounce rate.',
         successText:'Engagement Rate (38%) + Bounce Rate (62%) = 100%. With 62% bounce rate, over half of visitors leave after one page. The Products page at 78% is especially concerning for a sales page.',
         xp:130,
@@ -1525,6 +1545,7 @@ const LESSONS = [
         inputTask:true,
         correctAnswer:'1.6',
         altAnswers:['1.61','1.62'],
+        hint:'Sessions = 8,420. Users = 5,231. Divide Sessions by Users and round to 1 decimal.',
         successTitle:'Correct! 1.6 sessions per user.',
         successText:'8,420 ÷ 5,231 = 1.61. This means the average visitor comes back about 1.6 times. It\'s not a highly loyal audience yet — most people visit once or twice.',
         xp:110,
@@ -1570,6 +1591,7 @@ const LESSONS = [
         type:'practice',
         task:'Look at the Age chart. Your product targets 35–44 year olds. Which age group is <strong>actually</strong> your largest audience? Click on that age bar.',
         clickTarget:'age-bar-0',
+        hint:'Look at the Age bar chart. The first bar (18–24) is the longest — click directly on that row.',
         successTitle:'18–24 is your biggest group!',
         successText:'34% of your visitors are aged 18–24 — not the 35–44 group you targeted. This is a critical business insight: either adjust your product/marketing for a younger audience, or change your acquisition strategy to reach 35–44 year olds.',
         xp:120,
@@ -1617,6 +1639,7 @@ const LESSONS = [
         task:'Look at the Device category donut chart. What percentage of visitors use <strong>mobile</strong> phones? Type the number (no % sign).',
         inputTask:true,
         correctAnswer:'68',
+        hint:'The device percentage is shown in the legend next to each slice. Mobile shows 68%.',
         successTitle:'68% Mobile — Critical!',
         successText:'More than 2 out of 3 visitors are on phones. If your site has ANY mobile issues, you\'re losing the majority of your potential customers. This single insight could be the most valuable thing you report to your team today.',
         xp:100,
@@ -1665,6 +1688,7 @@ const LESSONS = [
         inputTask:true,
         correctAnswer:'0m 12s',
         altAnswers:['0:12','12s','12 seconds'],
+        hint:'Look at the Avg eng. time column in the Pages table. Find the Products row (/products) and read its time.',
         successTitle:'0m 12s — Only 12 seconds!',
         successText:'The Products page gets 2,890 views but visitors spend only 12 seconds there before leaving. On a sales page, that\'s a major red flag. People should spend 60–120 seconds exploring products. This page needs redesigning.',
         xp:120,
@@ -1712,6 +1736,7 @@ const LESSONS = [
         task:'This site had 8,420 sessions and 202 purchases this month. What is the <strong>conversion rate</strong>? Round to 1 decimal place.',
         inputTask:true,
         correctAnswer:'2.4',
+        hint:'Conversions = 202. Sessions = 8,420. Formula: (202 ÷ 8420) × 100 = ?',
         successTitle:'2.4% Conversion Rate!',
         successText:'202 ÷ 8,420 × 100 = 2.4%. That\'s within the normal range for e-commerce (1–4%). But with 62% bounce rate and 12-second engagement on the Products page, there\'s clear room to improve.',
         xp:150,
@@ -1760,6 +1785,7 @@ const LESSONS = [
         inputTask:true,
         correctAnswer:'friday',
         altAnswers:['Friday'],
+        hint:'Look at the chart bars — each bar is one day. The tallest bar is on a Friday. Type the day name.',
         successTitle:'Friday is peak day!',
         successText:'The chart shows traffic peaks on Fridays. This is common for consumer-facing sites — people browse during Friday lunch and end-of-day. Schedule your content releases and promotions for Thursday/Friday to maximise visibility.',
         xp:110,
@@ -2061,91 +2087,135 @@ function buildAgeChart() {
 
 // ═══════════════════════════════════════════════════════════════
 // TEACHING LAYER — SPOTLIGHT & COACH
+// 4-panel approach: surrounds target with dark panels, leaving
+// the target area COMPLETELY unobstructed and clickable
 // ═══════════════════════════════════════════════════════════════
-function spotlight(targetId) {
-  const overlay = document.getElementById('spotlight-overlay');
+function spotlight(targetId, isClickable) {
   const ring = document.getElementById('spotlight-ring');
 
+  // Get or create the 4 panels
+  let panels = document.getElementById('spotlight-panels');
+  if (!panels) {
+    panels = document.createElement('div');
+    panels.id = 'spotlight-panels';
+    panels.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998';
+    panels.innerHTML = ['top','right','bottom','left'].map(side =>
+      `<div id="sp-${side}" style="position:absolute;background:rgba(0,0,0,.6);pointer-events:none;transition:all .3s ease"></div>`
+    ).join('');
+    document.body.appendChild(panels);
+  }
+
   if (!targetId) {
-    overlay.classList.remove('active');
+    // Hide all panels and ring
+    ['top','right','bottom','left'].forEach(s => {
+      const p = document.getElementById(`sp-${s}`);
+      if (p) p.style.display = 'none';
+    });
     ring.style.display = 'none';
+    // Also hide legacy overlay
+    const ov = document.getElementById('spotlight-overlay');
+    if (ov) ov.classList.remove('active');
     return;
   }
-  const el = document.getElementById(targetId) || document.querySelector(`.${targetId}`) || document.querySelector(`[id="${targetId}"]`);
-  if (!el) { overlay.classList.remove('active'); ring.style.display = 'none'; return; }
 
-  const rect = el.getBoundingClientRect();
-  const pad = 10;
-  const hudH = document.getElementById('lesson-hud').classList.contains('visible') ? 64 : 0;
+  const el = document.getElementById(targetId) ||
+             document.querySelector(`[id="${targetId}"]`) ||
+             document.querySelector(`.${targetId}`);
+  if (!el) { spotlight(null); return; }
 
-  // Update overlay hole
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-  const sw = (rect.width / 2 + pad);
-  const sh = (rect.height / 2 + pad);
-  overlay.style.setProperty('--sx', `${cx}px`);
-  overlay.style.setProperty('--sy', `${cy}px`);
-  overlay.style.setProperty('--sw', `${sw}px`);
-  overlay.style.setProperty('--sh', `${sh}px`);
-  overlay.classList.add('active');
+  // Make sure element is visible in its scroll container
+  el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
 
-  // Update ring
-  ring.style.display = 'block';
-  ring.style.left   = `${rect.left - pad}px`;
-  ring.style.top    = `${rect.top - pad}px`;
-  ring.style.width  = `${rect.width + pad * 2}px`;
-  ring.style.height = `${rect.height + pad * 2}px`;
+  // Wait a tick for scroll to settle
+  setTimeout(() => {
+    const rect = el.getBoundingClientRect();
+    const pad  = 8;
+    const vw   = window.innerWidth;
+    const vh   = window.innerHeight;
+
+    const x = rect.left   - pad;
+    const y = rect.top    - pad;
+    const w = rect.width  + pad * 2;
+    const h = rect.height + pad * 2;
+
+    // 4 panels: top / right / bottom / left
+    const spTop  = document.getElementById('sp-top');
+    const spRight= document.getElementById('sp-right');
+    const spBot  = document.getElementById('sp-bottom');
+    const spLeft = document.getElementById('sp-left');
+
+    spTop.style.cssText   = `position:absolute;background:rgba(0,0,0,.6);pointer-events:none;top:0;left:0;right:0;height:${y}px;display:block`;
+    spBot.style.cssText   = `position:absolute;background:rgba(0,0,0,.6);pointer-events:none;top:${y+h}px;left:0;right:0;bottom:0;display:block`;
+    spLeft.style.cssText  = `position:absolute;background:rgba(0,0,0,.6);pointer-events:none;top:${y}px;left:0;width:${x}px;height:${h}px;display:block`;
+    spRight.style.cssText = `position:absolute;background:rgba(0,0,0,.6);pointer-events:none;top:${y}px;left:${x+w}px;right:0;height:${h}px;display:block`;
+
+    // Ring around target
+    ring.style.display = 'block';
+    ring.style.left    = `${x}px`;
+    ring.style.top     = `${y}px`;
+    ring.style.width   = `${w}px`;
+    ring.style.height  = `${h}px`;
+    ring.classList.toggle('click-target', !!isClickable);
+  }, 50);
 }
 
-function positionCoach(targetId, preferSide) {
+function positionCoach(targetId, forceLeft) {
   const bubble = document.getElementById('coach-bubble');
   bubble.classList.remove('hidden');
 
+  const bw     = 370;
+  const margin = 16;
+  const vw     = window.innerWidth;
+  const vh     = window.innerHeight;
+
   if (!targetId) {
-    // Center bottom
-    bubble.style.bottom = '24px';
-    bubble.style.right  = '24px';
-    bubble.style.top    = 'auto';
-    bubble.style.left   = 'auto';
+    // For practice/report stages: pin to left side, vertically centred
+    bubble.style.left   = `${margin}px`;
+    bubble.style.top    = '50%';
+    bubble.style.transform = 'translateY(-50%)';
+    bubble.style.right  = 'auto';
+    bubble.style.bottom = 'auto';
+    // Clamp to screen
+    requestAnimationFrame(() => {
+      const bh = bubble.offsetHeight;
+      const hudH = document.getElementById('lesson-hud').classList.contains('visible') ? 72 : 8;
+      const maxTop = vh - bh - margin;
+      const clampedTop = Math.max(hudH, Math.min(vh / 2 - bh / 2, maxTop));
+      bubble.style.top = `${clampedTop}px`;
+      bubble.style.transform = '';
+    });
     return;
   }
 
   const el = document.getElementById(targetId) || document.querySelector(`#${targetId}`);
   if (!el) {
-    bubble.style.bottom = '24px';
-    bubble.style.right  = '24px';
-    bubble.style.top    = 'auto';
-    bubble.style.left   = 'auto';
+    positionCoach(null);
     return;
   }
 
-  const rect   = el.getBoundingClientRect();
-  const bw     = 376;
-  const bh     = bubble.offsetHeight || 400;
-  const margin = 16;
-  const vw = window.innerWidth, vh = window.innerHeight;
+  const rect = el.getBoundingClientRect();
+  const hudH = document.getElementById('lesson-hud').classList.contains('visible') ? 72 : 8;
 
+  bubble.style.transform = '';
   let left, top;
 
-  // Try right side
-  if (rect.right + margin + bw < vw) {
+  // Try right of target first
+  if (rect.right + margin + bw + 16 <= vw) {
     left = rect.right + margin;
-    top  = Math.max(80, Math.min(rect.top, vh - bh - margin));
+    const bh = bubble.offsetHeight || 380;
+    top = Math.max(hudH, Math.min(rect.top + rect.height / 2 - bh / 2, vh - bh - margin));
   }
-  // Try left side
-  else if (rect.left - margin - bw > 0) {
+  // Try left of target
+  else if (rect.left - margin - bw - 16 >= 0) {
     left = rect.left - margin - bw;
-    top  = Math.max(80, Math.min(rect.top, vh - bh - margin));
+    const bh = bubble.offsetHeight || 380;
+    top = Math.max(hudH, Math.min(rect.top + rect.height / 2 - bh / 2, vh - bh - margin));
   }
-  // Below
-  else if (rect.bottom + margin + bh < vh) {
-    left = Math.max(margin, Math.min(rect.left, vw - bw - margin));
-    top  = rect.bottom + margin;
-  }
-  // Above
+  // Default: left side of screen
   else {
-    left = Math.max(margin, Math.min(rect.left, vw - bw - margin));
-    top  = Math.max(80, rect.top - bh - margin);
+    left = margin;
+    const bh = bubble.offsetHeight || 380;
+    top = Math.max(hudH, Math.min(rect.top + rect.height / 2 - bh / 2, vh - bh - margin));
   }
 
   bubble.style.left   = `${left}px`;
@@ -2202,13 +2272,18 @@ function renderStage(lessonIdx, stageIdx) {
   // Navigate GA4 to the right view
   navTo(lesson.navTarget);
 
-  // Spotlight & position
-  const spotTarget = stage.spotlight || null;
-  spotlight(spotTarget);
-  positionCoach(spotTarget);
+  // For hook/concept/explain/terms — spotlight and position based on stage type
+  // (locate and practice handle their own spotlight inside their blocks below)
+  if (!['locate','practice','report'].includes(stage.type)) {
+    const spotTarget = stage.spotlight || null;
+    spotlight(spotTarget, false);
+    positionCoach(spotTarget);
+  }
 
-  // Mark practice ring
-  document.getElementById('spotlight-ring').classList.remove('click-target');
+  // Clear click-target class unless practice will re-set it
+  if (stage.type !== 'practice') {
+    document.getElementById('spotlight-ring').classList.remove('click-target');
+  }
 
   // Render body & buttons
   const body = document.getElementById('coachBody');
@@ -2265,9 +2340,14 @@ function renderStage(lessonIdx, stageIdx) {
   }
 
   else if (stage.type === 'locate') {
-    // Spotlight & highlight the relevant section
-    spotlight(stage.spotlight);
-    positionCoach(stage.spotlight);
+    // Spotlight the target area (not clickable, just look)
+    if (stage.spotlight) {
+      spotlight(stage.spotlight, false);
+      positionCoach(stage.spotlight);
+    } else {
+      spotlight(null);
+      positionCoach(null);
+    }
     html = `
       <div class="coach-stage-tag">🖥️ Tool Location</div>
       <div class="coach-headline">${stage.headline}</div>
@@ -2285,25 +2365,21 @@ function renderStage(lessonIdx, stageIdx) {
   else if (stage.type === 'practice') {
     S.practiceAnswered = false;
     S.attempts = 0;
-    spotlight(null); // Remove spotlight during practice
+    document.getElementById('spotlight-ring').classList.remove('click-target');
+
+    if (stage.clickTarget) {
+      // Show spotlight WITH clickable flag — 4-panel approach keeps target clickable
+      setTimeout(() => {
+        spotlight(stage.clickTarget, true);
+      }, 120);
+    } else {
+      spotlight(null);
+    }
+
+    // Position coach on left side so dashboard is visible
     positionCoach(null);
 
-    // Highlight clickable target
-    if (stage.clickTarget) {
-      setTimeout(() => {
-        const ring = document.getElementById('spotlight-ring');
-        const el = document.getElementById(stage.clickTarget);
-        if (el) {
-          const rect = el.getBoundingClientRect();
-          ring.style.display = 'block';
-          ring.style.left   = `${rect.left - 6}px`;
-          ring.style.top    = `${rect.top - 6}px`;
-          ring.style.width  = `${rect.width + 12}px`;
-          ring.style.height = `${rect.height + 12}px`;
-          ring.classList.add('click-target');
-        }
-      }, 100);
-    }
+    const hintText = stage.hint || 'Use what you learned in the previous stages to find the answer.';
 
     if (stage.inputTask) {
       html = `
@@ -2314,17 +2390,19 @@ function renderStage(lessonIdx, stageIdx) {
           <button class="coach-btn coach-btn-primary" onclick="checkInput(${lessonIdx})">Check</button>
         </div>
         <div class="coach-feedback" id="coachFeedback"></div>
-        <div style="margin-top:8px"><button style="font-size:11px;color:var(--teach-muted);text-decoration:underline;background:none;border:none;cursor:pointer" onclick="toggleHint()">Show hint</button></div>
-        <div id="practiceHint" style="display:none;margin-top:8px;font-size:12px;color:#94a3b8;font-style:italic">${lesson.stages[stageIdx].hint || ''}</div>`;
-      btns = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button><button class="coach-btn coach-btn-primary" id="practiceNextBtn" disabled onclick="nextStage()">Next lesson →</button>`;
+        <div style="margin-top:8px"><button style="font-size:11px;color:var(--teach-muted);text-decoration:underline;background:none;border:none;cursor:pointer" onclick="toggleHint()">💡 Show hint</button></div>
+        <div id="practiceHint" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(251,191,36,.08);border-left:3px solid #fbbf24;border-radius:0 4px 4px 0;font-size:12px;color:#fbbf24;font-style:italic">${hintText}</div>`;
+      btns = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button><button class="coach-btn coach-btn-primary" id="practiceNextBtn" style="opacity:.4;cursor:not-allowed" onclick="practiceNextIfDone()">Next lesson →</button>`;
     } else {
       html = `
         <div class="coach-stage-tag">⚡ Practice Task</div>
         <div class="coach-task-box"><div class="coach-task-label">Your Task</div><div class="coach-task-text">${stage.task}</div></div>
-        <div style="margin-top:12px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--teach-green)">
-          <div style="width:8px;height:8px;border-radius:50%;background:var(--teach-green);animation:click-pulse 1.2s infinite"></div>
-          Click the highlighted element in the dashboard
+        <div style="margin-top:12px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--teach-green)">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--teach-green);animation:click-pulse 1.2s infinite;flex-shrink:0"></div>
+          <span>The target element is highlighted with a <strong>green ring</strong> in the dashboard. Click it directly.</span>
         </div>
+        <div style="margin-top:8px"><button style="font-size:11px;color:var(--teach-muted);text-decoration:underline;background:none;border:none;cursor:pointer" onclick="toggleHint()">💡 Show hint</button></div>
+        <div id="practiceHint" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(251,191,36,.08);border-left:3px solid #fbbf24;border-radius:0 4px 4px 0;font-size:12px;color:#fbbf24;font-style:italic">${hintText}</div>
         <div class="coach-feedback" id="coachFeedback"></div>`;
       btns = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button>`;
     }
@@ -2337,12 +2415,13 @@ function renderStage(lessonIdx, stageIdx) {
     html = `
       <div class="coach-stage-tag">📋 Final Report</div>
       <div class="coach-headline">Complete your 5-point performance brief.</div>
-      <div class="coach-text" style="margin-bottom:12px">Explore the dashboard to find each answer. This is a real analyst task.</div>
+      <div class="coach-text" style="margin-bottom:12px">Explore the dashboard freely. Navigate to each report section to find the answers.</div>
       ${stage.questions.map(q => `
         <div style="margin-bottom:10px">
           <div style="font-size:11px;color:var(--teach-muted);margin-bottom:4px">${q.label}</div>
+          <div style="font-size:10px;color:#64748b;margin-bottom:4px">📍 ${q.hint}</div>
           <div style="display:flex;gap:6px">
-            <input class="coach-input" id="report-${q.id}" placeholder="${q.hint}" style="flex:1;font-size:12px;padding:6px 10px"/>
+            <input class="coach-input" id="report-${q.id}" placeholder="Your answer…" style="flex:1;font-size:12px;padding:6px 10px"/>
             <div id="report-icon-${q.id}" style="width:24px;display:flex;align-items:center;justify-content:center;font-size:14px"></div>
           </div>
         </div>`).join('')}
@@ -2393,27 +2472,50 @@ function checkInput(lessonIdx) {
   const stage   = lesson.stages[S.currentStage];
   const inp     = document.getElementById('practiceInput');
   if (!inp) return;
-  const raw     = inp.value.trim().toLowerCase().replace('%','').replace('s','');
-  const correct = stage.correctAnswer.toLowerCase().replace('%','').replace('s','');
-  const alts    = (stage.altAnswers||[]).map(a => a.toLowerCase().replace('%','').replace('s',''));
-  const numOk   = !isNaN(parseFloat(raw)) && !isNaN(parseFloat(correct)) && Math.abs(parseFloat(raw) - parseFloat(correct)) < 0.1;
-  const isOk    = raw === correct || alts.includes(raw) || numOk;
+
+  // Normalise: trim, lowercase, strip trailing % or unit chars only for numeric answers
+  const rawInput  = inp.value.trim().toLowerCase();
+  const correct   = stage.correctAnswer.toLowerCase();
+  const alts      = (stage.altAnswers||[]).map(a => a.toLowerCase());
+
+  // Numeric comparison: strip % and allow ±0.1 tolerance
+  const numRaw  = parseFloat(rawInput.replace('%','').replace('m',''));
+  const numCorr = parseFloat(correct.replace('%','').replace('m',''));
+  const numOk   = !isNaN(numRaw) && !isNaN(numCorr) && Math.abs(numRaw - numCorr) < 0.15;
+
+  // Text comparison: exact match or alt match
+  const textOk  = rawInput === correct || alts.includes(rawInput);
+
+  const isOk = textOk || numOk;
 
   S.attempts++;
   const fb = document.getElementById('coachFeedback');
+
   if (isOk) {
     S.practiceAnswered = true;
     inp.style.borderColor = 'var(--teach-green)';
-    showSuccess(stage.successTitle, stage.successText, stage.xp, lessonIdx);
     if (fb) { fb.className='coach-feedback right'; fb.textContent='✓ Correct!'; }
+    // Enable the next button
     const btn = document.getElementById('practiceNextBtn');
-    if (btn) btn.disabled = false;
+    if (btn) {
+      btn.style.opacity = '1';
+      btn.style.cursor  = 'pointer';
+    }
+    // Show success overlay after brief pause
+    setTimeout(() => showSuccess(stage.successTitle, stage.successText, stage.xp, lessonIdx), 600);
   } else {
     inp.style.borderColor = '#ef4444';
-    const msgs = ['Not quite. Try again.', 'Still not right — check the dashboard.', `Attempt ${S.attempts}: use the hint above.`];
+    const msgs = [
+      'Not quite. Check your calculation and try again.',
+      `Still wrong (attempt ${S.attempts}). Try the hint below.`,
+      `Attempt ${S.attempts}: the hint has the exact formula. Use it!`,
+    ];
     if (fb) { fb.className='coach-feedback wrong'; fb.textContent = msgs[Math.min(S.attempts-1, 2)]; }
-    if (S.attempts >= 2) { const h = document.getElementById('practiceHint'); if (h) h.style.display = 'block'; }
-    setTimeout(() => { inp.style.borderColor = ''; }, 1500);
+    if (S.attempts >= 2) {
+      const h = document.getElementById('practiceHint');
+      if (h) h.style.display = 'block';
+    }
+    setTimeout(() => { if (inp) inp.style.borderColor = ''; }, 1500);
   }
 }
 
@@ -2445,76 +2547,80 @@ function checkReport(lessonIdx) {
 }
 
 // Practice click handlers
+function completePracticeByClick(successTitle, successText, xp) {
+  S.practiceAnswered = true;
+  spotlight(null);
+  document.getElementById('spotlight-ring').style.display = 'none';
+  // Update coach footer — add a "Next" button
+  const btns = document.getElementById('coachBtns');
+  if (btns) {
+    btns.innerHTML = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button>
+      <button class="coach-btn coach-btn-success" onclick="nextStage()">Next →</button>`;
+  }
+  // Show success overlay after short delay
+  setTimeout(() => showSuccess(successTitle, successText, xp, S.currentLesson), 400);
+}
+
 function handleChannelClick(idx) {
   const lesson = LESSONS[S.currentLesson];
-  const stage  = lesson.stages[S.currentStage];
-  if (stage.type !== 'practice' || S.practiceAnswered) return;
+  const stage  = lesson && lesson.stages[S.currentStage];
+  if (!stage || stage.type !== 'practice' || S.practiceAnswered) {
+    // Not in practice mode — still show tooltip via the global listener
+    return;
+  }
   if (`channel-row-${idx}` === stage.clickTarget) {
-    S.practiceAnswered = true;
-    spotlight(null);
-    document.getElementById('spotlight-ring').style.display = 'none';
     document.querySelectorAll('[id^=channel-row]').forEach(r => r.classList.remove('highlight-row'));
     document.getElementById(`channel-row-${idx}`).classList.add('highlight-row');
-    showSuccess(stage.successTitle, stage.successText, stage.xp, S.currentLesson);
+    completePracticeByClick(stage.successTitle, stage.successText, stage.xp);
   } else {
-    showWrong('Not that one — look at which row has the highest Sessions number.');
+    showWrong('Not that one — look at which row has the HIGHEST Sessions number.');
   }
 }
 
 function handleDonutClick(el, donutId) {
   const lesson = LESSONS[S.currentLesson];
-  const stage  = lesson.stages[S.currentStage];
-  if (stage.type !== 'practice' || S.practiceAnswered) return;
-  const idx = el.getAttribute('data-idx');
-  // For device lesson: idx 0 = mobile = correct
-  if (donutId === 'deviceDonut' && idx == '0') {
-    S.practiceAnswered = true;
-    showSuccess(stage.successTitle, stage.successText, stage.xp, S.currentLesson);
+  const stage  = lesson && lesson.stages[S.currentStage];
+  if (!stage || stage.type !== 'practice' || S.practiceAnswered) return;
+  const idx = parseInt(el.getAttribute('data-idx'));
+  // Mobile = index 0 in deviceDonut
+  if (donutId === 'deviceDonut' && idx === 0) {
+    completePracticeByClick(stage.successTitle, stage.successText, stage.xp);
   } else {
-    showWrong('Not that one — look at which slice is largest.');
+    showWrong('Not that one — find the largest slice. Mobile (68%) is the biggest.');
   }
 }
 
 function handleAgeBarClick(idx) {
   const lesson = LESSONS[S.currentLesson];
-  const stage  = lesson.stages[S.currentStage];
-  if (stage.type !== 'practice' || S.practiceAnswered) return;
+  const stage  = lesson && lesson.stages[S.currentStage];
+  if (!stage || stage.type !== 'practice' || S.practiceAnswered) return;
   if (`age-bar-${idx}` === stage.clickTarget) {
-    S.practiceAnswered = true;
-    spotlight(null);
-    document.getElementById('spotlight-ring').style.display = 'none';
     document.querySelectorAll('[id^=age-bar]').forEach(r => r.style.background = '');
     document.getElementById(`age-bar-${idx}`).style.background = '#e8f0fe';
-    showSuccess(stage.successTitle, stage.successText, stage.xp, S.currentLesson);
+    completePracticeByClick(stage.successTitle, stage.successText, stage.xp);
   } else {
-    showWrong('Not that one — find the longest bar in the age chart.');
+    showWrong('Not that one — find the LONGEST bar. That is the 18–24 age group.');
   }
 }
 
 // Metric card clicks
 function handleMetricClick(metricId) {
   const lesson = LESSONS[S.currentLesson];
-  if (!lesson) return;
-  const stage  = lesson.stages[S.currentStage];
-  if (stage.type !== 'practice' || S.practiceAnswered) return;
+  const stage  = lesson && lesson.stages[S.currentStage];
+  if (!stage || stage.type !== 'practice' || S.practiceAnswered) return;
   if (metricId === stage.clickTarget) {
-    S.practiceAnswered = true;
-    spotlight(null);
-    document.getElementById('spotlight-ring').style.display = 'none';
-    showSuccess(stage.successTitle, stage.successText, stage.xp, S.currentLesson);
+    completePracticeByClick(stage.successTitle, stage.successText, stage.xp);
   } else {
-    showWrong('Not that one — look for the Sessions metric card.');
+    showWrong('That\'s not the one — look for the card labelled "Sessions".');
   }
 }
 
+function practiceNextIfDone() {
+  if (S.practiceAnswered) nextStage();
+}
+
 function handleOverlayClick() {
-  // Clicks on overlay during practice → wrong
-  const lesson = LESSONS[S.currentLesson];
-  if (!lesson) return;
-  const stage  = lesson.stages[S.currentStage];
-  if (stage.type === 'practice' && !S.practiceAnswered && stage.clickTarget) {
-    showWrong('Click on the highlighted element inside the dashboard.');
-  }
+  // Legacy - not used with 4-panel approach but kept for safety
 }
 
 function showWrong(msg) {
@@ -2566,21 +2672,28 @@ function showCertificate() {
   document.getElementById('certDate').textContent = `Issued: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
   document.getElementById('cert-screen').classList.add('show');
   spotlight(null);
+  ['top','right','bottom','left'].forEach(s => {
+    const p = document.getElementById(`sp-${s}`);
+    if (p) p.style.display = 'none';
+  });
   document.getElementById('lesson-hud').classList.remove('visible');
   document.getElementById('spotlight-overlay').classList.remove('active');
   document.getElementById('spotlight-ring').style.display = 'none';
   document.getElementById('coach-bubble').classList.add('hidden');
+  // Restore shell
+  document.getElementById('ga-shell').style.marginTop = '';
+  document.getElementById('ga-shell').style.height    = '';
 }
 
 // ═══════════════════════════════════════════════════════════════
 // LESSON & COURSE START/EXIT
 // ═══════════════════════════════════════════════════════════════
 function startLesson(idx) {
-  S.currentLesson = idx;
-  S.currentStage  = 0;
+  S.currentLesson    = idx;
+  S.currentStage     = 0;
   S.practiceAnswered = false;
+  S.attempts         = 0;
   document.getElementById('lesson-hud').classList.add('visible');
-  // Push GA4 shell down by HUD height
   document.getElementById('ga-shell').style.marginTop = '64px';
   document.getElementById('ga-shell').style.height    = 'calc(100vh - 64px)';
   renderStage(idx, 0);
@@ -2595,8 +2708,12 @@ function startCourse() {
 }
 
 function exitToMenu() {
-  // Stop lesson
   spotlight(null);
+  // Hide 4-panel spotlight explicitly
+  ['top','right','bottom','left'].forEach(s => {
+    const p = document.getElementById(`sp-${s}`);
+    if (p) p.style.display = 'none';
+  });
   document.getElementById('spotlight-overlay').classList.remove('active');
   document.getElementById('spotlight-ring').style.display = 'none';
   document.getElementById('coach-bubble').classList.add('hidden');
@@ -2606,6 +2723,7 @@ function exitToMenu() {
   document.getElementById('cert-screen').classList.remove('show');
   document.getElementById('success-overlay').classList.remove('show');
   document.getElementById('landing-screen').classList.remove('hidden');
+  hideTooltip(true);
   renderLandingLessons();
 }
 
@@ -2688,6 +2806,197 @@ function renderLandingLessons() {
     ['realtimeNum','realtimeNum2'].forEach(id => { const el = document.getElementById(id); if(el) el.textContent = rt; });
   }, 3000);
 })();
+
+// ═══════════════════════════════════════════════════════════════
+// ELEMENT TOOLTIP SYSTEM
+// Clicking any GA4 element shows a small popup explaining what it is.
+// This works whether or not a lesson is active.
+// ═══════════════════════════════════════════════════════════════
+const ELEMENT_TOOLTIPS = {
+  // Metric cards
+  'metric-sessions':  { title:'Sessions', body:'One session = one complete visit to your website. Starts when someone arrives, ends when they leave or go inactive for 30 minutes.', value:'8,420 total visits this period' },
+  'metric-users':     { title:'Users', body:'Unique individuals who visited. One person visiting 5 times = 1 user, 5 sessions. Always less than or equal to sessions.', value:'5,231 unique people' },
+  'metric-newusers':  { title:'New Users', body:'People visiting your website for the very first time on this device/browser. Returning users have visited before.', value:'3,920 first-time visitors' },
+  'metric-engrate':   { title:'Engagement Rate', body:'% of sessions where the user was actively engaged — stayed 10+ seconds, visited 2+ pages, or converted. The inverse of bounce rate.\n\nBounce Rate = 100% − 38% = 62%', value:'38% engaged · 62% bounced' },
+  'metric-engtime':   { title:'Avg. Engagement Time', body:'How long visitors are actively using the site on average per session. Higher = more engaged audience.', value:'1 minute 52 seconds average' },
+  'metric-conv':      { title:'Conversions', body:'Times visitors completed a key action (purchase, sign-up, form submission). You define what counts as a conversion.', value:'202 conversions this period' },
+  // Table rows
+  'channel-row-0':    { title:'Organic Search', body:'Visitors who found you by typing a search into Google (or Bing, etc.) and clicking a FREE result — not an ad.', value:'3,368 sessions · 40% of total' },
+  'channel-row-1':    { title:'Direct', body:'Visitors who typed your URL directly, used a bookmark, or came from a source Analytics couldn\'t identify.', value:'2,105 sessions · 25% of total' },
+  'channel-row-2':    { title:'Organic Social', body:'Visitors from social media posts (not paid ads) — Instagram, Facebook, LinkedIn, TikTok, etc.', value:'1,684 sessions · 20% of total' },
+  'channel-row-3':    { title:'Referral', body:'Visitors who clicked a link on another website — a blog, news article, partner site, or directory.', value:'842 sessions · 10% of total' },
+  'channel-row-4':    { title:'Paid Search', body:'Visitors who clicked a paid advertisement in Google search results. The business paid per click.', value:'421 sessions · 5% of total' },
+  // Pages
+  'page-row-0':       { title:'/home — Homepage', body:'The most visited page. Bounce rate 45% is average. Most visitors land here first.', value:'12,400 views · 0m 58s avg time' },
+  'page-row-1':       { title:'Beginner\'s Guide to Coffee', body:'Excellent engagement — 4m 12s average time means people are reading this article fully. 22% bounce rate is very low.', value:'8,200 views · 4m 12s avg time' },
+  'page-row-2':       { title:'/about — About Us', body:'Normal metrics for an about page. 55% bounce rate is typical — people read it and leave.', value:'3,100 views · 1m 34s avg time' },
+  'page-row-3':       { title:'/products — Products Page', body:'⚠️ PROBLEM: 78% bounce rate and 12-second avg time on a sales page is critical. Visitors aren\'t finding what they expect.', value:'2,890 views · 0m 12s avg time' },
+  'page-row-4':       { title:'/contact — Contact Page', body:'60% bounce is normal for contact pages — people either find the info they need or leave to call/email.', value:'1,200 views · 0m 44s avg time' },
+  'page-row-5':       { title:'/checkout — Checkout', body:'Low bounce rate (12%) is expected here — people who reach checkout are committed. High engagement time shows they\'re completing the form.', value:'680 views · 3m 21s avg time' },
+  // Age bars
+  'age-bar-0':        { title:'Age: 18–24', body:'Your LARGEST audience group. If your product targets older professionals, this is a key mismatch to investigate.', value:'34% of visitors' },
+  'age-bar-1':        { title:'Age: 25–34', body:'Second largest group — often the "young professional" demographic. Good for most consumer and career products.', value:'28% of visitors' },
+  'age-bar-2':        { title:'Age: 35–44', body:'Mid-career professionals. Usually highest purchasing power in consumer categories.', value:'19% of visitors' },
+  'age-bar-3':        { title:'Age: 45–54', body:'Established professionals. May need different UX — larger text, simpler navigation.', value:'12% of visitors' },
+  'age-bar-4':        { title:'Age: 55–64', body:'Pre-retirement demographic. High disposable income but different digital habits.', value:'5% of visitors' },
+  'age-bar-5':        { title:'Age: 65+', body:'Senior audience. Accessibility (font size, contrast, touch targets) becomes particularly important.', value:'2% of visitors' },
+  // Sidebar nav
+  'nav-traffic-acq':  { title:'Traffic Acquisition', body:'Shows WHERE your visitors come from — which channels (search, social, direct, ads) drive the most sessions.', value:'Primary acquisition report' },
+  'nav-pages':        { title:'Pages and Screens', body:'Shows WHICH pages visitors view — ranked by views. Helps identify top content and problem pages.', value:'Content performance report' },
+  'nav-conversions':  { title:'Conversions', body:'Shows how many times visitors completed key actions (purchases, sign-ups). The most important business metric.', value:'Business goal tracking' },
+  'nav-user-attr':    { title:'User Attributes', body:'Shows WHO your visitors are — age, gender, location, language. Helps you understand if you\'re reaching the right audience.', value:'Audience demographics' },
+  'nav-tech':         { title:'Tech Overview', body:'Shows WHAT devices, browsers and operating systems visitors use. Critical for knowing where to focus UX improvements.', value:'Device & browser data' },
+  'nav-eng-overview': { title:'Engagement Overview', body:'Shows HOW visitors interact — engagement time, events, conversions. Measures quality of visits, not just quantity.', value:'Interaction quality report' },
+  // Chart cards
+  'taLineChart':      { title:'Sessions Chart', body:'Each data point = one day. The trend line shows whether traffic is growing, declining, or stable. Spikes indicate something drove extra traffic.', value:'Mar 1–15, 2026' },
+  'ta-table-card':    { title:'Traffic Sources Table', body:'Every row is one acquisition channel. The Sessions column shows how many visits each channel contributed. Higher = stronger channel.', value:'5 acquisition channels' },
+  // Header elements
+  'propertyChip':     { title:'Property: Nova Coffee Roasters', body:'This is the GA4 "property" — the specific website being tracked. A company can have multiple properties (website, app, etc.) in one account.', value:'Property ID: 314159265' },
+  'dateChip':         { title:'Date Range Selector', body:'Controls which time period the data covers. Always check this first — the same numbers mean very different things for different date ranges.', value:'Mar 1–15, 2026 (15 days)' },
+};
+
+let tooltipTimeout = null;
+let tooltipVisible = false;
+
+function showTooltip(id, x, y) {
+  const data = ELEMENT_TOOLTIPS[id];
+  if (!data) return;
+
+  clearTimeout(tooltipTimeout);
+  const tt    = document.getElementById('ga-tooltip');
+  const title = document.getElementById('ga-tooltip-title');
+  const body  = document.getElementById('ga-tooltip-body');
+  const val   = document.getElementById('ga-tooltip-value');
+
+  title.textContent = data.title;
+  body.textContent  = data.body;
+  val.textContent   = data.value || '';
+  val.style.display = data.value ? 'block' : 'none';
+
+  tt.style.display = 'block';
+  tt.style.opacity = '0';
+
+  // Position: avoid edges
+  const tw = 280, th = tt.offsetHeight || 100;
+  const vw = window.innerWidth, vh = window.innerHeight;
+  let tx = x + 12, ty = y + 12;
+  if (tx + tw > vw - 8) tx = x - tw - 12;
+  if (ty + th > vh - 8) ty = y - th - 12;
+  tx = Math.max(8, tx);
+  ty = Math.max(8, ty);
+
+  tt.style.left = `${tx}px`;
+  tt.style.top  = `${ty}px`;
+
+  requestAnimationFrame(() => { tt.style.opacity = '1'; });
+  tooltipVisible = true;
+}
+
+function hideTooltip(immediate) {
+  if (immediate) {
+    const tt = document.getElementById('ga-tooltip');
+    tt.style.opacity = '0';
+    tooltipTimeout = setTimeout(() => { tt.style.display = 'none'; }, 150);
+  } else {
+    tooltipTimeout = setTimeout(() => hideTooltip(true), 100);
+  }
+  tooltipVisible = false;
+}
+
+// Global click listener — show tooltip for any element with a known id
+document.addEventListener('click', function(e) {
+  // Walk up DOM to find a tooltippable element
+  let el = e.target;
+  let found = null;
+  for (let i = 0; i < 5 && el; i++) {
+    if (el.id && ELEMENT_TOOLTIPS[el.id]) { found = el; break; }
+    // Check for table rows
+    if (el.tagName === 'TR' && el.id && ELEMENT_TOOLTIPS[el.id]) { found = el; break; }
+    el = el.parentElement;
+  }
+
+  if (found) {
+    // If a lesson is active AND this element is the practice target, 
+    // let the practice handler fire first, then also show the tooltip
+    showTooltip(found.id, e.clientX, e.clientY);
+    // Auto-hide after 4 seconds
+    clearTimeout(tooltipTimeout);
+    tooltipTimeout = setTimeout(() => hideTooltip(true), 4500);
+  } else {
+    hideTooltip(true);
+  }
+}, true); // capture phase so we see all clicks
+
+// Also show on hover for discovery (subtle, 600ms delay)
+document.addEventListener('mouseover', function(e) {
+  // Only show hover tooltips when NOT in a lesson (to avoid cluttering practice)
+  if (document.getElementById('lesson-hud').classList.contains('visible')) return;
+
+  let el = e.target;
+  for (let i = 0; i < 5 && el; i++) {
+    if (el.id && ELEMENT_TOOLTIPS[el.id]) {
+      clearTimeout(tooltipTimeout);
+      tooltipTimeout = setTimeout(() => {
+        const rect = el.getBoundingClientRect();
+        showTooltip(el.id, rect.right, rect.top);
+      }, 700);
+      return;
+    }
+    el = el.parentElement;
+  }
+  // Mouse moved off — cancel pending tooltip
+  clearTimeout(tooltipTimeout);
+});
+
+document.addEventListener('mouseout', function(e) {
+  if (!tooltipVisible) clearTimeout(tooltipTimeout);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// SIDEBAR NAV TOOLTIPS — add to sidebar items
+// ═══════════════════════════════════════════════════════════════
+// These are handled by the global click listener above via id matching
+
+// ═══════════════════════════════════════════════════════════════
+// WINDOW RESIZE — reposition spotlight and coach
+// ═══════════════════════════════════════════════════════════════
+let resizeTimer;
+window.addEventListener('resize', () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => {
+    if (!document.getElementById('lesson-hud').classList.contains('visible')) return;
+    const lesson = LESSONS[S.currentLesson];
+    if (!lesson) return;
+    const stage = lesson.stages[S.currentStage];
+    if (!stage) return;
+    // Re-run spotlight and positioning after resize
+    if (stage.type === 'practice' && stage.clickTarget) {
+      spotlight(stage.clickTarget, true);
+    } else if (stage.spotlight) {
+      spotlight(stage.spotlight, false);
+      positionCoach(stage.spotlight);
+    }
+  }, 200);
+});
+
+// ═══════════════════════════════════════════════════════════════
+// KEYBOARD SHORTCUTS
+// ═══════════════════════════════════════════════════════════════
+document.addEventListener('keydown', function(e) {
+  if (!document.getElementById('lesson-hud').classList.contains('visible')) return;
+  // Don't intercept when typing in inputs
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA') return;
+
+  if (e.key === 'ArrowRight' || e.key === 'Enter') {
+    // Enter on practice stages only advances if answered
+    const lesson = LESSONS[S.currentLesson];
+    const stage  = lesson && lesson.stages[S.currentStage];
+    if (stage && (stage.type === 'practice' || stage.type === 'report')) return;
+    nextStage();
+  }
+  if (e.key === 'ArrowLeft') prevStage();
+  if (e.key === 'Escape') hideTooltip(true);
+});
 </script>
 </body>
 </html>
