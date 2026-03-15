@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SkillOS — Learn Google Analytics by Doing</title>
+<title>SkillOS — Learn Web Analytics by Doing</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
-<link href="https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;700&family=Roboto:wght@300;400;500&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
 <style>
 /* ═══════════════════════════════════════
    GA4 DESIGN TOKENS
@@ -63,7 +63,7 @@
   --shadow:    0 1px 3px rgba(60,64,67,.3), 0 4px 8px rgba(60,64,67,.15);
   --shadow-lg: 0 2px 6px rgba(60,64,67,.3), 0 8px 20px rgba(60,64,67,.2);
 
-  font-family: 'Roboto', 'Google Sans', sans-serif;
+  font-family: 'DM Sans', 'Plus Jakarta Sans', sans-serif;
 }
 
 /* ═══════════════════════════════════════
@@ -111,10 +111,10 @@ svg{display:block}
   border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
   font-size: 14px; font-weight: 700; color: white;
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
 }
 .ga-logo-text {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 16px; font-weight: 400; color: var(--ga-text-2);
   white-space: nowrap;
 }
@@ -148,7 +148,7 @@ svg{display:block}
   width: 32px; height: 32px; border-radius: 50%;
   background: linear-gradient(135deg, #1a73e8, #34a853);
   display: flex; align-items: center; justify-content: center;
-  font-family: 'Google Sans', sans-serif; font-size: 12px; font-weight: 500; color: white;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 500; color: white;
   cursor: pointer;
 }
 
@@ -277,7 +277,7 @@ svg{display:block}
 
 /* Report title */
 .ga-report-title {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 22px; font-weight: 400; color: var(--ga-text);
   margin-bottom: 4px;
 }
@@ -308,7 +308,7 @@ svg{display:block}
   display: flex; align-items: center; gap: 4px;
 }
 .ga-metric-value {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 28px; font-weight: 400; color: var(--ga-text);
   line-height: 1; margin-bottom: 6px;
 }
@@ -432,7 +432,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 
 /* Realtime counter */
 .ga-realtime-num {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 56px; font-weight: 300; color: var(--ga-text);
   line-height: 1;
 }
@@ -500,27 +500,43 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   50% { box-shadow: 0 0 0 10px rgba(52,168,83,.1), 0 0 30px rgba(52,168,83,.4); transform: scale(1.01); }
 }
 
-/* Coach bubble */
+/* Coach bubble — translucent, frosted glass */
 #coach-bubble {
   position: fixed;
   z-index: var(--coach-z);
   width: 360px;
-  background: var(--teach-bg);
-  border: 1px solid var(--teach-border);
+  background: rgba(22, 22, 40, 0.82);
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-lg);
-  box-shadow: 0 8px 40px rgba(0,0,0,.5);
+  box-shadow: 0 8px 40px rgba(0,0,0,.45), 0 0 0 0.5px rgba(255,255,255,0.06) inset;
   overflow: hidden;
-  transition: all .3s cubic-bezier(.4,0,.2,1);
+  transition: opacity .3s, transform .3s cubic-bezier(.4,0,.2,1);
   transform-origin: center top;
+  user-select: none;
 }
 #coach-bubble.hidden { opacity: 0; transform: scale(.95) translateY(-8px); pointer-events: none; }
+#coach-bubble.dragging { transition: none; opacity: 0.92; box-shadow: 0 20px 60px rgba(0,0,0,.6); }
 
+/* Drag handle — the header */
 .coach-header {
-  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
-  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(20,20,40,0.9) 0%, rgba(18,24,52,0.9) 100%);
+  padding: 10px 14px;
   display: flex; align-items: center; gap: 10px;
-  border-bottom: 1px solid var(--teach-border);
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  cursor: grab;
+  position: relative;
 }
+.coach-header:active { cursor: grabbing; }
+/* Drag indicator dots */
+.coach-header::before {
+  content: '⋮⋮';
+  position: absolute; right: 44px; top: 50%; transform: translateY(-50%);
+  font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 2px;
+  pointer-events: none;
+}
+
 .coach-avatar {
   width: 36px; height: 36px; border-radius: 50%;
   background: linear-gradient(135deg, var(--teach-cyan), var(--teach-purple));
@@ -532,12 +548,26 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 .coach-close {
   margin-left: auto; width: 24px; height: 24px; border-radius: 50%;
   display: flex; align-items: center; justify-content: center;
-  color: var(--teach-muted); cursor: pointer;
+  color: rgba(255,255,255,0.35); cursor: pointer;
   transition: background .15s, color .15s;
+  flex-shrink: 0;
 }
-.coach-close:hover { background: rgba(255,255,255,.1); color: var(--teach-text); }
+.coach-close:hover { background: rgba(255,255,255,.12); color: white; }
 
-.coach-body { padding: 16px; max-height: calc(100vh - 240px); overflow-y: auto; }
+/* Slightly translucent body too */
+.coach-body {
+  padding: 16px;
+  max-height: calc(100vh - 240px);
+  overflow-y: auto;
+  background: transparent;
+}
+.coach-footer {
+  padding: 10px 14px;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 8px;
+  background: rgba(0,0,0,0.15);
+}
 .coach-stage-tag {
   display: inline-flex; align-items: center; gap: 6px;
   background: rgba(0,212,255,.1); color: var(--teach-cyan);
@@ -546,7 +576,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   margin-bottom: 12px;
 }
 .coach-headline {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 17px; font-weight: 500; color: var(--teach-text);
   line-height: 1.3; margin-bottom: 10px;
 }
@@ -650,7 +680,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 #lesson-hud.visible { display: flex; }
 
 .hud-logo {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 16px; font-weight: 700;
   color: white; white-space: nowrap;
 }
@@ -716,7 +746,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   margin-bottom: 20px;
 }
 .landing-title {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 42px; font-weight: 400; color: white; line-height: 1.15;
   margin-bottom: 16px;
 }
@@ -736,7 +766,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 
 .landing-stats { display: flex; gap: 28px; }
 .landing-stat-val {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 28px; font-weight: 400; color: var(--teach-cyan);
   line-height: 1;
 }
@@ -747,7 +777,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 90vh;
 }
 .landing-right-title {
-  font-family: 'Google Sans', sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   font-size: 18px; font-weight: 500; color: var(--teach-text);
   margin-bottom: 4px;
 }
@@ -779,7 +809,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 .landing-start-btn {
   width: 100%; padding: 14px; border-radius: var(--radius);
   background: var(--ga-blue); color: white;
-  font-size: 15px; font-weight: 500; font-family: 'Google Sans', sans-serif;
+  font-size: 15px; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif;
   cursor: pointer; transition: background .15s;
   margin-top: 8px; border: none;
 }
@@ -802,7 +832,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 @keyframes popIn { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .success-icon { font-size: 48px; margin-bottom: 16px; }
-.success-title { font-family: 'Google Sans', sans-serif; font-size: 24px; font-weight: 500; color: var(--teach-text); margin-bottom: 8px; }
+.success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 500; color: var(--teach-text); margin-bottom: 8px; }
 .success-text { font-size: 14px; color: var(--teach-muted); line-height: 1.6; margin-bottom: 24px; }
 .success-xp { display: inline-flex; align-items: center; gap: 6px; background: rgba(251,191,36,.1); color: var(--teach-amber); border: 1px solid rgba(251,191,36,.3); border-radius: 100px; padding: 6px 16px; font-size: 13px; font-weight: 600; margin-bottom: 24px; }
 .success-btn { width: 100%; padding: 12px; border-radius: var(--radius-sm); background: var(--ga-blue); color: white; font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: background .15s; border: none; }
@@ -823,11 +853,11 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   animation: fadeIn .5s ease;
 }
 .cert-badge { font-size: 56px; margin-bottom: 12px; }
-.cert-title { font-family: 'Google Sans', sans-serif; font-size: 28px; color: var(--teach-text); margin-bottom: 6px; }
-.cert-name { font-size: 16px; color: var(--teach-cyan); font-family: 'Google Sans', sans-serif; margin: 16px 0 4px; }
+.cert-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; color: var(--teach-text); margin-bottom: 6px; }
+.cert-name { font-size: 16px; color: var(--teach-cyan); font-family: 'Plus Jakarta Sans', sans-serif; margin: 16px 0 4px; }
 .cert-course { font-size: 14px; color: var(--teach-muted); margin-bottom: 28px; }
 .cert-stats { display: flex; justify-content: center; gap: 40px; margin-bottom: 28px; }
-.cert-stat-val { font-family: 'Google Sans', sans-serif; font-size: 36px; color: var(--teach-amber); display: block; }
+.cert-stat-val { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 36px; color: var(--teach-amber); display: block; }
 .cert-stat-lbl { font-size: 11px; color: var(--teach-muted); text-transform: uppercase; letter-spacing: .08em; }
 .cert-date { font-size: 12px; color: var(--teach-muted); margin-bottom: 28px; }
 .cert-actions { display: flex; gap: 12px; justify-content: center; }
@@ -880,8 +910,8 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
     <div class="landing-left">
       <div>
         <div class="landing-eyebrow">Interactive Learning Bootcamp</div>
-        <div class="landing-title">Learn <em>Google Analytics</em> by doing it.</div>
-        <div class="landing-desc">You'll practice inside a pixel-perfect replica of the real Google Analytics 4 dashboard. No videos. No slides. Just hands-on guided practice with a coach that walks you through every step.</div>
+        <div class="landing-title">Learn <em>Web Analytics</em> by doing it.</div>
+        <div class="landing-desc">You'll practice inside a realistic analytics dashboard — the same kind used by professionals everywhere. No videos. No slides. Just hands-on guided practice with a coach that walks you through every step.</div>
         <div class="landing-loop">
           <span class="landing-loop-step">Explain</span><span class="landing-loop-arrow">→</span>
           <span class="landing-loop-step">Show</span><span class="landing-loop-arrow">→</span>
@@ -898,7 +928,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
     </div>
     <div class="landing-right">
       <div>
-        <div class="landing-right-title">Google Analytics Fundamentals</div>
+        <div class="landing-right-title">Web Analytics Fundamentals</div>
         <div class="landing-right-sub">10 lessons · 3 modules · ~4 hours · Beginner friendly</div>
       </div>
       <div id="landingLessonList"><!-- rendered by JS --></div>
@@ -932,8 +962,8 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   <!-- TOP HEADER -->
   <header id="ga-header">
     <div class="ga-logo-area">
-      <div class="ga-logo-icon">G</div>
-      <div class="ga-logo-text">Analytics <strong>4</strong></div>
+      <div class="ga-logo-icon" style="background:linear-gradient(135deg,#1a73e8 0%,#0d47a1 100%);border-radius:8px;font-size:16px">📊</div>
+      <div class="ga-logo-text">DataFlow <strong>Analytics</strong></div>
     </div>
     <div class="ga-property-chip" id="propertyChip">
       <div class="ga-property-dot"></div>
@@ -1060,17 +1090,17 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
       <div class="ga-home-grid">
         <div class="ga-home-tile" onclick="navTo('traffic-acq')">
           <div class="ga-home-tile-title">Traffic acquisition</div>
-          <div style="font-family:'Google Sans',sans-serif;font-size:32px;font-weight:400;color:var(--ga-text)">8,420</div>
+          <div style="font-family:'Plus Jakarta Sans', sans-serif;font-size:32px;font-weight:400;color:var(--ga-text)">8,420</div>
           <div style="font-size:12px;color:var(--ga-text-2);margin-top:4px">Sessions · ↑ 12%</div>
         </div>
         <div class="ga-home-tile" onclick="navTo('pages')">
           <div class="ga-home-tile-title">Pages and screens</div>
-          <div style="font-family:'Google Sans',sans-serif;font-size:32px;font-weight:400;color:var(--ga-text)">21,340</div>
+          <div style="font-family:'Plus Jakarta Sans', sans-serif;font-size:32px;font-weight:400;color:var(--ga-text)">21,340</div>
           <div style="font-size:12px;color:var(--ga-text-2);margin-top:4px">Page views · ↑ 8%</div>
         </div>
         <div class="ga-home-tile" onclick="navTo('conversions')">
           <div class="ga-home-tile-title">Conversions</div>
-          <div style="font-family:'Google Sans',sans-serif;font-size:32px;font-weight:400;color:var(--ga-text)">202</div>
+          <div style="font-family:'Plus Jakarta Sans', sans-serif;font-size:32px;font-weight:400;color:var(--ga-text)">202</div>
           <div style="font-size:12px;color:var(--ga-text-2);margin-top:4px">Conversion events · 2.4%</div>
         </div>
       </div>
@@ -1205,7 +1235,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
     <div class="ga-report-view" id="view-landing"><div style="padding:32px"><div class="ga-report-title">Landing page</div><div class="ga-empty" style="margin-top:24px">No data available.</div></div></div>
     <div class="ga-report-view" id="view-retention"><div style="padding:32px"><div class="ga-report-title">Retention</div><div class="ga-empty" style="margin-top:24px">Configure retention settings to see data.</div></div></div>
     <div class="ga-report-view" id="view-explore"><div style="padding:32px"><div class="ga-report-title">Explorations</div><div class="ga-empty" style="margin-top:24px">Create a new exploration to get started.</div></div></div>
-    <div class="ga-report-view" id="view-advertising"><div style="padding:32px"><div class="ga-report-title">Advertising</div><div class="ga-empty" style="margin-top:24px">Link a Google Ads account to see advertising data.</div></div></div>
+    <div class="ga-report-view" id="view-advertising"><div style="padding:32px"><div class="ga-report-title">Advertising</div><div class="ga-empty" style="margin-top:24px">Link an advertising account to see paid campaign data.</div></div></div>
     <div class="ga-report-view" id="view-admin"><div style="padding:32px"><div class="ga-report-title">Admin</div><div class="ga-empty" style="margin-top:24px">Property: Nova Coffee Roasters (314159265)</div></div></div>
     <div class="ga-report-view" id="view-user-acq"><div style="padding:32px"><div class="ga-report-title">User acquisition</div><div class="ga-empty" style="margin-top:24px">Shows first-time user acquisition channels.</div></div></div>
     <div class="ga-report-view" id="view-acq-overview"><div style="padding:32px"><div class="ga-report-title">Acquisition overview</div></div></div>
@@ -1263,7 +1293,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
     <div class="cert-title">Certificate of Completion</div>
     <div style="font-size:14px;color:var(--teach-muted);margin-bottom:8px">This certifies that</div>
     <div class="cert-name">SkillOS Graduate</div>
-    <div class="cert-course">has successfully completed<br><strong style="color:var(--teach-text)">Google Analytics Fundamentals</strong></div>
+    <div class="cert-course">has successfully completed<br><strong style="color:var(--teach-text)">Web Analytics Fundamentals</strong></div>
     <div class="cert-stats">
       <div><span class="cert-stat-val" id="certXP">0</span><span class="cert-stat-lbl">XP Earned</span></div>
       <div><span class="cert-stat-val">10</span><span class="cert-stat-lbl">Lessons</span></div>
@@ -1391,7 +1421,7 @@ const LESSONS = [
       },
       { // 4 — Locate
         type:'locate',
-        headline:'Find it in GA4: Traffic Acquisition',
+        headline:'Find it in DataFlow: Traffic Acquisition',
         spotlight:'ta-metrics-strip',
         steps:['Click Reports in the left sidebar','Click Acquisition → Traffic acquisition','The top row of cards shows Sessions, Users, Engagement Rate, and more'],
         tip:'These metrics cover your selected date range (top-right corner). Always check the date range first!',
@@ -1415,7 +1445,7 @@ const LESSONS = [
     stages:[
       {
         type:'hook',
-        scenario:'Your bakery website suddenly gets 500 visits in one day. Your partner says: "The ads are working!" But how do you KNOW it was the ads? What if most traffic came from Google search — for free — and the ads are wasting money?',
+        scenario:'Your bakery website suddenly gets 500 visits in one day. Your partner says: "The ads are working!" But how do you KNOW it was the ads? What if most traffic came from unpaid search — for free — and the ads are wasting money?',
         problem:'Without knowing your traffic sources, you might invest heavily in the wrong channel.',
         skill:'Reading the Traffic Acquisition table to see which channels bring visitors.',
       },
@@ -1423,17 +1453,17 @@ const LESSONS = [
       {
         type:'explain',
         headline:'Every visitor came from somewhere. Analytics tracks exactly where.',
-        text:'Google Analytics automatically categorises each visit by its source. Did the visitor come from a Google search? An Instagram post? A direct link? A paid ad? Each has a different name and appears as a separate row in the Traffic Acquisition table.',
+        text:'DataFlow automatically categorises each visit by its source. Did the visitor come from a search engine? An Instagram post? A direct link? A paid ad? Each has a different name and appears as a separate row in the Traffic Acquisition table.',
         analogy:'🗺️ Your website is a party. At the door, you ask every guest: "How did you hear about us?" The answers are your traffic sources.',
-        examples:['Googled "best bakery near me" → Organic Search','Clicked your Instagram post → Organic Social','Clicked a Google Ad → Paid Search','Typed your URL directly → Direct','Another website linked to you → Referral'],
+        examples:['Searched "best bakery near me" → Organic Search','Clicked your Instagram post → Organic Social','Clicked a paid search ad → Paid Search','Typed your URL directly → Direct','Another website linked to you → Referral'],
       },
       {
         type:'terms',
         terms:[
-          {term:'Organic Search', icon:'🔍', def:'Visitors from unpaid search engine results (Google, Bing). They searched a keyword and clicked your listing.',      ex:'Search "best espresso Paris" → click result → Organic Search visit.'},
-          {term:'Paid Search',    icon:'💰', def:'Visitors who clicked an advertisement in search results. You paid per click.',                                    ex:'Clicks the "Sponsored" result at the top of Google.'},
+          {term:'Organic Search', icon:'🔍', def:'Visitors from unpaid search engine results. They searched a keyword and clicked your listing.',      ex:'Search "best espresso Paris" → click result → Organic Search visit.'},
+          {term:'Paid Search',    icon:'💰', def:'Visitors who clicked an advertisement in search results. You paid per click.',                                    ex:'Clicks the "Sponsored" result at the top of a search engine.'},
           {term:'Organic Social', icon:'📱', def:'Visitors from social media posts (not ads) — Instagram, Facebook, TikTok, LinkedIn, etc.',                       ex:'Someone sees your Instagram post and clicks your bio link.'},
-          {term:'Direct',         icon:'🔗', def:'Visitors who typed your URL directly, used a bookmark, or came from a source Google can\'t identify.',            ex:'Someone already knows your site and types it in directly.'},
+          {term:'Direct',         icon:'🔗', def:'Visitors who typed your URL directly, used a bookmark, or came from a source the platform can\'t identify.',            ex:'Someone already knows your site and types it in directly.'},
           {term:'Referral',       icon:'↗️', def:'Visitors from a link on another website — a blog, news article, partner site, etc.',                             ex:'A food blog writes about you and links to your site.'},
         ],
       },
@@ -1450,7 +1480,7 @@ const LESSONS = [
         clickTarget:'channel-row-0',
         hint:'Look at the Sessions column in the table below. The channel with the highest number is in the first row.',
         successTitle:'Organic Search is #1!',
-        successText:'With 3,368 sessions (40% of all traffic), Organic Search is your top channel. People are finding Nova Coffee Roasters through Google — without paying for ads. This is extremely valuable.',
+        successText:'With 3,368 sessions (40% of all traffic), Organic Search is your top channel. People are finding Nova Coffee Roasters through organic search — without paying for ads. This is extremely valuable.',
         xp:120,
       },
     ]
@@ -1465,13 +1495,13 @@ const LESSONS = [
         type:'hook',
         scenario:'Your site gets 1,000 visitors per week. Sounds great! But your manager says: "Our bounce rate is 78% on the product page. We have a problem." You\'ve never heard this term. Is 78% good or bad? What does it even mean?',
         problem:'High traffic means nothing if visitors leave instantly without engaging. Bounce rate reveals the quality of your traffic.',
-        skill:'Finding and interpreting Engagement Rate (the inverse of bounce rate) in the GA4 metrics.',
+        skill:'Finding and interpreting Engagement Rate (the inverse of bounce rate) in the analytics metrics.',
       },
       { type:'concept', wordA:'BOUNCE', wordB:'RATE', summary:'% of visitors who left after seeing only ONE page, without doing anything.' },
       {
         type:'explain',
         headline:'Bounce rate = the % of visitors who arrived and immediately left.',
-        text:'When someone lands on a page and leaves without clicking anything, scrolling, or visiting another page — that\'s a "bounce." The bounce rate is the percentage of total visits that ended this way. In GA4, you see the inverse: <strong>Engagement Rate</strong> = sessions where users actively engaged. Engagement Rate = 100% − Bounce Rate.',
+        text:'When someone lands on a page and leaves without clicking anything, scrolling, or visiting another page — that\'s a "bounce." The bounce rate is the percentage of total visits that ended this way. In modern analytics tools, you see the inverse: <strong>Engagement Rate</strong> = sessions where users actively engaged. Engagement Rate = 100% − Bounce Rate.',
         analogy:'🏀 A basketball bouncing off the backboard — it hits the wall and goes straight back. The visitor hits your page and bounces right back to where they came from.',
         examples:['100 visitors. 80 leave after page 1 → 80% bounce rate (20% engagement rate)','Product pages typically need bounce rates below 60%','Blog posts naturally have higher bounce rates — readers finish and leave'],
       },
@@ -1480,7 +1510,7 @@ const LESSONS = [
         terms:[
           {term:'Bounce',           icon:'↩️', def:'A session where the visitor viewed only one page and left without any further interaction.',                    ex:'Someone opens your homepage and closes the tab after 5 seconds.'},
           {term:'Bounce Rate',      icon:'📉', def:'Bounce Rate = (single-page sessions ÷ total sessions) × 100. Lower is usually better for content/product pages.', ex:'700 single-page sessions out of 1,000 total = 70% bounce rate.'},
-          {term:'Engagement Rate',  icon:'💡', def:'Engagement Rate = (engaged sessions ÷ total sessions) × 100. This is what GA4 shows. Bounce Rate = 100% − Engagement Rate.', ex:'38% engagement rate = 62% bounce rate.'},
+          {term:'Engagement Rate',  icon:'💡', def:'Engagement Rate = (engaged sessions ÷ total sessions) × 100. This is what DataFlow shows. Bounce Rate = 100% − Engagement Rate.', ex:'38% engagement rate = 62% bounce rate.'},
           {term:'Engaged Session',  icon:'✅', def:'A session that lasted > 10 seconds, had 2+ page views, OR triggered a conversion event.',                      ex:'Visitor reads 3 articles → engaged session.'},
         ],
       },
@@ -1489,7 +1519,7 @@ const LESSONS = [
         headline:'Find it: Engagement Rate metric card',
         spotlight:'metric-engrate',
         steps:['In Traffic Acquisition, look at the metric cards at the top','Find "Engagement Rate" — this is the inverse of Bounce Rate','Subtract it from 100 to get Bounce Rate: if Engagement Rate = 38%, Bounce Rate = 62%'],
-        tip:'In the old Universal Analytics, this was shown as "Bounce Rate" directly. GA4 switched to "Engagement Rate" because it\'s more meaningful — it shows what IS working, not just what isn\'t.',
+        tip:'In older analytics tools this was shown as "Bounce Rate" directly. DataFlow uses "Engagement Rate" because it\'s more meaningful — it shows what IS working, not just what isn\'t.',
       },
       {
         type:'practice',
@@ -1526,7 +1556,7 @@ const LESSONS = [
       {
         type:'terms',
         terms:[
-          {term:'User',            icon:'👤', def:'A unique individual, identified by a browser cookie or signed-in Google account.',                                 ex:'5,231 users = 5,231 different people visited this period.'},
+          {term:'User',            icon:'👤', def:'A unique individual, identified by a browser cookie or signed-in platform account.',                                 ex:'5,231 users = 5,231 different people visited this period.'},
           {term:'New User',        icon:'🆕', def:'A user visiting your website for the very first time ever (on this device/browser).',                             ex:'3,920 new users this period visited for the first time.'},
           {term:'Returning User',  icon:'🔄', def:'A user who has visited before and is coming back.',                                                               ex:'5,231 total − 3,920 new = 1,311 returning users.'},
           {term:'Sessions/User',   icon:'÷',  def:'Average number of visits per user. Higher = more loyal audience.',                                               ex:'8,420 sessions ÷ 5,231 users = 1.61 sessions per user.'},
@@ -1568,7 +1598,7 @@ const LESSONS = [
       {
         type:'explain',
         headline:'Demographics = basic facts about WHO visits your site.',
-        text:'Google Analytics automatically collects demographic data from users who are logged into Google accounts. This tells you the age range, gender, and location of your visitors — letting you check if your real audience matches who you think you\'re targeting.',
+        text:'DataFlow automatically collects demographic data from users who are logged into a recognised account. This tells you the age range, gender, and location of your visitors — letting you check if your real audience matches who you think you\'re targeting.',
         analogy:'📋 Imagine a registration form at the entrance of your shop. Every visitor fills it in: age, where they\'re from, what language they speak. Demographics is that data, automatically collected.',
         examples:['Your top age group is 18–24, but you\'re targeting 35–50 → mismatch!','70% of visitors are from France, but your site is English-only','80% of visitors are female, but your ads only show men'],
       },
@@ -1585,7 +1615,7 @@ const LESSONS = [
         headline:'Find it: User Attributes report',
         spotlight:'view-user-attr',
         steps:['Click Reports → User → User attributes','You\'ll see an Age chart and a Gender donut chart','Scroll down for a Country breakdown table'],
-        tip:'Note: GA4 only shows demographics for users signed into a Google account. The data covers the majority of users but not all.',
+        tip:'Note: DataFlow only shows demographics for users signed into a recognised account. The data covers the majority of users but not all.',
       },
       {
         type:'practice',
@@ -1613,8 +1643,8 @@ const LESSONS = [
       { type:'concept', wordA:'DEVICE', wordB:'CATEGORY', summary:'Shows whether visitors use mobile phones, desktop computers, or tablets.' },
       {
         type:'explain',
-        headline:'GA4 automatically tracks which type of device each visitor used.',
-        text:'Google Analytics detects whether each session came from a mobile phone, a desktop computer, or a tablet. This tells you whether your website needs to work better on smaller screens — which it almost certainly does, because mobile is now over 50% of global web traffic.',
+        headline:'DataFlow automatically tracks which type of device each visitor used.',
+        text:'DataFlow detects whether each session came from a mobile phone, a desktop computer, or a tablet. This tells you whether your website needs to work better on smaller screens — which it almost certainly does, because mobile is now over 50% of global web traffic.',
         analogy:'📱 Your website has three entrances: a tiny door (mobile), a regular door (desktop), and a medium door (tablet). Device category tells you which entrance most visitors use.',
         examples:['68% mobile → most people visit on phones — mobile UX is critical','B2B companies often see more desktop because people research at work','If mobile > 60% but you never tested on phone → urgent problem'],
       },
@@ -1670,7 +1700,7 @@ const LESSONS = [
         type:'terms',
         terms:[
           {term:'Page Views',    icon:'👁', def:'Total times a page was loaded or reloaded. One user visiting the same page twice = 2 page views.',     ex:'Homepage: 12,400 page views this period.'},
-          {term:'Landing Page',  icon:'🛬', def:'The first page a visitor sees when they arrive. The page they "land" on from an external source.',     ex:'Visitor clicks Google result for your blog → that blog post is the landing page.'},
+          {term:'Landing Page',  icon:'🛬', def:'The first page a visitor sees when they arrive. The page they "land" on from an external source.',     ex:'Visitor clicks a search result for your blog → that blog post is the landing page.'},
           {term:'Exit Page',     icon:'🚪', def:'The last page visited before leaving. High exits on product pages = problem.',                        ex:'Products page has 2,200 exits — most people leave from there.'},
           {term:'Avg Eng. Time', icon:'⏱', def:'How long visitors actively spend on a page. Low time on key pages = they\'re not reading.',           ex:'Blog post: 4m 12s = people are reading it. Products page: 12s = not.'},
         ],
@@ -1720,7 +1750,7 @@ const LESSONS = [
         terms:[
           {term:'Conversion',      icon:'🎯', def:'When a visitor completes a specific desired action on your website.',                                 ex:'A visitor buys a product → that purchase is a conversion.'},
           {term:'Conversion Rate', icon:'📈', def:'(Conversions ÷ Sessions) × 100. The % of visits that result in a desired action.',                   ex:'202 purchases ÷ 8,420 sessions × 100 = 2.4% conversion rate.'},
-          {term:'Conversion Event',icon:'⚡', def:'In GA4, a specific event marked as a "key event" that tracks conversions automatically.',            ex:'The "purchase" event is marked as a conversion event.'},
+          {term:'Conversion Event',icon:'⚡', def:'In DataFlow, a specific event marked as a "key event" that tracks conversions automatically.',            ex:'The "purchase" event is marked as a conversion event.'},
           {term:'Goal Funnel',     icon:'🔻', def:'The steps visitors go through on the way to converting. Each step is an opportunity to lose people.', ex:'Homepage → Products → Cart → Checkout → Purchase.'},
         ],
       },
@@ -1751,7 +1781,7 @@ const LESSONS = [
     stages:[
       {
         type:'hook',
-        scenario:'Your boss asks: "Is our traffic growing or declining?" You open GA4 and see a number: 8,420 sessions. But is that good? Is it up from last month? Down? Without a comparison, a single number means nothing.',
+        scenario:'Your boss asks: "Is our traffic growing or declining?" You open the analytics dashboard and see a number: 8,420 sessions. But is that good? Is it up from last month? Down? Without a comparison, a single number means nothing.',
         problem:'A single metric snapshot without context or time comparison is almost meaningless for making decisions.',
         skill:'Using the chart to identify trends and understanding the date range selector.',
       },
@@ -1759,7 +1789,7 @@ const LESSONS = [
       {
         type:'explain',
         headline:'A number without context is useless. Trends tell the real story.',
-        text:'8,420 sessions this month sounds great — but what if it was 12,000 last month? That\'s a 30% decline! Or what if it was 3,000 last year? That\'s 180% growth! The line chart in GA4 shows your metric over time. Spikes show something worked. Drops show something went wrong.',
+        text:'8,420 sessions this month sounds great — but what if it was 12,000 last month? That\'s a 30% decline! Or what if it was 3,000 last year? That\'s 180% growth! The line chart shows your metric over time. Spikes show something worked. Drops show something went wrong.',
         analogy:'🌡️ A temperature reading of 38°C is alarming for a human (fever!) but normal for a summer day. Context — the trend and the baseline — tells you whether a number should concern you.',
         examples:['Friday spikes are common — people browse during work lunch','Weekend drops are normal for B2B sites','A sudden spike often means a viral post or press mention','A gradual decline often signals SEO or brand issues'],
       },
@@ -1777,7 +1807,7 @@ const LESSONS = [
         headline:'Find it: the line chart and date range',
         spotlight:'taLineChart',
         steps:['In Traffic Acquisition, the chart shows sessions over time','Each data point = one day. Hover to see exact numbers','Use the date picker (top right of the page) to change the time window'],
-        tip:'Always set a comparison period! In GA4, click the date chip → turn on "Compare". Compare to the previous period or same period last year.',
+        tip:'Always set a comparison period! Click the date chip → turn on "Compare". Compare to the previous period or same period last year.',
       },
       {
         type:'practice',
@@ -1839,7 +1869,7 @@ const LESSONS = [
           {id:'r5', label:'Conversion rate % (1 decimal)', correct:'2.4', hint:'Check Conversions metrics strip'},
         ],
         successTitle:'🎉 Report Complete — Certificate Earned!',
-        successText:'You correctly identified all 5 key metrics. This is exactly what a junior analyst does in a real job. You\'ve completed the Google Analytics Fundamentals course.',
+        successText:'You correctly identified all 5 key metrics. This is exactly what a junior analyst does in a real job. You\'ve completed the Web Analytics Fundamentals course.',
         xp:200,
       },
     ]
@@ -1847,7 +1877,7 @@ const LESSONS = [
 ];
 
 // ═══════════════════════════════════════════════════════════════
-// GA4 NAVIGATION & RENDERING
+// DASHBOARD NAVIGATION & RENDERING
 // ═══════════════════════════════════════════════════════════════
 function navTo(id) {
   // Hide all views
@@ -1906,7 +1936,7 @@ function toggleSubNav(subId, el) {
   // stop bubbling to parent
 }
 
-// ── BUILD GA4 TABLES & CHARTS ─────────────────────────────────
+// ── BUILD DASHBOARD TABLES & CHARTS ─────────────────────────────────
 function buildMetricStrip(containerId, metrics) {
   const el = document.getElementById(containerId);
   if (!el) return;
@@ -2226,18 +2256,101 @@ function positionCoach(targetId, forceLeft) {
 
 function minimizeCoach() {
   document.getElementById('coach-bubble').classList.add('hidden');
-  // Add a show button to HUD
   const hud = document.getElementById('lesson-hud');
   let showBtn = document.getElementById('hudShowCoach');
   if (!showBtn) {
     showBtn = document.createElement('button');
     showBtn.id = 'hudShowCoach';
     showBtn.className = 'hud-exit-btn';
-    showBtn.textContent = '💬 Show Coach';
-    showBtn.onclick = () => { document.getElementById('coach-bubble').classList.remove('hidden'); showBtn.remove(); };
-    hud.insertBefore(showBtn, document.getElementById('lesson-hud').lastElementChild);
+    showBtn.textContent = '💬 Coach';
+    showBtn.onclick = () => {
+      document.getElementById('coach-bubble').classList.remove('hidden');
+      showBtn.remove();
+    };
+    hud.insertBefore(showBtn, hud.lastElementChild);
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// DRAGGABLE COACH BUBBLE
+// Drag via the header bar. Works on mouse and touch.
+// ═══════════════════════════════════════════════════════════════
+(function initDraggableCoach() {
+  let isDragging = false;
+  let startX = 0, startY = 0;
+  let origLeft = 0, origTop = 0;
+
+  function getCoach() { return document.getElementById('coach-bubble'); }
+
+  function onDragStart(e) {
+    // Only drag from the header — ignore close button clicks
+    if (e.target.closest('.coach-close') || e.target.closest('.coach-btn')) return;
+    const coach = getCoach();
+    if (!coach || coach.classList.contains('hidden')) return;
+
+    isDragging = true;
+    coach.classList.add('dragging');
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const rect = coach.getBoundingClientRect();
+
+    // Convert to absolute position if currently using right/bottom
+    if (coach.style.right && coach.style.right !== 'auto') {
+      coach.style.left   = `${rect.left}px`;
+      coach.style.top    = `${rect.top}px`;
+      coach.style.right  = 'auto';
+      coach.style.bottom = 'auto';
+    }
+
+    startX   = clientX;
+    startY   = clientY;
+    origLeft = rect.left;
+    origTop  = rect.top;
+
+    e.preventDefault();
+  }
+
+  function onDragMove(e) {
+    if (!isDragging) return;
+    const coach = getCoach();
+    if (!coach) return;
+
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const dx = clientX - startX;
+    const dy = clientY - startY;
+
+    const vw = window.innerWidth;
+    const vh = window.innerHeight;
+    const bw = coach.offsetWidth;
+    const bh = coach.offsetHeight;
+    const hudH = document.getElementById('lesson-hud').classList.contains('visible') ? 68 : 0;
+
+    const newLeft = Math.max(0, Math.min(origLeft + dx, vw - bw));
+    const newTop  = Math.max(hudH, Math.min(origTop  + dy, vh - bh - 8));
+
+    coach.style.left = `${newLeft}px`;
+    coach.style.top  = `${newTop}px`;
+
+    e.preventDefault();
+  }
+
+  function onDragEnd() {
+    if (!isDragging) return;
+    isDragging = false;
+    const coach = getCoach();
+    if (coach) coach.classList.remove('dragging');
+  }
+
+  // Attach to header — use event delegation since header is always in the DOM
+  document.addEventListener('mousedown',  (e) => { if (e.target.closest('.coach-header')) onDragStart(e); });
+  document.addEventListener('touchstart', (e) => { if (e.target.closest('.coach-header')) onDragStart(e); }, { passive: false });
+  document.addEventListener('mousemove',  onDragMove);
+  document.addEventListener('touchmove',  onDragMove, { passive: false });
+  document.addEventListener('mouseup',    onDragEnd);
+  document.addEventListener('touchend',   onDragEnd);
+})();
 
 // ═══════════════════════════════════════════════════════════════
 // STAGE RENDERING
@@ -2269,7 +2382,7 @@ function renderStage(lessonIdx, stageIdx) {
     return `<div class="coach-dot ${cls}"></div>`;
   }).join('');
 
-  // Navigate GA4 to the right view
+  // Navigate dashboard to the right view
   navTo(lesson.navTarget);
 
   // For hook/concept/explain/terms — spotlight and position based on stage type
@@ -2306,9 +2419,9 @@ function renderStage(lessonIdx, stageIdx) {
     html = `
       <div class="coach-stage-tag">💡 Core Concept</div>
       <div style="text-align:center;padding:20px 0">
-        <div style="font-family:'Google Sans',sans-serif;font-size:52px;font-weight:700;line-height:1;color:#00d4ff;text-shadow:0 0 40px rgba(0,212,255,.4)">${stage.wordA}</div>
+        <div style="font-family:'Plus Jakarta Sans', sans-serif;font-size:52px;font-weight:700;line-height:1;color:#00d4ff;text-shadow:0 0 40px rgba(0,212,255,.4)">${stage.wordA}</div>
         <div style="width:60px;height:2px;background:#3d3d5c;margin:10px auto"></div>
-        <div style="font-family:'Google Sans',sans-serif;font-size:52px;font-weight:700;line-height:1;color:#fbbf24;text-shadow:0 0 40px rgba(251,191,36,.4)">${stage.wordB}</div>
+        <div style="font-family:'Plus Jakarta Sans', sans-serif;font-size:52px;font-weight:700;line-height:1;color:#fbbf24;text-shadow:0 0 40px rgba(251,191,36,.4)">${stage.wordB}</div>
       </div>
       <div class="coach-text" style="text-align:center">${stage.summary}</div>`;
     btns = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button><button class="coach-btn coach-btn-primary" onclick="nextStage()">Explain it →</button>`;
@@ -2336,7 +2449,7 @@ function renderStage(lessonIdx, stageIdx) {
             <div style="font-size:11px;color:#64748b;margin-top:4px">📌 ${t.ex}</div>
           </div>`).join('')}
       </div>`;
-    btns = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button><button class="coach-btn coach-btn-primary" onclick="nextStage()">Find it in GA4 →</button>`;
+    btns = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button><button class="coach-btn coach-btn-primary" onclick="nextStage()">Find it →</button>`;
   }
 
   else if (stage.type === 'locate') {
@@ -2753,7 +2866,7 @@ function renderLandingLessons() {
 // INIT
 // ═══════════════════════════════════════════════════════════════
 (function init() {
-  // Build all GA4 content
+  // Build all dashboard content
   buildMetricStrip('ta-metrics-strip', [
     {id:'metric-sessions', label:'Sessions',          value:'8,420', dir:'up',  delta:'↑ 12%', onclick:'handleMetricClick("metric-sessions")'},
     {id:'metric-users',    label:'Users',             value:'5,231', dir:'up',  delta:'↑ 9%',  onclick:'handleMetricClick("metric-users")'},
@@ -2809,7 +2922,7 @@ function renderLandingLessons() {
 
 // ═══════════════════════════════════════════════════════════════
 // ELEMENT TOOLTIP SYSTEM
-// Clicking any GA4 element shows a small popup explaining what it is.
+// Clicking any dashboard element shows a small popup explaining what it is.
 // This works whether or not a lesson is active.
 // ═══════════════════════════════════════════════════════════════
 const ELEMENT_TOOLTIPS = {
@@ -2821,11 +2934,11 @@ const ELEMENT_TOOLTIPS = {
   'metric-engtime':   { title:'Avg. Engagement Time', body:'How long visitors are actively using the site on average per session. Higher = more engaged audience.', value:'1 minute 52 seconds average' },
   'metric-conv':      { title:'Conversions', body:'Times visitors completed a key action (purchase, sign-up, form submission). You define what counts as a conversion.', value:'202 conversions this period' },
   // Table rows
-  'channel-row-0':    { title:'Organic Search', body:'Visitors who found you by typing a search into Google (or Bing, etc.) and clicking a FREE result — not an ad.', value:'3,368 sessions · 40% of total' },
+  'channel-row-0':    { title:'Organic Search', body:'Visitors who found you by typing a search into a search engine (Google, Bing, etc.) and clicking a FREE result — not an ad.', value:'3,368 sessions · 40% of total' },
   'channel-row-1':    { title:'Direct', body:'Visitors who typed your URL directly, used a bookmark, or came from a source Analytics couldn\'t identify.', value:'2,105 sessions · 25% of total' },
   'channel-row-2':    { title:'Organic Social', body:'Visitors from social media posts (not paid ads) — Instagram, Facebook, LinkedIn, TikTok, etc.', value:'1,684 sessions · 20% of total' },
   'channel-row-3':    { title:'Referral', body:'Visitors who clicked a link on another website — a blog, news article, partner site, or directory.', value:'842 sessions · 10% of total' },
-  'channel-row-4':    { title:'Paid Search', body:'Visitors who clicked a paid advertisement in Google search results. The business paid per click.', value:'421 sessions · 5% of total' },
+  'channel-row-4':    { title:'Paid Search', body:'Visitors who clicked a paid advertisement in search results. The business paid per click.', value:'421 sessions · 5% of total' },
   // Pages
   'page-row-0':       { title:'/home — Homepage', body:'The most visited page. Bounce rate 45% is average. Most visitors land here first.', value:'12,400 views · 0m 58s avg time' },
   'page-row-1':       { title:'Beginner\'s Guide to Coffee', body:'Excellent engagement — 4m 12s average time means people are reading this article fully. 22% bounce rate is very low.', value:'8,200 views · 4m 12s avg time' },
@@ -2851,7 +2964,7 @@ const ELEMENT_TOOLTIPS = {
   'taLineChart':      { title:'Sessions Chart', body:'Each data point = one day. The trend line shows whether traffic is growing, declining, or stable. Spikes indicate something drove extra traffic.', value:'Mar 1–15, 2026' },
   'ta-table-card':    { title:'Traffic Sources Table', body:'Every row is one acquisition channel. The Sessions column shows how many visits each channel contributed. Higher = stronger channel.', value:'5 acquisition channels' },
   // Header elements
-  'propertyChip':     { title:'Property: Nova Coffee Roasters', body:'This is the GA4 "property" — the specific website being tracked. A company can have multiple properties (website, app, etc.) in one account.', value:'Property ID: 314159265' },
+  'propertyChip':     { title:'Property: Nova Coffee Roasters', body:'This is the DataFlow "property" — the specific website being tracked. One account can hold multiple properties (website, app, etc.).', value:'Property ID: 314159265' },
   'dateChip':         { title:'Date Range Selector', body:'Controls which time period the data covers. Always check this first — the same numbers mean very different things for different date ranges.', value:'Mar 1–15, 2026 (15 days)' },
 };
 
