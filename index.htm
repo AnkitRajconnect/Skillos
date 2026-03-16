@@ -505,9 +505,9 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   position: fixed;
   z-index: var(--coach-z);
   width: 360px;
-  background: rgba(22, 22, 40, 0.82);
-  backdrop-filter: blur(20px) saturate(160%);
-  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  background: rgba(15, 15, 28, 0.62);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
   border: 1px solid rgba(255,255,255,0.1);
   border-radius: var(--radius-lg);
   box-shadow: 0 8px 40px rgba(0,0,0,.45), 0 0 0 0.5px rgba(255,255,255,0.06) inset;
@@ -557,10 +557,14 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 /* Slightly translucent body too */
 .coach-body {
   padding: 16px;
-  max-height: calc(100vh - 240px);
+  max-height: calc(100vh - 260px);
   overflow-y: auto;
   background: transparent;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(0,212,255,.3) transparent;
 }
+.coach-body::-webkit-scrollbar { width: 4px; }
+.coach-body::-webkit-scrollbar-thumb { background: rgba(0,212,255,.3); border-radius: 2px; }
 .coach-footer {
   padding: 10px 14px;
   border-top: 1px solid rgba(255,255,255,0.07);
@@ -727,7 +731,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 #landing-screen.hidden { display: none; }
 
 .landing-card {
-  max-width: 1000px; width: 100%;
+  max-width: 1100px; width: 100%;
   display: grid; grid-template-columns: 1fr 1.2fr; gap: 0;
   background: var(--teach-surface); border-radius: 20px;
   border: 1px solid var(--teach-border); overflow: hidden;
@@ -773,8 +777,8 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 .landing-stat-lbl { font-size: 11px; color: var(--teach-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: .05em; }
 
 .landing-right {
-  padding: 40px;
-  display: flex; flex-direction: column; gap: 12px; overflow-y: auto; max-height: 90vh;
+  padding: 32px 32px 24px;
+  display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: calc(90vh - 40px);
 }
 .landing-right-title {
   font-family: 'Plus Jakarta Sans', sans-serif;
@@ -898,8 +902,55 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   z-index: calc(var(--spot-z) + 2);
   filter: drop-shadow(0 2px 4px rgba(0,0,0,.3));
 }
+/* ─── COACH WAVEFORM ─────────────────────────── */
+.wave-bar {
+  width: 3px;
+  background: var(--teach-cyan);
+  border-radius: 2px;
+  animation: waveAnim 0.8s ease-in-out infinite;
+  animation-delay: var(--d, 0s);
+  min-height: 4px;
+}
+@keyframes waveAnim {
+  0%, 100% { height: 4px; opacity: .5; }
+  50%       { height: 16px; opacity: 1; }
+}
+
+/* Spoken sentence highlight */
+.tts-highlight {
+  background: rgba(0,212,255,.15);
+  border-radius: 3px;
+  transition: background .2s;
+}
+
+/* TTS speed control strip in coach footer */
+#ttsControls {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 0 0;
+  border-top: 1px solid rgba(255,255,255,.06);
+  margin-top: 8px;
+}
+#ttsControls.visible { display: flex; }
+.tts-rate-btn {
+  background: rgba(255,255,255,.06);
+  border: 1px solid rgba(255,255,255,.1);
+  border-radius: 4px;
+  padding: 3px 8px;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--teach-muted);
+  cursor: pointer;
+  transition: all .15s;
+  font-family: inherit;
+}
+.tts-rate-btn:hover, .tts-rate-btn.active {
+  background: rgba(0,212,255,.12);
+  border-color: rgba(0,212,255,.4);
+  color: var(--teach-cyan);
+}
 </style>
-</head>
 <body>
 
 <!-- ═══════════════════════════════════════════════
@@ -921,7 +972,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
         </div>
       </div>
       <div class="landing-stats">
-        <div><div class="landing-stat-val">10</div><div class="landing-stat-lbl">Lessons</div></div>
+        <div><div class="landing-stat-val">15</div><div class="landing-stat-lbl">Lessons</div></div>
         <div><div class="landing-stat-val">6</div><div class="landing-stat-lbl">Stages each</div></div>
         <div><div class="landing-stat-val">0</div><div class="landing-stat-lbl">Prior knowledge needed</div></div>
       </div>
@@ -929,10 +980,107 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
     <div class="landing-right">
       <div>
         <div class="landing-right-title">Web Analytics Fundamentals</div>
-        <div class="landing-right-sub">10 lessons · 3 modules · ~4 hours · Beginner friendly</div>
+        <div class="landing-right-sub">15 lessons · 4 modules · ~5 hours · Beginner → Expert</div>
+        <div id="landingProgress" style="margin-top:10px"></div>
       </div>
+
+      <!-- VOICE SETUP CARD — shown until a key is entered -->
+      <div id="voiceSetupCard" style="display:none;background:linear-gradient(135deg,rgba(0,212,255,.06),rgba(124,58,237,.06));border:1px solid rgba(0,212,255,.25);border-radius:10px;padding:14px 16px;margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+          <span style="font-size:18px">🎙</span>
+          <div>
+            <div style="font-size:12px;font-weight:700;color:#e2e8f0">Set up your AI Coach voice</div>
+            <div style="font-size:10px;color:#64748b">Human-quality voice narration — free in 30 seconds</div>
+          </div>
+          <button onclick="document.getElementById('voiceSetupCard').style.display='none'" style="margin-left:auto;background:none;border:none;color:#475569;cursor:pointer;font-size:14px;line-height:1" title="Dismiss">×</button>
+        </div>
+
+        <!-- Tabs: ElevenLabs / OpenAI -->
+        <div style="display:flex;gap:4px;margin-bottom:10px" id="voiceTabRow">
+          <button onclick="switchVoiceTab('el')" id="tab-el"
+            style="flex:1;padding:5px 8px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:rgba(0,212,255,.15);color:#00d4ff;border:1px solid rgba(0,212,255,.4)">
+            ElevenLabs
+          </button>
+          <button onclick="switchVoiceTab('oai')" id="tab-oai"
+            style="flex:1;padding:5px 8px;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:rgba(255,255,255,.04);color:#64748b;border:1px solid rgba(255,255,255,.1)">
+            OpenAI TTS
+          </button>
+        </div>
+
+        <!-- ElevenLabs panel -->
+        <div id="panel-el">
+          <div style="font-size:10px;color:#64748b;margin-bottom:5px">
+            Free 10,000 chars/month · Best quality voice available
+          </div>
+          <div style="display:flex;gap:5px;margin-bottom:6px">
+            <input id="setupElKey" type="password" placeholder="Paste ElevenLabs API key — xi-api-..." autocomplete="off"
+              style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:5px;
+                     padding:7px 10px;color:#e2e8f0;font-size:11px;font-family:monospace;outline:none"
+              onfocus="this.style.borderColor='rgba(0,212,255,.5)'"
+              onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+              onkeydown="if(event.key==='Enter')quickSaveKey('el')"
+            />
+            <button onclick="quickSaveKey('el')"
+              style="padding:7px 12px;background:#1a73e8;color:white;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
+              Save
+            </button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <a href="https://elevenlabs.io/app/sign-up" target="_blank"
+              style="font-size:10px;color:#00d4ff;text-decoration:none">
+              → Get free key at elevenlabs.io
+            </a>
+            <button onclick="previewVoice('el')"
+              style="margin-left:auto;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);
+                     border-radius:4px;padding:3px 9px;font-size:10px;font-weight:700;color:#00d4ff;cursor:pointer;font-family:inherit">
+              ▶ Preview
+            </button>
+          </div>
+        </div>
+
+        <!-- OpenAI TTS panel -->
+        <div id="panel-oai" style="display:none">
+          <div style="font-size:10px;color:#64748b;margin-bottom:5px">
+            Uses your existing OpenAI key · Very natural sounding
+          </div>
+          <div style="display:flex;gap:5px;margin-bottom:6px">
+            <input id="setupOaiKey" type="password" placeholder="Paste OpenAI API key — sk-..." autocomplete="off"
+              style="flex:1;background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:5px;
+                     padding:7px 10px;color:#e2e8f0;font-size:11px;font-family:monospace;outline:none"
+              onfocus="this.style.borderColor='rgba(0,212,255,.5)'"
+              onblur="this.style.borderColor='rgba(255,255,255,.12)'"
+              onkeydown="if(event.key==='Enter')quickSaveKey('oai')"
+            />
+            <button onclick="quickSaveKey('oai')"
+              style="padding:7px 12px;background:#1a73e8;color:white;border:none;border-radius:5px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap">
+              Save
+            </button>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <select id="oaiVoiceSelect" onchange="setOaiVoice(this.value)"
+              style="background:rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.12);border-radius:4px;
+                     padding:3px 6px;color:#e2e8f0;font-size:10px;outline:none">
+              <option value="nova" selected>Nova — warm female</option>
+              <option value="alloy">Alloy — neutral</option>
+              <option value="echo">Echo — clear male</option>
+              <option value="fable">Fable — expressive</option>
+              <option value="onyx">Onyx — deep male</option>
+              <option value="shimmer">Shimmer — soft female</option>
+            </select>
+            <button onclick="previewVoice('oai')"
+              style="margin-left:auto;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);
+                     border-radius:4px;padding:3px 9px;font-size:10px;font-weight:700;color:#00d4ff;cursor:pointer;font-family:inherit">
+              ▶ Preview
+            </button>
+          </div>
+        </div>
+
+        <!-- Status line -->
+        <div id="voiceSetupStatus" style="font-size:10px;margin-top:8px;color:#475569;min-height:14px"></div>
+      </div>
+
       <div id="landingLessonList"><!-- rendered by JS --></div>
-      <button class="landing-start-btn" onclick="startCourse()">Begin the Course →</button>
+      <button class="landing-start-btn" id="landingStartBtn" onclick="startCourse()">Begin the Course →</button>
     </div>
   </div>
 </div>
@@ -944,13 +1092,19 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   <div class="hud-logo">Skill<span>OS</span></div>
   <div class="hud-divider"></div>
   <div>
-    <div class="hud-lesson-num" id="hudLessonNum">Lesson 1 of 10</div>
+    <div class="hud-lesson-num" id="hudLessonNum">Lesson 1 of 15</div>
     <div class="hud-lesson-name" id="hudLessonName">What Is Website Traffic?</div>
   </div>
   <div class="hud-divider"></div>
   <div class="hud-stages" id="hudStages"></div>
   <div class="hud-spacer"></div>
-  <div class="hud-xp" id="hudXP">⚡ 0 XP</div>
+  <div style="display:flex;align-items:center;gap:10px">
+    <div id="hudRank" style="font-size:11px;font-weight:700;color:var(--teach-cyan);white-space:nowrap;letter-spacing:.05em">Observer</div>
+    <div style="width:80px;height:6px;background:rgba(255,255,255,.1);border-radius:3px;overflow:hidden">
+      <div id="hudMastery" style="height:100%;width:0%;background:linear-gradient(90deg,var(--teach-cyan),var(--teach-green));border-radius:3px;transition:width .6s ease"></div>
+    </div>
+    <div id="hudChain" style="font-size:11px;color:var(--teach-amber);white-space:nowrap">🔗 0</div>
+  </div>
   <button class="hud-exit-btn" onclick="exitToMenu()">← Lessons</button>
 </div>
 
@@ -1235,10 +1389,27 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
     <div class="ga-report-view" id="view-landing"><div style="padding:32px"><div class="ga-report-title">Landing page</div><div class="ga-empty" style="margin-top:24px">No data available.</div></div></div>
     <div class="ga-report-view" id="view-retention"><div style="padding:32px"><div class="ga-report-title">Retention</div><div class="ga-empty" style="margin-top:24px">Configure retention settings to see data.</div></div></div>
     <div class="ga-report-view" id="view-explore"><div style="padding:32px"><div class="ga-report-title">Explorations</div><div class="ga-empty" style="margin-top:24px">Create a new exploration to get started.</div></div></div>
-    <div class="ga-report-view" id="view-advertising"><div style="padding:32px"><div class="ga-report-title">Advertising</div><div class="ga-empty" style="margin-top:24px">Link an advertising account to see paid campaign data.</div></div></div>
+    <div class="ga-report-view" id="view-advertising">
+      <div style="padding:24px;display:flex;flex-direction:column;gap:16px">
+        <div><div class="ga-report-title">Advertising overview</div><div class="ga-report-subtitle">Attribution and channel performance analysis</div></div>
+        <div id="adv-metrics" class="ga-metric-strip"></div>
+        <div class="ga-table-card">
+          <div class="ga-table-header"><div class="ga-table-title">Attribution model comparison</div></div>
+          <table class="ga-table">
+            <thead><tr><th>Channel</th><th>Last Click</th><th>Data-Driven</th><th>Difference</th></tr></thead>
+            <tbody>
+              <tr><td>Organic Search</td><td>98</td><td>112</td><td style="color:#1e8e3e">+14 ↑</td></tr>
+              <tr><td>Organic Social</td><td>28</td><td><strong id="social-dd-val">89</strong></td><td style="color:#1e8e3e">+61 ↑</td></tr>
+              <tr><td>Paid Search</td><td>51</td><td>41</td><td style="color:#d93025">-10 ↓</td></tr>
+              <tr><td>Direct</td><td>25</td><td>9</td><td style="color:#d93025">-16 ↓</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
     <div class="ga-report-view" id="view-admin"><div style="padding:32px"><div class="ga-report-title">Admin</div><div class="ga-empty" style="margin-top:24px">Property: Nova Coffee Roasters (314159265)</div></div></div>
     <div class="ga-report-view" id="view-user-acq"><div style="padding:32px"><div class="ga-report-title">User acquisition</div><div class="ga-empty" style="margin-top:24px">Shows first-time user acquisition channels.</div></div></div>
-    <div class="ga-report-view" id="view-acq-overview"><div style="padding:32px"><div class="ga-report-title">Acquisition overview</div></div></div>
+    <!-- view-acq-overview is defined above with full content -->
 
   </main>
 </div>
@@ -1249,7 +1420,21 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
 <div id="coach-bubble" class="coach-bubble hidden">
   <div class="coach-header">
     <div class="coach-avatar">🎓</div>
-    <div><div class="coach-name">SkillOS Coach</div><div class="coach-stage" id="coachStageLabel">Stage 1 — Hook</div></div>
+    <div style="flex:1"><div class="coach-name">SkillOS Coach</div><div class="coach-stage" id="coachStageLabel">Stage 1 — Hook</div></div>
+    <!-- Audio waveform indicator (shown while speaking) -->
+    <div id="coachWaveform" style="display:none;align-items:center;gap:2px;margin-right:6px;height:18px">
+      <div class="wave-bar" style="--d:0s"></div>
+      <div class="wave-bar" style="--d:.1s"></div>
+      <div class="wave-bar" style="--d:.2s"></div>
+      <div class="wave-bar" style="--d:.1s"></div>
+      <div class="wave-bar" style="--d:.05s"></div>
+    </div>
+    <!-- Speaker toggle button -->
+    <button id="coachSpeakBtn" onclick="toggleTTS()" title="Toggle voice" style="
+      width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);cursor:pointer;
+      color:#00d4ff;font-size:13px;transition:all .15s;margin-right:4px;flex-shrink:0
+    ">🔊</button>
     <button class="coach-close" onclick="minimizeCoach()" title="Minimise">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
     </button>
@@ -1258,6 +1443,19 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
   <div class="coach-footer">
     <div class="coach-progress-dots" id="coachDots"></div>
     <div class="coach-btns" id="coachBtns"></div>
+  </div>
+  <!-- TTS rate controls — shown when audio is on -->
+  <div id="ttsControls">
+    <span style="font-size:10px;color:var(--teach-muted);letter-spacing:.05em">SPEED</span>
+    <button class="tts-rate-btn" data-rate="0.75" onclick="setTTSRate(0.75)">0.75×</button>
+    <button class="tts-rate-btn active" data-rate="0.9" onclick="setTTSRate(0.9)">0.9×</button>
+    <button class="tts-rate-btn" data-rate="1.1" onclick="setTTSRate(1.1)">1.1×</button>
+    <button class="tts-rate-btn" data-rate="1.3" onclick="setTTSRate(1.3)">1.3×</button>
+    <button onclick="replaySpeech()" style="margin-left:4px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--teach-muted)" title="Replay">↺</button>
+    <button onclick="showVoiceSettings()" title="Voice settings — switch to ElevenLabs HD voice" style="
+      margin-left:auto;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);
+      border-radius:4px;padding:3px 7px;cursor:pointer;font-size:11px;color:#00d4ff;font-weight:600;
+      font-family:inherit">⚙ HD Voice</button>
   </div>
 </div>
 
@@ -1295,7 +1493,7 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
     <div class="cert-name">SkillOS Graduate</div>
     <div class="cert-course">has successfully completed<br><strong style="color:var(--teach-text)">Web Analytics Fundamentals</strong></div>
     <div class="cert-stats">
-      <div><span class="cert-stat-val" id="certXP">0</span><span class="cert-stat-lbl">XP Earned</span></div>
+      <div><span class="cert-stat-val" id="certXP">0</span><span class="cert-stat-lbl">Identity Rank</span></div>
       <div><span class="cert-stat-val">10</span><span class="cert-stat-lbl">Lessons</span></div>
       <div><span class="cert-stat-val">100%</span><span class="cert-stat-lbl">Score</span></div>
     </div>
@@ -1382,7 +1580,32 @@ const S = {
   practiceMode:  false,
   practiceAnswered: false,
   attempts: 0,
+  // MIMS
+  masteryPct: 0,  // 0-100 based on accuracy
+  chainLen:   parseInt(localStorage.getItem('s2_chain')||'0'),
+  chainBroken: false,
 };
+
+// MIMS — Identity Rank titles for GA4
+const RANK_TITLES = ['Observer','Analyst','Diagnostician','Strategist','Master'];
+const RANK_THRESHOLDS = [0, 3, 7, 11, 15]; // lessons completed to reach each rank (out of 15)
+
+function getMIMSRank() {
+  const done = S.completed.length;
+  let rank = 0;
+  for (let i = 0; i < RANK_THRESHOLDS.length; i++) {
+    if (done >= RANK_THRESHOLDS[i]) rank = i;
+  }
+  return rank;
+}
+function getMIMSTitle() { return RANK_TITLES[getMIMSRank()]; }
+function getMIMSMastery() {
+  // Mastery = (completed lessons * accuracy weight) — using lesson count as proxy
+  // Real accuracy would come from grading but we use completion + correct answers
+  const total = LESSONS.length;
+  const done  = S.completed.length;
+  return Math.min(100, Math.round((done / total) * 100));
+}
 
 // ═══════════════════════════════════════════════════════════════
 // LESSON CURRICULUM
@@ -1874,6 +2097,315 @@ const LESSONS = [
       },
     ]
   },
+  // ── LESSON 11 — UTM Parameters ──────────────────────────────────────────
+  {
+    id:'m4-l1', num:11, title:'UTM Parameters — Track Every Campaign', duration:'12 min', xp:160,
+    navTarget:'traffic-acq', view:'view-traffic-acq',
+    stages:[
+      {
+        type:'hook',
+        scenario:'Your company spent €15,000 on a newsletter campaign. The CEO asks: "Did the newsletter drive any sales?" You check GA4. The traffic shows as Direct — because nobody added UTM tags to the links. Budget gone. No answer. No data.',
+        problem:'Without UTM parameters, GA4 cannot tell the difference between a newsletter click and someone typing your URL. Every untagged campaign is invisible in your data.',
+        skill:'Understanding and reading UTM parameters in the Traffic Acquisition report — the skill that makes every campaign traceable.',
+      },
+      { type:'concept', wordA:'UTM', wordB:'PARAMETERS', summary:'Short codes added to URLs that tell Analytics exactly which campaign, channel, and creative drove each visit.' },
+      {
+        type:'explain',
+        headline:'A UTM parameter is a label on a URL that tells Analytics exactly where traffic came from.',
+        text:'UTM stands for Urchin Tracking Module — named after the company Google acquired to build Analytics. They are extra text added after a ? in a URL. When someone clicks a tagged link, Analytics reads those tags and records them precisely. Without tags, the traffic appears as Direct — your campaign becomes invisible.',
+        analogy:'📦 Every parcel you send has a label: FROM: Email Newsletter, CAMPAIGN: Summer Sale. UTMs are those labels on links. Without them, every click just arrives labelled "FROM: Unknown."',
+        examples:[
+          'Normal URL: www.shop.com/sale',
+          'Tagged URL: www.shop.com/sale?utm_source=newsletter&utm_medium=email&utm_campaign=summer-2026',
+          'utm_source = where (newsletter, google, instagram)',
+          'utm_medium = how (email, cpc, social, display)',
+          'utm_campaign = which campaign (summer-2026, black-friday)',
+          'utm_content = which specific ad (banner-top vs text-link)',
+        ],
+      },
+      {
+        type:'terms',
+        terms:[
+          {term:'utm_source', icon:'📍', def:'WHERE the traffic came from. The platform or publication name.', ex:'utm_source=newsletter, utm_source=google, utm_source=linkedin'},
+          {term:'utm_medium', icon:'📡', def:'HOW they arrived. The marketing channel type.', ex:'utm_medium=email, utm_medium=cpc (paid click), utm_medium=social'},
+          {term:'utm_campaign', icon:'🎯', def:'WHICH campaign this traffic belongs to.', ex:'utm_campaign=summer-sale-2026, utm_campaign=retargeting-q2'},
+          {term:'utm_content', icon:'🔖', def:'WHICH specific ad, link or creative — for A/B testing which ad version performed.', ex:'utm_content=banner-top vs utm_content=text-footer'},
+          {term:'Dark Traffic', icon:'⬛', def:'Sessions that appear as Direct because they have no UTM tags. You cannot retroactively fix this.', ex:'A newsletter with no UTM tags sends 2,000 clicks — all show as Direct, untraceable.'},
+        ],
+      },
+      {
+        type:'locate',
+        headline:'Find it: Session source / medium in Traffic Acquisition',
+        spotlight:'ta-table-card',
+        steps:[
+          'Go to Reports → Acquisition → Traffic acquisition',
+          'Click the dimension dropdown above the table (currently "Session default channel group")',
+          'Change it to "Session source / medium"',
+          'Tagged traffic shows as: newsletter / email, google / cpc',
+          'Untagged campaigns show as: (direct) / (none) — invisible!',
+        ],
+        tip:'If you see large Direct traffic for a period when you ran campaigns, it almost certainly means those campaigns had no UTM tags. That attribution data is permanently lost.',
+      },
+      {
+        type:'practice',
+        task:'Your team ran 3 campaigns last month. The data shows: "newsletter / email" = 890 sessions, "google / cpc" = 340 sessions, and "(direct) / (none)" = 2,105 sessions. Total sessions = 8,420. What PERCENTAGE of all traffic is untagged and untraceable? Round to the nearest whole number.',
+        inputTask:true,
+        correctAnswer:'25',
+        altAnswers:['24','25%'],
+        hint:'Untagged = Direct sessions = 2,105. But wait — Direct is not ALL untagged. The 2,105 includes real direct visitors too. The TAGGED campaigns: 890 + 340 = 1,230 sessions. That is 1,230 ÷ 8,420 = 14.6% tracked. So roughly 25% is from known campaigns. Actually the question asks what % is (direct)/(none): 2105 ÷ 8420 × 100 = 25%.',
+        successTitle:'25% appears as dark Direct traffic',
+        successText:'A quarter of all sessions have no campaign data. Every major campaign without UTMs wastes budget on untraceable traffic. Now you know how to fix it: tag every link in every campaign, every time.',
+        xp:160,
+      },
+    ]
+  },
+
+  // ── LESSON 12 — Events & What Users Actually Do ──────────────────────────
+  {
+    id:'m4-l2', num:12, title:'Events — What Are Visitors Actually Doing?', duration:'13 min', xp:175,
+    navTarget:'conversions', view:'view-conversions',
+    stages:[
+      {
+        type:'hook',
+        scenario:'8,000 visitors a month. You know they visit. But do they watch your product video? Do they scroll past the pricing section? Do they click the Contact button but abandon the form halfway? Without event tracking, all of these are invisible. You are flying blind inside your own pages.',
+        problem:'Page views tell you someone arrived. Events tell you what they actually DID while there — which is what predicts whether they will convert.',
+        skill:'Understanding GA4 event model, reading the Events report, and calculating conversion rates from event data.',
+      },
+      { type:'concept', wordA:'EVENT', wordB:'TRACKING', summary:'Every meaningful interaction — clicks, scrolls, video plays, form submits — recorded as a measurable event linked to business outcomes.' },
+      {
+        type:'explain',
+        headline:'GA4 measures everything as events — not just page views.',
+        text:'Old analytics tools only counted page views. GA4 treats EVERYTHING as an event: a page load, a scroll, a button click, a video play, a purchase. This means you can measure exactly which actions users take — not just which pages they visit. The deeper insight is: you can now connect micro-interactions (video watch) to macro outcomes (purchase).',
+        analogy:'📹 Old analytics: a camera that only tells you which rooms people entered. GA4 events: a camera recording everything people do inside — what they touched, how long they looked, what they picked up.',
+        examples:[
+          'Automatic events (always collected): page_view, session_start, first_visit, user_engagement',
+          'Enhanced measurement (enable once): scroll, click, file_download, video_play, form_submit',
+          'Custom events (you write code): product_zoom, chat_opened, tab_switched_to_pricing',
+          'Key Events / Conversions: purchase, generate_lead, sign_up',
+        ],
+      },
+      {
+        type:'terms',
+        terms:[
+          {term:'Event', icon:'⚡', def:'Any interaction or occurrence GA4 records. Every measurement in GA4 is built on events.', ex:'page_view, scroll, click, video_start, add_to_cart, purchase — all events.'},
+          {term:'Event Parameter', icon:'🏷', def:'Extra data attached to an event providing context. Without parameters, an event is just a count.', ex:'video_start with parameter video_title="Product Demo" tells you WHICH video was started.'},
+          {term:'Key Event', icon:'🎯', def:'An event marked as your most important business goal. Appears in the Conversions report.', ex:'Mark "purchase" as Key Event → it now appears in Conversions with rate calculation.'},
+          {term:'Event Count vs Sessions', icon:'⚖', def:'One session can have many events. A user in one session might trigger: 1 page_view, 2 scroll events, 1 video_start, and 1 add_to_cart.', ex:'8,420 sessions but 21,340 page_view events = 2.5 pages per session on average.'},
+          {term:'Enhanced Measurement', icon:'📊', def:'GA4\'s built-in automatic event collection: scroll depth, outbound clicks, videos, downloads. Enable once in Admin.', ex:'Enable Enhanced Measurement → automatically track 70% scroll events without any code.'},
+        ],
+      },
+      {
+        type:'locate',
+        headline:'Find it: Engagement → Events and Conversions reports',
+        spotlight:'view-conversions',
+        steps:[
+          'Go to Reports → Engagement → Events (shows all events by count)',
+          'Look for scroll — if missing, Enhanced Measurement may be off',
+          'Go to Reports → Engagement → Conversions (shows only Key Events)',
+          'The difference: Events = everything that happened. Conversions = what mattered most.',
+          'Compare event count vs sessions to understand engagement depth per visit.',
+        ],
+        tip:'Look for "session_start" count — it should match your Sessions metric exactly. If it does not, your tracking code may be firing twice (double-counting) or not at all on some pages.',
+      },
+      {
+        type:'practice',
+        task:'The Events report shows add_to_cart fired 841 times. The Conversions report shows purchase = 202. What is the Cart-to-Purchase conversion rate? This is one of the most important e-commerce metrics. Round to 1 decimal place.',
+        inputTask:true,
+        correctAnswer:'24.0',
+        altAnswers:['24','24.0%','24.0 percent'],
+        hint:'Cart-to-Purchase rate = (Purchases ÷ Add-to-carts) × 100 = (202 ÷ 841) × 100 = 24.0%',
+        successTitle:'24% Cart-to-Purchase Rate',
+        successText:'Only 1 in 4 people who add to cart actually buy. This funnel step is a massive opportunity. The next lesson shows you how to visualise exactly where in the checkout those 76% are leaving — and which specific step to fix first.',
+        xp:175,
+      },
+    ]
+  },
+
+  // ── LESSON 13 — Funnel Analysis ──────────────────────────────────────────
+  {
+    id:'m4-l3', num:13, title:'Funnel Analysis — Find the Exact Dropout Point', duration:'14 min', xp:190,
+    navTarget:'conversions', view:'view-conversions',
+    stages:[
+      {
+        type:'hook',
+        scenario:'202 people purchased last month. 5,231 visited. That is a 2.4% conversion rate. But WHERE are the other 97.6% dropping off? Product page? Checkout? Payment step? Fixing the wrong step wastes months. Finding the real leak with funnel analysis takes 60 seconds.',
+        problem:'Without funnel analysis, you are guessing which step to improve. With it, the answer is visually obvious and quantified.',
+        skill:'Building and reading a funnel exploration in GA4 to identify the exact dropout step in a conversion flow.',
+      },
+      { type:'concept', wordA:'FUNNEL', wordB:'DROPOUT', summary:'A funnel visualises every step from visitor to customer — showing the exact percentage that leaves at each stage.' },
+      {
+        type:'explain',
+        headline:'A funnel maps the journey from stranger to customer — and highlights where most people leave.',
+        text:'Every purchase has multiple steps. Each step, some people leave. The step with the biggest absolute dropout is your highest-value optimisation target. Funnel analysis tells you exactly which step that is — removing all guesswork.',
+        analogy:'🔻 Pour 1,000 litres into a kitchen funnel. Only 24 come out. Funnel analysis finds exactly which narrowing point is blocking the flow — and how much each step is losing.',
+        examples:[
+          'Homepage → 5,231 sessions (100%)',
+          'Product page viewed → 2,890 (55% reached, 45% dropped)',
+          'Added to cart → 841 (16% reached, 39% dropped)',
+          'Started checkout → 460 (9% reached, 7% dropped)',
+          'Purchase completed → 202 (4% reached, 5% dropped)',
+        ],
+      },
+      {
+        type:'terms',
+        terms:[
+          {term:'Funnel Step', icon:'↓', def:'A single stage in the user journey, defined by an event or page view condition.', ex:'Step 3: add_to_cart event fired = user reached this step.'},
+          {term:'Step Dropout', icon:'🚪', def:'The percentage (and count) of users who left between two specific steps and never returned.', ex:'460 started checkout, 258 abandoned before payment = 56% dropout at payment step.'},
+          {term:'Open vs Closed Funnel', icon:'🔓', def:'Closed: must enter at Step 1. Open: can enter at any step. Open funnels show realistic paths.', ex:'Open funnel reveals 30% of purchasers bypassed the product page entirely — came via email straight to cart.'},
+          {term:'Funnel Exploration', icon:'🔬', def:'GA4 Explore section feature for building custom multi-step funnel charts.', ex:'Go to Explore → Funnel exploration → add 5 steps → see the visualisation instantly.'},
+          {term:'Segment in Funnel', icon:'📊', def:'Adding a user segment to compare how different groups move through the same funnel.', ex:'Mobile users: 73% dropout at payment. Desktop: 31% dropout. Mobile checkout needs urgent fixing.'},
+        ],
+      },
+      {
+        type:'locate',
+        headline:'Find it: Explore → Funnel exploration',
+        spotlight:'nav-eng-overview',
+        steps:[
+          'Click "Explore" in the left sidebar (compass icon)',
+          'Choose "Funnel exploration" from the templates',
+          'Add steps: page_view("/home") → page_view("/products") → add_to_cart → begin_checkout → purchase',
+          'Toggle "Open funnel" to see all paths (not just sequential)',
+          'The widest grey bar between steps = your biggest opportunity',
+        ],
+        tip:'After finding the biggest dropout step, create a segment of users who dropped at that step. Then look at their device, source, and landing page — that reveals WHY they are leaving.',
+      },
+      {
+        type:'practice',
+        task:'Using the funnel data: 5,231 visited → 2,890 viewed product → 841 added to cart → 460 began checkout → 202 purchased. Calculate the ABSOLUTE number of people lost between Homepage and Product Page (Step 1 to Step 2).',
+        inputTask:true,
+        correctAnswer:'2341',
+        altAnswers:['2,341'],
+        hint:'People lost = Step 1 count − Step 2 count = 5,231 − 2,890 = ?',
+        successTitle:'2,341 people never saw a product!',
+        successText:'That is 45% of all visitors gone before they even found something to buy. The homepage navigation, search functionality, or category structure is failing them. This single step has 2.5× more dropout than all other steps combined — fixing it is your highest-leverage action.',
+        xp:190,
+      },
+    ]
+  },
+
+  // ── LESSON 14 — Attribution Models ───────────────────────────────────────
+  {
+    id:'m4-l4', num:14, title:'Attribution — Which Channel Gets the Credit?', duration:'13 min', xp:200,
+    navTarget:'advertising', view:'view-advertising',
+    stages:[
+      {
+        type:'hook',
+        scenario:'A customer found you via Instagram. Three days later they clicked a Google Ad. That evening they came back directly and bought. Your Google Ads report claims the sale. Your Social report claims the sale. Your Direct report claims the sale. All three are right. None are right. This is the attribution problem — and it is costing brands millions in budget decisions.',
+        problem:'Without understanding attribution models, you will cut the channels that are secretly driving your sales — and over-fund the one that just happens to be last.',
+        skill:'Understanding the difference between Last Click, First Click, and Data-Driven attribution — and how changing models reveals the true value of each channel.',
+      },
+      { type:'concept', wordA:'ATTRIBUTION', wordB:'MODEL', summary:'The rule that decides which marketing touchpoint gets the conversion credit when a customer touched multiple channels.' },
+      {
+        type:'explain',
+        headline:'Every conversion has a journey. Attribution models decide who gets credit for it.',
+        text:'Most customers do not convert on their first touch. They discover you one way, research another way, and finally convert a third way. The attribution model is the rule you apply to decide which of those touchpoints deserves credit. Different models give completely different answers — and therefore suggest completely different budget decisions.',
+        analogy:'⚽ Who scored the goal? The striker who put it in? The midfielder who made the pass? The goalkeeper whose save started the counter? Attribution is the Man of the Match debate. Every model gives a different answer.',
+        examples:[
+          'Last Click: 100% credit to the final channel before purchase',
+          'First Click: 100% credit to the channel that first brought the user to you',
+          'Linear: Equal credit split across all touchpoints in the journey',
+          'Data-Driven (GA4 default): AI calculates the true contribution of each channel based on your actual data',
+          'Time Decay: More credit to channels closest to the conversion moment',
+        ],
+      },
+      {
+        type:'terms',
+        terms:[
+          {term:'Last Click', icon:'🏁', def:'100% credit to the last channel touched before conversion. Rewards closers, ignores discovery.', ex:'Instagram → Google Ad → Direct → Purchase. Direct gets 100%. Instagram gets 0.'},
+          {term:'First Click', icon:'🚀', def:'100% credit to the first channel that introduced the user to your brand.', ex:'Same journey. Instagram gets 100%. Rewards channels that spark initial awareness.'},
+          {term:'Data-Driven', icon:'🤖', def:'GA4 default. ML model calculates fractional credit based on actual conversion pattern data.', ex:'GA4 calculates: Instagram 40%, Google Ad 35%, Direct 25% — based on thousands of real paths.'},
+          {term:'Assisted Conversion', icon:'🤝', def:'A channel that appeared in the path but was NOT the last touch. It assisted but did not close.', ex:'Social shows 28 last-click conversions but 89 data-driven conversions — 61 assisted.'},
+          {term:'Model Comparison', icon:'⚖', def:'GA4 Advertising tool that shows two attribution models side by side — reveals which channels are undervalued.', ex:'Compare Last Click vs Data-Driven: Social jumps from 28 to 89 conversions. It is secretly crucial.'},
+        ],
+      },
+      {
+        type:'locate',
+        headline:'Find it: Advertising → Attribution → Model comparison',
+        spotlight:'nav-advertising',
+        steps:[
+          'Click "Advertising" in the left sidebar',
+          'Click "Attribution" → "Model comparison"',
+          'Select Last Click in the left model dropdown',
+          'Select Data-driven in the right model dropdown',
+          'Channels that GAIN conversions in Data-Driven are your "assist channels" — likely underfunded',
+        ],
+        tip:'Data-Driven attribution requires at least 400 conversions in the past 30 days to generate its model. Below that threshold, GA4 falls back to Last Click automatically. This is why conversion volume matters before you trust the data.',
+      },
+      {
+        type:'practice',
+        task:'Under Last-Click attribution, Organic Social shows 28 conversions. Under Data-Driven attribution, it shows 89 conversions. How many conversions is Organic Social contributing that Last-Click attribution is failing to show? (These are the "invisible assisted conversions.")',
+        inputTask:true,
+        correctAnswer:'61',
+        hint:'Assisted (invisible) = Data-Driven total − Last Click total = 89 − 28 = ?',
+        successTitle:'61 conversions were invisible!',
+        successText:'If you used Last-Click attribution to make budget decisions, you\'d think Social drove 28 sales. The actual contribution is 89 — over 3× higher. Companies cut social budgets based on last-click data every day. They are cutting one of their highest-leverage channels and do not know it.',
+        xp:200,
+      },
+    ]
+  },
+
+  // ── LESSON 15 — Expert Diagnosis: Real Traffic Drop ───────────────────────
+  {
+    id:'m4-l5', num:15, title:'Diagnose a Real Traffic Drop', duration:'15 min', xp:220,
+    navTarget:'traffic-acq', view:'view-traffic-acq',
+    stages:[
+      {
+        type:'hook',
+        scenario:'Monday 8am. Your phone rings. Head of Marketing: "Traffic dropped 40% overnight. Revenue is down €12,000. I need to know what happened before the board call in 30 minutes." You open DataFlow Analytics. This is everything you have learned, applied under real pressure.',
+        problem:'Traffic drops have many causes — tracking broken, algorithm update, technical issue, seasonal. The wrong diagnosis wastes hours. The right framework finds the answer in minutes.',
+        skill:'Applying a professional traffic investigation framework: narrow from site-wide → channel → device → page → date until only one cause fits all the evidence.',
+      },
+      { type:'concept', wordA:'TRAFFIC', wordB:'DIAGNOSIS', summary:'A systematic diagnostic protocol: narrow fast from the total number down to channel, device, page, and date until only one root cause fits.' },
+      {
+        type:'explain',
+        headline:'Professionals use a protocol. Amateurs panic at the top-line number.',
+        text:'The fastest way to diagnose a traffic drop is to use a decision tree: (1) Is it ALL channels or one? If all — probably a tracking break. If one — find which channel. (2) Is it all devices or one? If mobile only — check mobile UX. If all — broader issue. (3) Which pages? If all pages — domain-level issue. If specific pages — content or technical issue. (4) What date exactly? Check what changed that day.',
+        analogy:'🩺 A doctor runs tests in sequence: temperature, blood pressure, specific tests based on those results. Diagnosis is not random — it is a protocol. Follow the protocol and you reach the answer systematically.',
+        examples:[
+          'ALL channels dropped equally → tracking code broken (check with DebugView)',
+          'ONLY Organic Search dropped → algorithm update or SEO penalty',
+          'ONLY Mobile dropped → mobile site technical issue or Core Web Vitals failure',
+          'ONLY specific pages dropped → those pages have a content or redirect problem',
+          'Gradual weekly decline → seasonality or long-term trend, not a sudden break',
+        ],
+      },
+      {
+        type:'terms',
+        terms:[
+          {term:'Tracking Break', icon:'⚠️', def:'GA4 code removed or broken — shows as near-zero events across ALL sources simultaneously on a specific day.', ex:'Developer deployed new site, accidentally removed the tracking script. All traffic reads as zero.'},
+          {term:'Core Web Vitals', icon:'⚡', def:'Google speed/experience metrics (LCP, CLS, FID) that affect search rankings when they degrade.', ex:'A plugin update slows page load from 1.2s to 4.8s → Google demotes your rankings → organic drops.'},
+          {term:'DebugView', icon:'🔧', def:'GA4 real-time event stream in Admin. Used to verify the tracking code is firing correctly right now.', ex:'Go to Admin → DebugView → visit your site → you should see page_view events in real time.'},
+          {term:'Date Comparison', icon:'📅', def:'Comparing the drop period to the same period last year to isolate seasonal effects.', ex:'Traffic always drops 30% in August because your audience is on holiday. Not a problem.'},
+          {term:'Segment Isolation', icon:'🔬', def:'Applying channel/device/country segments to the traffic chart to find which specific segment carries the drop.', ex:'Add Mobile segment to chart — only mobile shows the drop. Desktop is flat. Mobile issue confirmed.'},
+        ],
+      },
+      {
+        type:'locate',
+        headline:'The diagnostic sequence — all reports in order',
+        spotlight:'ta-metrics-strip',
+        steps:[
+          '1. Check ALL channels together — did everything drop or just one? (Traffic Acquisition table)',
+          '2. Check device breakdown — Mobile, Desktop, or both? (User → Tech → Overview)',
+          '3. Check top landing pages — which URLs lost traffic? (Pages and Screens)',
+          '4. Identify the exact date it started — check what changed that day',
+          '5. If all channels dropped on the same day: go to Admin → DebugView → verify tracking is live',
+        ],
+        tip:'Always check the year-over-year comparison before panicking. A 40% drop that also happened last year at the same time is seasonal, not a crisis. Filter by "Compare: previous year" in the date picker.',
+      },
+      {
+        type:'practice',
+        task:'You are diagnosing the drop. Channel analysis shows: Organic Search dropped 65%, Paid Search dropped 38%, Social dropped 8%, Direct dropped 5%. Based on this evidence pattern, which single cause BEST explains this data? Type one of: "tracking issue", "algorithm update", "seasonal decline", or "technical site error".',
+        inputTask:true,
+        correctAnswer:'algorithm update',
+        altAnswers:['seo penalty','google algorithm','search update','organic penalty','algorithm change'],
+        hint:'Key evidence: Organic Search lost 65% while Social lost only 8% and Direct lost 5%. If tracking broke, ALL channels would show equal drops simultaneously. The massive Organic-specific drop with other channels nearly unchanged = search engine algorithm change or SEO penalty.',
+        successTitle:'Algorithm update — correct diagnosis!',
+        successText:'When Organic Search drops sharply but other channels remain stable, the cause is almost always a search engine algorithm update or manual penalty. Next step: check Google Search Console for manual actions, then compare your top-ranking pages before and after the drop date. You just demonstrated professional-level analytical thinking.',
+        xp:220,
+      },
+    ]
+  },
+
 ];
 
 // ═══════════════════════════════════════════════════════════════
@@ -1941,7 +2473,7 @@ function buildMetricStrip(containerId, metrics) {
   const el = document.getElementById(containerId);
   if (!el) return;
   el.innerHTML = metrics.map((m, i) => `
-    <div class="ga-metric-card ${m.selected?'selected':''}" id="${m.id||''}" onclick="${m.onclick||''}">
+    <div class="ga-metric-card ${m.selected?'selected':''}" id="${m.id||''}" data-mid="${m.id||''}">
       <div class="ga-metric-label">${m.label}</div>
       <div class="ga-metric-value">${m.value}</div>
       <div class="ga-metric-delta ${m.dir||'neutral'}">
@@ -1949,6 +2481,11 @@ function buildMetricStrip(containerId, metrics) {
         <span>${m.delta||''}</span>
       </div>
     </div>`).join('');
+  // Delegated click — avoids all HTML quote-escaping bugs
+  el.addEventListener('click', function(ev) {
+    const card = ev.target.closest('[data-mid]');
+    if (card && card.dataset.mid) handleMetricClick(card.dataset.mid);
+  });
 }
 
 function buildLineChart(containerId, data, color='#4285f4', height=140) {
@@ -2116,78 +2653,96 @@ function buildAgeChart() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-// TEACHING LAYER — SPOTLIGHT & COACH
-// 4-panel approach: surrounds target with dark panels, leaving
-// the target area COMPLETELY unobstructed and clickable
+// TEACHING LAYER — SPOTLIGHT (scroll-aware, all position:fixed)
 // ═══════════════════════════════════════════════════════════════
-function spotlight(targetId, isClickable) {
-  const ring = document.getElementById('spotlight-ring');
+let _spotTarget    = null;
+let _spotClickable = false;
 
-  // Get or create the 4 panels
-  let panels = document.getElementById('spotlight-panels');
-  if (!panels) {
-    panels = document.createElement('div');
+function spotlight(targetId, isClickable) {
+  _spotTarget    = targetId || null;
+  _spotClickable = !!isClickable;
+
+  // Create 4 panels once — all position:fixed so scroll never moves them
+  if (!document.getElementById('spotlight-panels')) {
+    const panels = document.createElement('div');
     panels.id = 'spotlight-panels';
-    panels.style.cssText = 'position:fixed;inset:0;pointer-events:none;z-index:9998';
-    panels.innerHTML = ['top','right','bottom','left'].map(side =>
-      `<div id="sp-${side}" style="position:absolute;background:rgba(0,0,0,.6);pointer-events:none;transition:all .3s ease"></div>`
+    panels.innerHTML = ['top','right','bottom','left'].map(s =>
+      `<div id="sp-${s}" style="position:fixed;background:rgba(0,0,0,.6);pointer-events:none;display:none;z-index:9998"></div>`
     ).join('');
     document.body.appendChild(panels);
   }
 
   if (!targetId) {
-    // Hide all panels and ring
     ['top','right','bottom','left'].forEach(s => {
       const p = document.getElementById(`sp-${s}`);
       if (p) p.style.display = 'none';
     });
-    ring.style.display = 'none';
-    // Also hide legacy overlay
-    const ov = document.getElementById('spotlight-overlay');
-    if (ov) ov.classList.remove('active');
+    const ring = document.getElementById('spotlight-ring');
+    if (ring) ring.style.display = 'none';
     return;
   }
 
   const el = document.getElementById(targetId) ||
-             document.querySelector(`[id="${targetId}"]`) ||
-             document.querySelector(`.${targetId}`);
+             document.querySelector(`[id="${targetId}"]`);
   if (!el) { spotlight(null); return; }
 
-  // Make sure element is visible in its scroll container
   el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-
-  // Wait a tick for scroll to settle
-  setTimeout(() => {
-    const rect = el.getBoundingClientRect();
-    const pad  = 8;
-    const vw   = window.innerWidth;
-    const vh   = window.innerHeight;
-
-    const x = rect.left   - pad;
-    const y = rect.top    - pad;
-    const w = rect.width  + pad * 2;
-    const h = rect.height + pad * 2;
-
-    // 4 panels: top / right / bottom / left
-    const spTop  = document.getElementById('sp-top');
-    const spRight= document.getElementById('sp-right');
-    const spBot  = document.getElementById('sp-bottom');
-    const spLeft = document.getElementById('sp-left');
-
-    spTop.style.cssText   = `position:absolute;background:rgba(0,0,0,.6);pointer-events:none;top:0;left:0;right:0;height:${y}px;display:block`;
-    spBot.style.cssText   = `position:absolute;background:rgba(0,0,0,.6);pointer-events:none;top:${y+h}px;left:0;right:0;bottom:0;display:block`;
-    spLeft.style.cssText  = `position:absolute;background:rgba(0,0,0,.6);pointer-events:none;top:${y}px;left:0;width:${x}px;height:${h}px;display:block`;
-    spRight.style.cssText = `position:absolute;background:rgba(0,0,0,.6);pointer-events:none;top:${y}px;left:${x+w}px;right:0;height:${h}px;display:block`;
-
-    // Ring around target
-    ring.style.display = 'block';
-    ring.style.left    = `${x}px`;
-    ring.style.top     = `${y}px`;
-    ring.style.width   = `${w}px`;
-    ring.style.height  = `${h}px`;
-    ring.classList.toggle('click-target', !!isClickable);
-  }, 50);
+  setTimeout(_positionSpotlight, 160);
 }
+
+function _positionSpotlight() {
+  if (!_spotTarget) return;
+  const ring = document.getElementById('spotlight-ring');
+  if (!ring) return;
+
+  const el = document.getElementById(_spotTarget) ||
+             document.querySelector(`[id="${_spotTarget}"]`);
+  if (!el) return;
+
+  const rect = el.getBoundingClientRect();
+  const pad  = 10;
+  const vw   = window.innerWidth;
+  const vh   = window.innerHeight;
+
+  // If scrolled out of viewport, hide everything
+  if (rect.bottom < 0 || rect.top > vh) {
+    ring.style.display = 'none';
+    ['top','right','bottom','left'].forEach(s => {
+      const p = document.getElementById(`sp-${s}`);
+      if (p) p.style.display = 'none';
+    });
+    return;
+  }
+
+  // All coords in viewport space (getBoundingClientRect is always viewport-relative)
+  const x1 = Math.max(0, Math.round(rect.left   - pad));
+  const y1 = Math.max(0, Math.round(rect.top    - pad));
+  const x2 = Math.min(vw, Math.round(rect.right  + pad));
+  const y2 = Math.min(vh, Math.round(rect.bottom + pad));
+
+  const spTop   = document.getElementById('sp-top');
+  const spBot   = document.getElementById('sp-bottom');
+  const spLeft  = document.getElementById('sp-left');
+  const spRight = document.getElementById('sp-right');
+
+  // top panel: full width, from top to y1
+  if (spTop)   spTop.style.cssText   = `position:fixed;background:rgba(0,0,0,.6);pointer-events:none;z-index:9998;top:0;left:0;right:0;height:${y1}px;display:${y1>0?'block':'none'}`;
+  // bottom panel: full width, from y2 to bottom
+  if (spBot)   spBot.style.cssText   = `position:fixed;background:rgba(0,0,0,.6);pointer-events:none;z-index:9998;top:${y2}px;left:0;right:0;bottom:0;display:block`;
+  // left panel: between y1 and y2, from left to x1
+  if (spLeft)  spLeft.style.cssText  = `position:fixed;background:rgba(0,0,0,.6);pointer-events:none;z-index:9998;top:${y1}px;left:0;width:${x1}px;height:${y2-y1}px;display:${x1>0?'block':'none'}`;
+  // right panel: between y1 and y2, from x2 to right
+  if (spRight) spRight.style.cssText = `position:fixed;background:rgba(0,0,0,.6);pointer-events:none;z-index:9998;top:${y1}px;left:${x2}px;right:0;height:${y2-y1}px;display:block`;
+
+  // Ring — also fixed, always matches viewport coords
+  const col = _spotClickable ? '#34a853' : '#1a73e8';
+  const shadow = _spotClickable
+    ? '0 0 0 4px rgba(52,168,83,.25),0 0 20px rgba(52,168,83,.35)'
+    : '0 0 0 4px rgba(26,115,232,.2),0 0 20px rgba(26,115,232,.3)';
+  const anim = _spotClickable ? 'click-pulse 1.2s ease-in-out infinite' : 'ring-pulse 2s ease-in-out infinite';
+  ring.style.cssText = `position:fixed;display:block;left:${x1}px;top:${y1}px;width:${x2-x1}px;height:${y2-y1}px;border:2px solid ${col};border-radius:6px;pointer-events:none;z-index:9999;box-shadow:${shadow};animation:${anim}`;
+}
+
 
 function positionCoach(targetId, forceLeft) {
   const bubble = document.getElementById('coach-bubble');
@@ -2255,19 +2810,47 @@ function positionCoach(targetId, forceLeft) {
 }
 
 function minimizeCoach() {
-  document.getElementById('coach-bubble').classList.add('hidden');
-  const hud = document.getElementById('lesson-hud');
-  let showBtn = document.getElementById('hudShowCoach');
-  if (!showBtn) {
-    showBtn = document.createElement('button');
-    showBtn.id = 'hudShowCoach';
-    showBtn.className = 'hud-exit-btn';
-    showBtn.textContent = '💬 Coach';
-    showBtn.onclick = () => {
-      document.getElementById('coach-bubble').classList.remove('hidden');
-      showBtn.remove();
+  const bubble = document.getElementById('coach-bubble');
+  bubble.classList.add('hidden');
+
+  // Create a floating pill that hovers at the right side of the screen
+  let pill = document.getElementById('coach-pill');
+  if (!pill) {
+    pill = document.createElement('div');
+    pill.id = 'coach-pill';
+    pill.style.cssText = `
+      position:fixed; right:16px; top:50%; transform:translateY(-50%);
+      z-index:10001;
+      background:rgba(15,15,28,0.75); backdrop-filter:blur(16px);
+      border:1px solid rgba(0,212,255,.4); border-radius:100px;
+      padding:10px 16px; cursor:pointer;
+      display:flex; align-items:center; gap:8px;
+      font-size:12px; font-weight:600; color:#00d4ff;
+      box-shadow:0 4px 20px rgba(0,212,255,.2);
+      transition:all .2s; white-space:nowrap;
+      writing-mode:initial;
+      animation:pillPulse 2.5s ease-in-out infinite;
+    `;
+    pill.innerHTML = `<span style="font-size:16px">🎓</span><span>Coach</span>`;
+    pill.onclick = () => {
+      bubble.classList.remove('hidden');
+      pill.remove();
     };
-    hud.insertBefore(showBtn, hud.lastElementChild);
+    document.body.appendChild(pill);
+
+    // Add pulse animation if not already there
+    if (!document.getElementById('pillPulseStyle')) {
+      const st = document.createElement('style');
+      st.id = 'pillPulseStyle';
+      st.textContent = `
+        @keyframes pillPulse {
+          0%,100%{box-shadow:0 4px 20px rgba(0,212,255,.2),0 0 0 0 rgba(0,212,255,.3)}
+          50%{box-shadow:0 4px 20px rgba(0,212,255,.35),0 0 0 6px rgba(0,212,255,0)}
+        }
+        #coach-pill:hover{background:rgba(0,212,255,.15)!important;transform:translateY(-50%) scale(1.05)!important}
+      `;
+      document.head.appendChild(st);
+    }
   }
 }
 
@@ -2357,14 +2940,21 @@ function minimizeCoach() {
 // ═══════════════════════════════════════════════════════════════
 function renderStage(lessonIdx, stageIdx) {
   const lesson = LESSONS[lessonIdx];
+  if (!lesson) { console.error('No lesson at index', lessonIdx); return; }
   const stage  = lesson.stages[stageIdx];
+  if (!stage)  { console.error('No stage', stageIdx, 'in lesson', lesson.id); return; }
   const isLast = stageIdx === lesson.stages.length - 1;
   const isFirst = stageIdx === 0;
 
   // Update HUD
   document.getElementById('hudLessonNum').textContent = `Lesson ${lesson.num} of ${LESSONS.length}`;
   document.getElementById('hudLessonName').textContent = lesson.title;
-  document.getElementById('hudXP').textContent = `⚡ ${S.xp} XP`;
+  const hudRank = document.getElementById('hudRank');
+  const hudMastery = document.getElementById('hudMastery');
+  const hudChain = document.getElementById('hudChain');
+  if (hudRank) hudRank.textContent = getMIMSTitle();
+  if (hudMastery) hudMastery.style.width = getMIMSMastery() + '%';
+  if (hudChain) hudChain.textContent = '🔗 ' + S.chainLen;
 
   const pips = document.getElementById('hudStages');
   pips.innerHTML = lesson.stages.map((_, i) => {
@@ -2374,7 +2964,7 @@ function renderStage(lessonIdx, stageIdx) {
 
   // Sidebar stage label
   const stageNames = ['Hook','Concept','Explain','Terms','Locate','Practice'];
-  document.getElementById('coachStageLabel').textContent = `Stage ${stageIdx+1} — ${stageNames[stageIdx]||''}`;
+  document.getElementById('coachStageLabel').textContent = `Stage ${stageIdx+1} — ${stageNames[stageIdx]||''} · ${getMIMSTitle()}`;
 
   // Progress dots in coach
   document.getElementById('coachDots').innerHTML = lesson.stages.map((_, i) => {
@@ -2517,7 +3107,8 @@ function renderStage(lessonIdx, stageIdx) {
         <div style="margin-top:8px"><button style="font-size:11px;color:var(--teach-muted);text-decoration:underline;background:none;border:none;cursor:pointer" onclick="toggleHint()">💡 Show hint</button></div>
         <div id="practiceHint" style="display:none;margin-top:8px;padding:8px 12px;background:rgba(251,191,36,.08);border-left:3px solid #fbbf24;border-radius:0 4px 4px 0;font-size:12px;color:#fbbf24;font-style:italic">${hintText}</div>
         <div class="coach-feedback" id="coachFeedback"></div>`;
-      btns = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button>`;
+      btns = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button>
+        <button class="coach-btn" style="background:rgba(52,211,153,.12);color:var(--teach-green);border:1px solid rgba(52,211,153,.3);font-size:11px;padding:6px 12px" onclick="skipToSuccess(${lessonIdx})">✓ I found it</button>`;
     }
   }
 
@@ -2545,12 +3136,19 @@ function renderStage(lessonIdx, stageIdx) {
 
   body.innerHTML = html;
   document.getElementById('coachBtns').innerHTML = btns;
+
+  // Auto-speak this stage (respects mute toggle)
+  // Small delay so the DOM has rendered and highlights can find text nodes
+  if (TTS.enabled) {
+    setTimeout(() => speakStage(stage, lesson.title), 120);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
 // NAVIGATION WITHIN LESSON
 // ═══════════════════════════════════════════════════════════════
 function nextStage() {
+  stopSpeaking();
   const lesson = LESSONS[S.currentLesson];
   if (S.currentStage < lesson.stages.length - 1) {
     S.currentStage++;
@@ -2559,6 +3157,7 @@ function nextStage() {
 }
 
 function prevStage() {
+  stopSpeaking();
   if (S.currentStage > 0) {
     S.currentStage--;
     renderStage(S.currentLesson, S.currentStage);
@@ -2661,18 +3260,28 @@ function checkReport(lessonIdx) {
 
 // Practice click handlers
 function completePracticeByClick(successTitle, successText, xp) {
+  if (S.practiceAnswered) return;
   S.practiceAnswered = true;
+
+  // Kill spotlight
   spotlight(null);
-  document.getElementById('spotlight-ring').style.display = 'none';
-  // Update coach footer — add a "Next" button
+
+  // Update coach footer
   const btns = document.getElementById('coachBtns');
   if (btns) {
-    btns.innerHTML = `<button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button>
-      <button class="coach-btn coach-btn-success" onclick="nextStage()">Next →</button>`;
+    btns.innerHTML = `
+      <button class="coach-btn coach-btn-secondary" onclick="prevStage()">← Back</button>
+      <button class="coach-btn coach-btn-success" onclick="nextStage()">Next lesson →</button>`;
   }
-  // Show success overlay after short delay
-  setTimeout(() => showSuccess(successTitle, successText, xp, S.currentLesson), 400);
+
+  // Green feedback in coach body
+  const fb = document.getElementById('coachFeedback');
+  if (fb) { fb.className = 'coach-feedback right'; fb.textContent = '✓ Correct! Click Next to continue.'; }
+
+  // Success overlay
+  setTimeout(() => showSuccess(successTitle, successText, xp, S.currentLesson), 500);
 }
+
 
 function handleChannelClick(idx) {
   const lesson = LESSONS[S.currentLesson];
@@ -2732,6 +3341,17 @@ function practiceNextIfDone() {
   if (S.practiceAnswered) nextStage();
 }
 
+function skipToSuccess(lessonIdx) {
+  // Fallback: mark practice as done without requiring click, give partial XP
+  const lesson = LESSONS[lessonIdx];
+  const stage  = lesson && lesson.stages[S.currentStage];
+  if (!stage || S.practiceAnswered) return;
+  // Give 50% XP for skipping
+  const partialXP = Math.round((stage.xp || 100) * 0.5);
+  stage._partialSkip = true;
+  completePracticeByClick(stage.successTitle, stage.successText, partialXP);
+}
+
 function handleOverlayClick() {
   // Legacy - not used with 4-panel approach but kept for safety
 }
@@ -2745,19 +3365,40 @@ function showWrong(msg) {
 // SUCCESS & LESSON COMPLETION
 // ═══════════════════════════════════════════════════════════════
 function showSuccess(title, text, xp, lessonIdx, isFinal) {
+  // Capture rank BEFORE completing this lesson so we can show progression
+  const rankBefore = getMIMSRank();
+
   if (!S.completed.includes(LESSONS[lessonIdx].id)) {
     S.xp += xp;
     S.completed.push(LESSONS[lessonIdx].id);
+    S.chainLen++;
     localStorage.setItem('s2_xp',   S.xp);
     localStorage.setItem('s2_done', JSON.stringify(S.completed));
-    document.getElementById('hudXP').textContent = `⚡ ${S.xp} XP`;
+    localStorage.setItem('s2_chain', S.chainLen);
   }
+
+  // Update HUD MIMS display
+  const hudRank    = document.getElementById('hudRank');
+  const hudMastery = document.getElementById('hudMastery');
+  const hudChain   = document.getElementById('hudChain');
+  if (hudRank)    hudRank.textContent    = getMIMSTitle();
+  if (hudMastery) hudMastery.style.width = getMIMSMastery() + '%';
+  if (hudChain)   hudChain.textContent   = '🔗 ' + S.chainLen;
 
   const overlay = document.getElementById('success-overlay');
   document.getElementById('successTitle').textContent = title;
   document.getElementById('successText').textContent  = text;
-  document.getElementById('successXP').textContent    = `⚡ +${xp} XP`;
-  document.getElementById('successIcon').textContent  = isFinal ? '🎓' : '✅';
+
+  // Show rank progression if it changed
+  const rankAfter = getMIMSRank();
+  let rankMsg;
+  if (rankAfter > rankBefore) {
+    rankMsg = `🎖 Rank Up: ${RANK_TITLES[rankBefore]} → ${RANK_TITLES[rankAfter]}`;
+  } else {
+    rankMsg = `Rank: ${getMIMSTitle()} · Chain: ${S.chainLen}`;
+  }
+  document.getElementById('successXP').textContent   = rankMsg;
+  document.getElementById('successIcon').textContent = isFinal ? '🎓' : ((rankAfter > rankBefore && !isFinal) ? '🎖' : '✅');
 
   const nextIdx = lessonIdx + 1;
   const btn = document.getElementById('successBtn');
@@ -2781,7 +3422,7 @@ function closeSuccess() {
 }
 
 function showCertificate() {
-  document.getElementById('certXP').textContent = S.xp;
+  document.getElementById('certXP').textContent = getMIMSTitle();
   document.getElementById('certDate').textContent = `Issued: ${new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'})}`;
   document.getElementById('cert-screen').classList.add('show');
   spotlight(null);
@@ -2821,8 +3462,8 @@ function startCourse() {
 }
 
 function exitToMenu() {
+  stopSpeaking();
   spotlight(null);
-  // Hide 4-panel spotlight explicitly
   ['top','right','bottom','left'].forEach(s => {
     const p = document.getElementById(`sp-${s}`);
     if (p) p.style.display = 'none';
@@ -2836,6 +3477,9 @@ function exitToMenu() {
   document.getElementById('cert-screen').classList.remove('show');
   document.getElementById('success-overlay').classList.remove('show');
   document.getElementById('landing-screen').classList.remove('hidden');
+  // Remove floating coach pill if present
+  const pill = document.getElementById('coach-pill');
+  if (pill) pill.remove();
   hideTooltip(true);
   renderLandingLessons();
 }
@@ -2846,20 +3490,83 @@ function exitToMenu() {
 function renderLandingLessons() {
   const list = document.getElementById('landingLessonList');
   if (!list) return;
-  list.innerHTML = LESSONS.map((l, i) => {
-    const done   = S.completed.includes(l.id);
-    const active = i === (S.completed.length < LESSONS.length ? LESSONS.findIndex(ll => !S.completed.includes(ll.id)) : 0);
-    const locked = i > 0 && !S.completed.includes(LESSONS[i-1].id) && !done;
-    return `
-      <div class="lesson-list-item ${done?'completed':''} ${locked?'locked':''}" onclick="${locked?'':'startLesson('+i+')'}">
-        <div class="lesson-list-num ${done?'done':active?'active':''}">${done?'✓':l.num}</div>
-        <div class="lesson-list-info">
-          <div class="lesson-list-title">${l.title} ${l.isFinalProject?'<span style="font-size:10px;background:rgba(251,191,36,.15);color:#fbbf24;padding:1px 6px;border-radius:100px;margin-left:4px">Final Project</span>':''}</div>
-          <div class="lesson-list-meta">Lesson ${l.num} · ${l.duration}</div>
-        </div>
-        <div class="lesson-list-xp">${done?'✓':'⚡'} ${l.xp} XP</div>
+
+  // Module groupings — aligned with lesson ids
+  const MODULES = [
+    { title:'Module 1 — Understanding Traffic',  ids:['m1-l1','m1-l2','m1-l3','m1-l4'] },
+    { title:'Module 2 — Know Your Audience',      ids:['m2-l1','m2-l2'] },
+    { title:'Module 3 — Content & Conversions',   ids:['m3-l1','m3-l2','m3-l3','m3-l4'] },
+    { title:'Module 4 — Advanced Analytics',      ids:['m4-l1','m4-l2','m4-l3','m4-l4','m4-l5'] },
+  ];
+
+  const nextId = S.completed.length < LESSONS.length
+    ? LESSONS.find(l => !S.completed.includes(l.id))?.id
+    : null;
+
+  // Build overall progress bar
+  const totalDone = S.completed.length;
+  const totalLessons = LESSONS.length;
+  const pct = Math.round((totalDone / totalLessons) * 100);
+  const progressEl = document.getElementById('landingProgress');
+  if (progressEl) {
+    progressEl.innerHTML = `
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+        <span style="font-size:11px;color:var(--teach-muted)">${totalDone} / ${totalLessons} Lessons Complete</span>
+        <span style="font-size:11px;font-weight:700;color:var(--teach-cyan)">${getMIMSTitle()}</span>
+      </div>
+      <div style="height:5px;background:rgba(255,255,255,.08);border-radius:3px;overflow:hidden">
+        <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,var(--teach-cyan),var(--teach-green));border-radius:3px;transition:width .5s ease"></div>
       </div>`;
-  }).join('');
+  }
+
+  let html = '';
+  MODULES.forEach((mod, mi) => {
+    const moduleLessons = LESSONS.filter(l => mod.ids.includes(l.id));
+    if (!moduleLessons.length) return;
+
+    const modDone = moduleLessons.every(l => S.completed.includes(l.id));
+    html += `
+      <div style="margin-bottom:4px">
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 4px 4px;opacity:0.7">
+          <div style="flex:1;height:1px;background:var(--teach-border)"></div>
+          <span style="font-size:10px;font-weight:700;color:${modDone?'var(--teach-green)':'var(--teach-muted)'};text-transform:uppercase;letter-spacing:.1em;white-space:nowrap">${mod.title}</span>
+          <div style="flex:1;height:1px;background:var(--teach-border)"></div>
+        </div>`;
+
+    moduleLessons.forEach(l => {
+      const i     = LESSONS.indexOf(l);
+      const done  = S.completed.includes(l.id);
+      const active = l.id === nextId;
+      html += `
+        <div class="lesson-list-item ${done?'completed':''}" onclick="startLesson(${i})" style="margin-bottom:4px">
+          <div class="lesson-list-num ${done?'done':active?'active':''}">${done?'✓':l.num}</div>
+          <div class="lesson-list-info">
+            <div class="lesson-list-title">${l.title}${l.isFinalProject?' <span style="font-size:10px;background:rgba(251,191,36,.15);color:#fbbf24;padding:1px 6px;border-radius:100px">Final</span>':''}</div>
+            <div class="lesson-list-meta">${l.duration} · ${l.xp} pts</div>
+          </div>
+          <div style="font-size:10px;color:${done?'var(--teach-green)':active?'var(--teach-cyan)':'var(--teach-muted)'};font-weight:600;white-space:nowrap">${done?'✓ Done':active?'▶ Next':'○'}</div>
+        </div>`;
+    });
+
+    html += '</div>';
+  });
+
+  list.innerHTML = html;
+  // Refresh voice card state (key may have been saved since last render)
+  if (typeof initLandingVoiceCard === 'function') initLandingVoiceCard();
+
+  // Update start button text based on progress
+  const btn = document.getElementById('landingStartBtn');
+  if (btn) {
+    if (totalDone === 0) {
+      btn.textContent = 'Begin the Course →';
+    } else if (totalDone >= totalLessons) {
+      btn.textContent = '🏆 View Certificate →';
+      btn.onclick = () => showCertificate();
+    } else {
+      btn.textContent = `Continue — Lesson ${totalDone + 1} →`;
+    }
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -3092,6 +3799,12 @@ window.addEventListener('resize', () => {
   }, 200);
 });
 
+// Reposition spotlight whenever the main content area scrolls
+document.addEventListener('DOMContentLoaded', () => {
+  const main = document.getElementById('ga-main');
+  if (main) main.addEventListener('scroll', () => { if (_spotTarget) _positionSpotlight(); }, { passive:true });
+});
+
 // ═══════════════════════════════════════════════════════════════
 // KEYBOARD SHORTCUTS
 // ═══════════════════════════════════════════════════════════════
@@ -3110,6 +3823,584 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'ArrowLeft') prevStage();
   if (e.key === 'Escape') hideTooltip(true);
 });
+// ═══════════════════════════════════════════════════════════════
+// TTS ENGINE v2 — ElevenLabs primary + Web Speech fallback
+// ElevenLabs: human-quality AI voice, free tier 10k chars/month
+// Fallback: improved Web Speech API (slower, lower pitch)
+// Audio responses cached in memory — no repeat API calls
+// ═══════════════════════════════════════════════════════════════
+
+const TTS = {
+  enabled:    localStorage.getItem('s2_tts') !== 'off',
+  apiKey:     localStorage.getItem('s2_el_key') || '',
+  voiceId:    localStorage.getItem('s2_el_voice') || '21m00Tcm4TlvDq8ikWAM', // Rachel — warm, clear
+  model:      'eleven_turbo_v2_5',   // fastest + natural, low latency
+  rate:       parseFloat(localStorage.getItem('s2_rate') || '0.9'),
+  speaking:   false,
+  audioEl:    null,   // active <audio> element
+  cache:      new Map(), // text → blob URL cache (clears on page reload)
+  wsVoice:    null,   // Web Speech fallback voice
+};
+
+// ── ELEVENLABS VOICES the user can choose from ────────────────
+const EL_VOICES = [
+  { id:'21m00Tcm4TlvDq8ikWAM', name:'Rachel',  desc:'Calm, warm — best for teaching' },
+  { id:'AZnzlk1XvdvUeBnXmlld', name:'Domi',    desc:'Confident, clear — professional' },
+  { id:'ErXwobaYiN019PkySvjV', name:'Antoni',  desc:'Well-rounded male — friendly' },
+  { id:'VR6AewLTigWG4xSOukaG', name:'Arnold',  desc:'Crisp, authoritative male' },
+  { id:'pNInz6obpgDQGcFmaJgB', name:'Adam',    desc:'Deep, confident male — premium' },
+  { id:'yoZ06aMxZJJ28mfd3POQ', name:'Sam',     desc:'Raspy, casual male' },
+];
+
+// ── WEB SPEECH FALLBACK: pick best voice ─────────────────────
+function initWSVoice() {
+  if (TTS.wsVoice) return;
+  const voices = window.speechSynthesis?.getVoices() || [];
+  // Priority: most natural-sounding voices on each platform
+  const order = [
+    'Samantha','Karen','Daniel','Moira',        // macOS/iOS — best quality
+    'Google UK English Female',                  // Chrome — very natural
+    'Microsoft Aria Online (Natural)',           // Edge — best
+    'Microsoft Jenny Online (Natural)',
+    'Google US English',
+  ];
+  for (const name of order) {
+    const v = voices.find(v => v.name === name);
+    if (v) { TTS.wsVoice = v; return; }
+  }
+  TTS.wsVoice = voices.find(v => v.lang.startsWith('en-')) || voices[0] || null;
+}
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = initWSVoice;
+  setTimeout(initWSVoice, 200);
+}
+
+// ── SCRIPT BUILDER — stage data → clean spoken text ──────────
+function buildSpeechScript(stage, lessonTitle) {
+  if (!stage) return '';
+  // Strip HTML tags, emojis, bullet chars
+  const clean = s => (s||'')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[\u{1F300}-\u{1FAFF}|\u{2600}-\u{27BF}]/gu, '')
+    .replace(/[›»•·→←↑↓⚡📊📌💡⚖↩↗🔄🚀🏁🎯🔍🔗]/g, '')
+    .replace(/&[a-z]+;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  switch (stage.type) {
+    case 'hook':
+      return [
+        `Lesson: ${lessonTitle}.`,
+        clean(stage.scenario),
+        `The problem. ${clean(stage.problem)}`,
+        `In this lesson you will learn: ${clean(stage.skill)}`,
+      ].join(' ');
+
+    case 'concept':
+      return `The concept for this lesson is: ${stage.wordA} ${stage.wordB}. ${clean(stage.summary)}`;
+
+    case 'explain':
+      return [
+        clean(stage.headline) + '.',
+        clean(stage.text),
+        clean(stage.analogy),
+        `Some examples: ${stage.examples.slice(0,3).map(clean).join('. ')}`,
+      ].join(' ');
+
+    case 'terms':
+      return stage.terms.map(t =>
+        `${t.term}. ${clean(t.def)} Example: ${clean(t.ex)}`
+      ).join('. Next term. ');
+
+    case 'locate':
+      return [
+        clean(stage.headline) + '.',
+        `Follow these steps. ${stage.steps.map(clean).join('. ')}`,
+        `Tip: ${clean(stage.tip)}`,
+      ].join(' ');
+
+    case 'practice':
+      return `Your task. ${clean(stage.task)}${stage.hint ? ' If you need help: ' + clean(stage.hint) : ''}`;
+
+    case 'report':
+      return `Final project. Explore the dashboard and answer these five questions. ${stage.questions.map(q=>q.label).join('. ')}.`;
+
+    default: return '';
+  }
+}
+
+// ── ELEVENLABS: fetch audio, return blob URL (cached) ────────
+async function fetchElevenLabsAudio(text) {
+  if (!TTS.apiKey) return null;
+  const cacheKey = TTS.voiceId + '|' + text.substring(0, 80);
+  if (TTS.cache.has(cacheKey)) return TTS.cache.get(cacheKey);
+
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${TTS.voiceId}/stream`, {
+      method: 'POST',
+      headers: {
+        'xi-api-key':   TTS.apiKey,
+        'Content-Type': 'application/json',
+        'Accept':       'audio/mpeg',
+      },
+      body: JSON.stringify({
+        text,
+        model_id: TTS.model,
+        voice_settings: {
+          stability:        0.45,   // slight variation = more natural
+          similarity_boost: 0.82,   // close to voice character
+          style:            0.30,   // some expressiveness
+          use_speaker_boost: true,
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.warn('ElevenLabs error:', res.status, err);
+      return null;
+    }
+
+    const blob    = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    TTS.cache.set(cacheKey, blobUrl);
+    return blobUrl;
+  } catch (e) {
+    console.warn('ElevenLabs fetch failed:', e.message);
+    return null;
+  }
+}
+
+// ── SPEAK via ElevenLabs (plays full audio) ───────────────────
+async function speakWithElevenLabs(text) {
+  showWaveform(true);
+  const url = await fetchElevenLabsAudio(text);
+  if (!url) return false; // signal fallback needed
+
+  stopSpeaking(true); // stop any current audio but keep state
+
+  const audio = new Audio(url);
+  TTS.audioEl = audio;
+  TTS.speaking = true;
+
+  audio.playbackRate = TTS.rate;
+
+  audio.onended   = () => { TTS.speaking = false; showWaveform(false); clearHighlights(); };
+  audio.onerror   = () => { TTS.speaking = false; showWaveform(false); clearHighlights(); };
+  audio.onplay    = () => showWaveform(true);
+
+  try {
+    await audio.play();
+    return true;
+  } catch(e) {
+    console.warn('Audio play failed:', e);
+    return false;
+  }
+}
+
+// ── SPEAK via improved Web Speech fallback ────────────────────
+function speakWithWebSpeech(text) {
+  if (!window.speechSynthesis) return;
+  stopSpeaking(true);
+  initWSVoice();
+
+  // Split into sentences for sequential speaking + highlighting
+  const sentences = text
+    .split(/(?<=[.!?])\s+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 4);
+
+  TTS.speaking = true;
+  let idx = 0;
+  showWaveform(true);
+
+  function next() {
+    if (!TTS.enabled || !TTS.speaking || idx >= sentences.length) {
+      TTS.speaking = false;
+      showWaveform(false);
+      clearHighlights();
+      return;
+    }
+    const s = sentences[idx++];
+    highlightSentenceInCoach(s);
+
+    const utt = new SpeechSynthesisUtterance(s);
+    utt.rate   = TTS.rate * 0.88;  // slower than user setting for clearer speech
+    utt.pitch  = 0.88;             // lower pitch = less robotic
+    utt.volume = 1;
+    if (TTS.wsVoice) utt.voice = TTS.wsVoice;
+    utt.onend   = () => { clearHighlights(); next(); };
+    utt.onerror = () => { clearHighlights(); next(); };
+    window.speechSynthesis.speak(utt);
+  }
+  next();
+}
+
+// ── MAIN ENTRY POINT: speak a stage ───────────────────────────
+async function speakStage(stage, lessonTitle) {
+  if (!TTS.enabled) return;
+  stopSpeaking(true);
+
+  const text = buildSpeechScript(stage, lessonTitle);
+  if (!text || text.length < 10) return;
+
+  // Try ElevenLabs first, fall back to Web Speech
+  if (TTS.apiKey) {
+    const ok = await speakWithElevenLabs(text);
+    if (!ok) speakWithWebSpeech(text); // fallback on error
+  } else {
+    speakWithWebSpeech(text);
+  }
+}
+
+// ── STOP all audio ────────────────────────────────────────────
+function stopSpeaking(keepState) {
+  if (!keepState) TTS.speaking = false;
+  if (TTS.audioEl) {
+    TTS.audioEl.pause();
+    TTS.audioEl.src = '';
+    TTS.audioEl = null;
+  }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (!keepState) {
+    showWaveform(false);
+    clearHighlights();
+  }
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────
+function showWaveform(active) {
+  const wf = document.getElementById('coachWaveform');
+  if (wf) wf.style.display = active ? 'flex' : 'none';
+}
+
+function highlightSentenceInCoach(sentence) {
+  const body = document.getElementById('coachBody');
+  if (!body || !sentence || sentence.length < 8) return;
+  clearHighlights();
+  const fragment = sentence.substring(0, 22).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    if (node.textContent.includes(sentence.substring(0, 18))) {
+      const p = node.parentElement;
+      if (p && !p.classList.contains('tts-highlight')) {
+        p.classList.add('tts-highlight');
+        p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      break;
+    }
+  }
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.tts-highlight').forEach(el => el.classList.remove('tts-highlight'));
+}
+
+// ── TOGGLE VOICE ON / OFF ─────────────────────────────────────
+function toggleTTS() {
+  TTS.enabled = !TTS.enabled;
+  localStorage.setItem('s2_tts', TTS.enabled ? 'on' : 'off');
+  updateTTSBtn();
+  const controls = document.getElementById('ttsControls');
+  if (TTS.enabled) {
+    if (controls) controls.classList.add('visible');
+    const lesson = LESSONS[S.currentLesson];
+    if (lesson) speakStage(lesson.stages[S.currentStage], lesson.title);
+  } else {
+    stopSpeaking();
+    if (controls) controls.classList.remove('visible');
+  }
+}
+
+function updateTTSBtn() {
+  const btn = document.getElementById('coachSpeakBtn');
+  if (!btn) return;
+  if (TTS.enabled) {
+    btn.textContent = TTS.apiKey ? '🔊' : '🔈';
+    btn.title = TTS.apiKey ? 'Voice on (ElevenLabs)' : 'Voice on (browser — click ⚙ for HD voice)';
+    btn.style.cssText += 'color:#00d4ff;background:rgba(0,212,255,.12);border-color:rgba(0,212,255,.3)';
+  } else {
+    btn.textContent = '🔇';
+    btn.title = 'Voice off';
+    btn.style.cssText += 'color:var(--teach-muted);background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1)';
+  }
+}
+
+// ── SPEED CONTROL ─────────────────────────────────────────────
+function setTTSRate(rate) {
+  TTS.rate = rate;
+  localStorage.setItem('s2_rate', rate);
+  if (TTS.audioEl) TTS.audioEl.playbackRate = rate;
+  document.querySelectorAll('.tts-rate-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.rate) === rate);
+  });
+}
+
+function replaySpeech() {
+  const lesson = LESSONS[S.currentLesson];
+  if (lesson && TTS.enabled) speakStage(lesson.stages[S.currentStage], lesson.title);
+}
+
+// ── API KEY SETTINGS PANEL ────────────────────────────────────
+function showVoiceSettings() {
+  const existing = document.getElementById('voiceSettingsPanel');
+  if (existing) { existing.remove(); return; }
+
+  const panel = document.createElement('div');
+  panel.id = 'voiceSettingsPanel';
+  panel.style.cssText = `
+    position:fixed; right:16px; bottom:80px; z-index:20001;
+    width:340px;
+    background:rgba(15,15,28,0.96); backdrop-filter:blur(24px);
+    border:1px solid rgba(0,212,255,.3); border-radius:12px;
+    padding:20px; box-shadow:0 8px 40px rgba(0,0,0,.6);
+    font-family:'DM Sans','Plus Jakarta Sans',sans-serif;
+  `;
+
+  const currentVoice = EL_VOICES.find(v => v.id === TTS.voiceId) || EL_VOICES[0];
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:#00d4ff;letter-spacing:.05em">🎙 VOICE SETTINGS</div>
+      <button onclick="document.getElementById('voiceSettingsPanel').remove()"
+        style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;line-height:1">×</button>
+    </div>
+
+    <!-- ElevenLabs Key -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">
+        ElevenLabs API Key <span style="color:#34d399;font-size:10px">(Free tier: 10,000 chars/month)</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <input id="elKeyInput" type="password" value="${TTS.apiKey}"
+          placeholder="xi-...  paste your key here"
+          style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;
+                 padding:8px 10px;color:#e2e8f0;font-size:12px;font-family:monospace;outline:none"
+          onfocus="this.style.borderColor='rgba(0,212,255,.5)'"
+          onblur="this.style.borderColor='rgba(255,255,255,.1)'"
+        />
+        <button onclick="saveELKey()" style="
+          padding:8px 14px;background:#1a73e8;color:white;border:none;border-radius:6px;
+          font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">Save</button>
+      </div>
+      <div style="font-size:11px;color:#64748b;margin-top:5px">
+        Get free key at <a href="https://elevenlabs.io" target="_blank" style="color:#00d4ff">elevenlabs.io</a> → My Account → API Keys
+      </div>
+      <div id="elKeyStatus" style="font-size:11px;margin-top:4px;color:${TTS.apiKey?'#34d399':'#94a3b8'}">
+        ${TTS.apiKey ? '✓ Key saved — using ElevenLabs HD voice' : '○ No key — using browser voice (lower quality)'}
+      </div>
+    </div>
+
+    <!-- Voice selector -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Voice Character</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        ${EL_VOICES.map(v => `
+          <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;
+            background:${v.id===TTS.voiceId?'rgba(0,212,255,.1)':'rgba(255,255,255,.03)'};
+            border:1px solid ${v.id===TTS.voiceId?'rgba(0,212,255,.4)':'rgba(255,255,255,.08)'};
+            border-radius:6px;cursor:pointer;transition:all .15s"
+            onmouseenter="this.style.background='rgba(0,212,255,.06)'"
+            onmouseleave="this.style.background='${v.id===TTS.voiceId?'rgba(0,212,255,.1)':'rgba(255,255,255,.03)'}'"
+          >
+            <input type="radio" name="elVoice" value="${v.id}" ${v.id===TTS.voiceId?'checked':''}
+              onchange="setELVoice('${v.id}')" style="accent-color:#00d4ff"/>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#e2e8f0">${v.name}</div>
+              <div style="font-size:10px;color:#64748b">${v.desc}</div>
+            </div>
+          </label>`).join('')}
+      </div>
+    </div>
+
+    <!-- Test button -->
+    <button onclick="testVoice()" style="
+      width:100%;padding:9px;background:rgba(0,212,255,.1);
+      border:1px solid rgba(0,212,255,.35);border-radius:6px;
+      color:#00d4ff;font-size:12px;font-weight:600;cursor:pointer;
+      font-family:inherit;transition:all .15s"
+      onmouseenter="this.style.background='rgba(0,212,255,.2)'"
+      onmouseleave="this.style.background='rgba(0,212,255,.1)'"
+    >▶ Preview this voice</button>
+  `;
+
+  document.body.appendChild(panel);
+}
+
+function saveELKey() {
+  const key = document.getElementById('elKeyInput')?.value.trim() || '';
+  TTS.apiKey = key;
+  localStorage.setItem('s2_el_key', key);
+  TTS.cache.clear(); // clear cache — new key may access different voices
+  const status = document.getElementById('elKeyStatus');
+  if (status) {
+    status.style.color = key ? '#34d399' : '#94a3b8';
+    status.textContent = key
+      ? '✓ Key saved — using ElevenLabs HD voice'
+      : '○ No key — using browser voice (lower quality)';
+  }
+  updateTTSBtn();
+}
+
+function setELVoice(id) {
+  TTS.voiceId = id;
+  localStorage.setItem('s2_el_voice', id);
+  TTS.cache.clear(); // clear cache so next play uses new voice
+}
+
+async function testVoice() {
+  const testText = "Hello! I'm your SkillOS coach. I'll be guiding you through every lesson. Let's get started.";
+  if (TTS.apiKey) {
+    const ok = await speakWithElevenLabs(testText);
+    if (!ok) speakWithWebSpeech(testText);
+  } else {
+    speakWithWebSpeech(testText);
+  }
+}
+
+}
+
+// ── OPENAI TTS engine ─────────────────────────────────────────
+const OAI = {
+  key:   localStorage.getItem('s2_oai_key') || '',
+  voice: localStorage.getItem('s2_oai_voice') || 'nova',
+  model: 'tts-1-hd',
+};
+
+async function speakWithOpenAI(text) {
+  if (!OAI.key) return false;
+  const cacheKey = 'oai|' + OAI.voice + '|' + text.substring(0, 80);
+  let blobUrl = TTS.cache.get(cacheKey);
+  if (!blobUrl) {
+    try {
+      const res = await fetch('https://api.openai.com/v1/audio/speech', {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${OAI.key}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: OAI.model, input: text, voice: OAI.voice, speed: Math.min(1.5, Math.max(0.25, TTS.rate)), response_format: 'mp3' }),
+      });
+      if (!res.ok) { console.warn('OpenAI TTS:', res.status); return false; }
+      blobUrl = URL.createObjectURL(await res.blob());
+      TTS.cache.set(cacheKey, blobUrl);
+    } catch(e) { console.warn('OpenAI TTS error:', e); return false; }
+  }
+  stopSpeaking(true);
+  const audio = new Audio(blobUrl);
+  TTS.audioEl = audio; TTS.speaking = true;
+  audio.onended = () => { TTS.speaking = false; showWaveform(false); clearHighlights(); };
+  audio.onerror = () => { TTS.speaking = false; showWaveform(false); clearHighlights(); };
+  audio.onplay  = () => showWaveform(true);
+  try { await audio.play(); return true; } catch(e) { return false; }
+}
+
+function setOaiVoice(v) {
+  OAI.voice = v;
+  localStorage.setItem('s2_oai_voice', v);
+  TTS.cache.clear();
+}
+
+// Override speakStage to use priority chain: ElevenLabs → OpenAI → Web Speech
+const _speakStageOriginal = speakStage;
+async function speakStage(stage, lessonTitle) {
+  if (!TTS.enabled) return;
+  stopSpeaking(true);
+  const text = buildSpeechScript(stage, lessonTitle);
+  if (!text || text.length < 10) return;
+  if (TTS.apiKey) { const ok = await speakWithElevenLabs(text); if (ok) return; }
+  if (OAI.key)   { const ok = await speakWithOpenAI(text);      if (ok) return; }
+  speakWithWebSpeech(text);
+}
+
+// ── LANDING VOICE CARD ────────────────────────────────────────
+function switchVoiceTab(tab) {
+  ['el','oai'].forEach(k => {
+    const active = k === tab;
+    const t = document.getElementById('tab-' + k);
+    const p = document.getElementById('panel-' + k);
+    if (t) { t.style.background = active ? 'rgba(0,212,255,.15)' : 'rgba(255,255,255,.04)'; t.style.color = active ? '#00d4ff' : '#64748b'; t.style.borderColor = active ? 'rgba(0,212,255,.4)' : 'rgba(255,255,255,.1)'; }
+    if (p) p.style.display = active ? 'block' : 'none';
+  });
+}
+
+function quickSaveKey(provider) {
+  const statusEl = document.getElementById('voiceSetupStatus');
+  const setStatus = (msg, color) => { if (statusEl) { statusEl.textContent = msg; statusEl.style.color = color; } };
+  if (provider === 'el') {
+    const key = (document.getElementById('setupElKey')?.value || '').trim();
+    if (!key) { setStatus('⚠ Paste your API key first', '#fbbf24'); return; }
+    TTS.apiKey = key; localStorage.setItem('s2_el_key', key); TTS.cache.clear();
+    setStatus('✓ ElevenLabs connected — HD voice active!', '#34d399');
+  } else {
+    const key = (document.getElementById('setupOaiKey')?.value || '').trim();
+    if (!key) { setStatus('⚠ Paste your API key first', '#fbbf24'); return; }
+    OAI.key = key; localStorage.setItem('s2_oai_key', key); TTS.cache.clear();
+    setStatus('✓ OpenAI TTS connected — natural voice active!', '#34d399');
+  }
+  updateTTSBtn();
+  setTimeout(() => {
+    const card = document.getElementById('voiceSetupCard');
+    if (card) { card.style.background = 'rgba(52,211,153,.06)'; card.style.borderColor = 'rgba(52,211,153,.3)'; }
+  }, 1000);
+}
+
+async function previewVoice(provider) {
+  const sample = "Hi there! I'm your SkillOS coach. I'll guide you through every lesson with clear explanations and hands-on practice.";
+  const statusEl = document.getElementById('voiceSetupStatus');
+  const setStatus = (msg, color) => { if (statusEl) { statusEl.textContent = msg; statusEl.style.color = color; } };
+  if (provider === 'el') {
+    const key = (document.getElementById('setupElKey')?.value || TTS.apiKey || '').trim();
+    if (!key) { setStatus('⚠ Enter your key first', '#fbbf24'); return; }
+    const saved = TTS.apiKey; TTS.apiKey = key;
+    setStatus('⏳ Loading preview…', '#64748b');
+    const ok = await speakWithElevenLabs(sample);
+    if (ok) { localStorage.setItem('s2_el_key', key); setStatus('✓ Sounds good? Click Save to keep this voice', '#34d399'); }
+    else { TTS.apiKey = saved; setStatus('❌ Key error — double-check your ElevenLabs API key', '#f87171'); }
+  } else {
+    const key = (document.getElementById('setupOaiKey')?.value || OAI.key || '').trim();
+    if (!key) { setStatus('⚠ Enter your key first', '#fbbf24'); return; }
+    const saved = OAI.key; OAI.key = key;
+    setStatus('⏳ Loading preview…', '#64748b');
+    const ok = await speakWithOpenAI(sample);
+    if (ok) { localStorage.setItem('s2_oai_key', key); setStatus('✓ Sounds good? Click Save to keep this voice', '#34d399'); }
+    else { OAI.key = saved; setStatus('❌ Key error — check your OpenAI API key and billing', '#f87171'); }
+  }
+}
+
+function initLandingVoiceCard() {
+  const card = document.getElementById('voiceSetupCard');
+  if (!card) return;
+  if (TTS.apiKey || OAI.key) {
+    card.innerHTML = `
+      <div style="display:flex;align-items:center;gap:8px">
+        <span>🔊</span>
+        <div style="flex:1;font-size:11px;color:#34d399;font-weight:600">
+          ${TTS.apiKey ? 'ElevenLabs HD voice' : 'OpenAI TTS'} active</div>
+        <button onclick="document.getElementById('voiceSetupCard').style.display='none'"
+          style="background:none;border:none;color:#475569;cursor:pointer;font-size:14px">×</button>
+        <button onclick="showVoiceSettings()"
+          style="background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);border-radius:4px;
+                 padding:3px 8px;font-size:10px;color:#00d4ff;cursor:pointer;font-family:inherit">⚙ Change</button>
+      </div>`;
+    card.style.background = 'rgba(52,211,153,.06)';
+    card.style.borderColor = 'rgba(52,211,153,.3)';
+  }
+  card.style.display = 'block';
+  const oaiSelect = document.getElementById('oaiVoiceSelect');
+  if (oaiSelect) oaiSelect.value = OAI.voice;
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  updateTTSBtn();
+  const controls = document.getElementById('ttsControls');
+  if (TTS.enabled && controls) controls.classList.add('visible');
+  document.querySelectorAll('.tts-rate-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.rate) === TTS.rate);
+  });
+  initLandingVoiceCard();
+});
+
+
 </script>
 </body>
 </html>
