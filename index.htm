@@ -983,32 +983,6 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
         <div class="landing-right-sub">15 lessons · 4 modules · ~5 hours · Beginner → Expert</div>
         <div id="landingProgress" style="margin-top:10px"></div>
       </div>
-
-      <!-- VOICE CARD — browser built-in Web Speech -->
-      <div id="voiceSetupCard" style="display:none;background:linear-gradient(135deg,rgba(0,212,255,.05),rgba(59,130,246,.04));border:1px solid rgba(0,212,255,.2);border-radius:10px;padding:14px 16px;margin-bottom:4px">
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <span style="font-size:18px">🎙</span>
-          <div>
-            <div style="font-size:12px;font-weight:700;color:#e2e8f0">AI Coach Voice</div>
-            <div style="font-size:10px;color:#64748b">Built-in browser speech — no sign-up, no API key, free forever</div>
-          </div>
-          <button onclick="document.getElementById('voiceSetupCard').style.display='none'" style="margin-left:auto;background:none;border:none;color:#475569;cursor:pointer;font-size:14px;line-height:1">×</button>
-        </div>
-        <div style="margin-bottom:8px">
-          <div style="font-size:10px;color:#64748b;margin-bottom:5px">Choose a voice</div>
-          <select id="wsVoiceSelect" onchange="setWSVoice(this.value)"
-            style="width:100%;background:rgba(0,0,0,.4);border:1px solid rgba(0,212,255,.2);border-radius:6px;padding:7px 10px;color:#e2e8f0;font-size:12px;outline:none;cursor:pointer">
-            <option value="">⏳ Loading voices…</option>
-          </select>
-        </div>
-        <div style="display:flex;gap:6px;margin-bottom:8px">
-          <button onclick="previewWSVoice()" style="flex:1;padding:7px;background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.3);border-radius:6px;color:#00d4ff;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">▶ Preview voice</button>
-          <button onclick="document.getElementById('voiceSetupCard').style.display='none'" style="padding:7px 14px;background:rgba(52,211,153,.12);border:1px solid rgba(52,211,153,.3);border-radius:6px;color:#34d399;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">✓ Done</button>
-        </div>
-        <div id="voiceSetupStatus" style="font-size:10px;color:#64748b;min-height:14px"></div>
-      </div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-          <span style="font-size:18px">🎙</span>
       <div id="landingLessonList"><!-- rendered by JS --></div>
       <button class="landing-start-btn" id="landingStartBtn" onclick="startCourse()">Begin the Course →</button>
     </div>
@@ -1382,10 +1356,10 @@ table.ga-table tr.highlight-row td { background: #fff8e1; }
     <button class="tts-rate-btn" data-rate="1.1" onclick="setTTSRate(1.1)">1.1×</button>
     <button class="tts-rate-btn" data-rate="1.3" onclick="setTTSRate(1.3)">1.3×</button>
     <button onclick="replaySpeech()" style="margin-left:4px;background:none;border:none;cursor:pointer;font-size:13px;color:var(--teach-muted)" title="Replay">↺</button>
-    <button onclick="openVoiceCard()" title="Voice settings" style="
+    <button onclick="showVoiceSettings()" title="Voice settings — switch to ElevenLabs HD voice" style="
       margin-left:auto;background:rgba(0,212,255,.08);border:1px solid rgba(0,212,255,.2);
       border-radius:4px;padding:3px 7px;cursor:pointer;font-size:11px;color:#00d4ff;font-weight:600;
-      font-family:inherit">⚙ Voice</button>
+      font-family:inherit">⚙ HD Voice</button>
   </div>
 </div>
 
@@ -1536,251 +1510,6 @@ function getMIMSMastery() {
   const done  = S.completed.length;
   return Math.min(100, Math.round((done / total) * 100));
 }
-
-// ═══════════════════════════════════════════════════════════════
-// ═══════════════════════════════════════════════════════════════
-// VOICE ENGINE — Web Speech API (built-in browser, free, no key)
-// ═══════════════════════════════════════════════════════════════
-
-const TTS = {
-  enabled: localStorage.getItem('s2_tts') !== 'off',
-  rate:     parseFloat(localStorage.getItem('s2_rate') || '0.9'),
-  speaking: false,
-  cache:    new Map(),
-};
-
-// Web Speech voice selection
-let _wsVoice     = null;
-let _wsVoiceList = [];
-
-function loadWSVoices() {
-  const voices = window.speechSynthesis?.getVoices() || [];
-  if (!voices.length) return;
-  _wsVoiceList = voices.filter(v => v.lang.startsWith('en'));
-  if (!_wsVoiceList.length) _wsVoiceList = voices;
-
-  // Populate the dropdown if it exists
-  const sel = document.getElementById('wsVoiceSelect');
-  if (sel) {
-    const savedUri = localStorage.getItem('s2_ws_voice');
-    sel.innerHTML = _wsVoiceList.map(v =>
-      `<option value="${v.voiceURI}" ${v.voiceURI === savedUri ? 'selected' : ''}>${v.name} (${v.lang})</option>`
-    ).join('');
-    if (!savedUri) sel.selectedIndex = 0;
-  }
-
-  // Restore saved voice or pick best default
-  const savedUri = localStorage.getItem('s2_ws_voice');
-  if (savedUri) {
-    _wsVoice = _wsVoiceList.find(v => v.voiceURI === savedUri) || null;
-  }
-  if (!_wsVoice) {
-    // Prefer high-quality named voices
-    const preferred = [
-      'Samantha','Karen','Daniel','Moira',
-      'Google UK English Female','Google UK English Male',
-      'Microsoft Aria Online (Natural)','Microsoft Jenny Online (Natural)',
-      'Google US English'
-    ];
-    for (const name of preferred) {
-      const v = _wsVoiceList.find(v => v.name === name);
-      if (v) { _wsVoice = v; break; }
-    }
-    if (!_wsVoice) _wsVoice = _wsVoiceList[0] || null;
-  }
-}
-
-if (window.speechSynthesis) {
-  window.speechSynthesis.onvoiceschanged = loadWSVoices;
-  setTimeout(loadWSVoices, 200);
-}
-
-function setWSVoice(uri) {
-  const v = _wsVoiceList.find(v => v.voiceURI === uri);
-  if (v) { _wsVoice = v; localStorage.setItem('s2_ws_voice', uri); }
-}
-
-function previewWSVoice() {
-  const sel = document.getElementById('wsVoiceSelect');
-  if (sel && sel.value) setWSVoice(sel.value);
-  const st = document.getElementById('voiceSetupStatus');
-  if (st) { st.textContent = '▶ Playing preview…'; st.style.color = '#00d4ff'; }
-  speakWithWebSpeech("Hello! I'm your SkillOS coach. I'll guide you through every lesson with clear explanations.");
-  setTimeout(() => { if (st) { st.textContent = '✅ Voice active — click Done to continue'; st.style.color = '#34d399'; } }, 800);
-}
-
-function openVoiceCard() {
-  const card = document.getElementById('voiceSetupCard');
-  if (card) {
-    card.style.display = card.style.display === 'none' ? 'block' : 'none';
-    loadWSVoices(); // refresh dropdown
-  }
-}
-
-// ── SCRIPT BUILDER ────────────────────────────────────────────
-function buildSpeechScript(stage, lessonTitle) {
-  if (!stage) return '';
-  const clean = s => (s || '')
-    .replace(/<[^>]+>/g, ' ')
-    .replace(/[\u{1F300}-\u{1FAFF}]/gu, '')
-    .replace(/[›»•·→←↑↓⚡📊📌💡⚖↩↗🔄🚀🏁🎯🔍🔗]/g, '')
-    .replace(/&[a-z]+;/gi, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
-
-  switch (stage.type) {
-    case 'hook':
-      return `${lessonTitle}. ${clean(stage.scenario)} The problem: ${clean(stage.problem)} In this lesson you will learn: ${clean(stage.skill)}`;
-    case 'concept':
-      return `The concept for this lesson is: ${stage.wordA} ${stage.wordB}. ${clean(stage.summary)}`;
-    case 'explain':
-      return [clean(stage.headline), clean(stage.text), clean(stage.analogy),
-              `Examples: ${stage.examples.slice(0,3).map(clean).join('. ')}`].join('. ');
-    case 'terms':
-      return stage.terms.map(t => `${t.term}. ${clean(t.def)} For example: ${clean(t.ex)}`).join('. Next. ');
-    case 'locate':
-      return `${clean(stage.headline)}. ${stage.steps.map(clean).join('. ')}. Tip: ${clean(stage.tip)}`;
-    case 'practice':
-      return `Your task. ${clean(stage.task)}${stage.hint ? ' Hint: ' + clean(stage.hint) : ''}`;
-    case 'report':
-      return `Final project. Answer these questions using the dashboard. ${stage.questions.map(q => q.label).join('. ')}.`;
-    default: return '';
-  }
-}
-
-// ── WEB SPEECH ENGINE ─────────────────────────────────────────
-function speakWithWebSpeech(text) {
-  if (!window.speechSynthesis) return;
-  stopSpeaking(true);
-  if (!_wsVoice) loadWSVoices();
-
-  const sentences = text.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(s => s.length > 4);
-  TTS.speaking = true;
-  let idx = 0;
-  showWaveform(true);
-
-  function next() {
-    if (!TTS.enabled || !TTS.speaking || idx >= sentences.length) {
-      TTS.speaking = false; showWaveform(false); clearHighlights(); return;
-    }
-    const s = sentences[idx++];
-    highlightSentenceInCoach(s);
-    const utt = new SpeechSynthesisUtterance(s);
-    utt.rate   = TTS.rate * 0.88;
-    utt.pitch  = 0.9;
-    utt.volume = 1;
-    if (_wsVoice) utt.voice = _wsVoice;
-    utt.onend   = () => { clearHighlights(); next(); };
-    utt.onerror = () => { clearHighlights(); next(); };
-    window.speechSynthesis.speak(utt);
-  }
-  next();
-}
-
-// ── MAIN ENTRY ────────────────────────────────────────────────
-async function speakStage(stage, lessonTitle) {
-  if (!TTS.enabled) return;
-  stopSpeaking(true);
-  const text = buildSpeechScript(stage, lessonTitle);
-  if (!text || text.length < 8) return;
-  speakWithWebSpeech(text);
-}
-
-// ── STOP ──────────────────────────────────────────────────────
-function stopSpeaking(keepState) {
-  if (!keepState) TTS.speaking = false;
-  if (window.speechSynthesis) window.speechSynthesis.cancel();
-  if (!keepState) { showWaveform(false); clearHighlights(); }
-}
-
-// ── UI HELPERS ────────────────────────────────────────────────
-function showWaveform(active) {
-  const wf = document.getElementById('coachWaveform');
-  if (wf) wf.style.display = active ? 'flex' : 'none';
-}
-
-function highlightSentenceInCoach(sentence) {
-  const body = document.getElementById('coachBody');
-  if (!body || !sentence || sentence.length < 8) return;
-  clearHighlights();
-  const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
-  let node;
-  while ((node = walker.nextNode())) {
-    if (node.textContent.includes(sentence.substring(0, 18))) {
-      const p = node.parentElement;
-      if (p && !p.classList.contains('tts-highlight')) {
-        p.classList.add('tts-highlight');
-        p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-      break;
-    }
-  }
-}
-
-function clearHighlights() {
-  document.querySelectorAll('.tts-highlight').forEach(el => el.classList.remove('tts-highlight'));
-}
-
-function setVoiceStatus(msg, color) {
-  ['voiceSetupStatus','voiceStatusInline'].forEach(id => {
-    const el = document.getElementById(id);
-    if (el) { el.textContent = msg; el.style.color = color || '#94a3b8'; }
-  });
-}
-
-// ── TOGGLE / RATE / REPLAY ────────────────────────────────────
-function toggleTTS() {
-  TTS.enabled = !TTS.enabled;
-  localStorage.setItem('s2_tts', TTS.enabled ? 'on' : 'off');
-  updateTTSBtn();
-  const controls = document.getElementById('ttsControls');
-  if (TTS.enabled) {
-    if (controls) controls.classList.add('visible');
-    const lesson = LESSONS[S.currentLesson];
-    if (lesson) speakStage(lesson.stages[S.currentStage], lesson.title);
-  } else {
-    stopSpeaking();
-    if (controls) controls.classList.remove('visible');
-  }
-}
-
-function updateTTSBtn() {
-  const btn = document.getElementById('coachSpeakBtn');
-  if (!btn) return;
-  if (TTS.enabled) {
-    btn.textContent = '🔊';
-    btn.style.color = '#00d4ff';
-    btn.style.background = 'rgba(0,212,255,.12)';
-    btn.style.borderColor = 'rgba(0,212,255,.3)';
-  } else {
-    btn.textContent = '🔇';
-    btn.style.color = 'var(--teach-muted)';
-    btn.style.background = 'rgba(255,255,255,.04)';
-    btn.style.borderColor = 'rgba(255,255,255,.1)';
-  }
-}
-
-function setTTSRate(rate) {
-  TTS.rate = rate;
-  localStorage.setItem('s2_rate', rate);
-  document.querySelectorAll('.tts-rate-btn').forEach(b => {
-    b.classList.toggle('active', parseFloat(b.dataset.rate) === rate);
-  });
-}
-
-function replaySpeech() {
-  const lesson = LESSONS[S.currentLesson];
-  if (lesson && TTS.enabled) speakStage(lesson.stages[S.currentStage], lesson.title);
-}
-
-function initLandingVoiceCard() {
-  const card = document.getElementById('voiceSetupCard');
-  if (!card) return;
-  card.style.display = 'block';
-  // Load voices into dropdown (may need slight delay for browser to populate)
-  setTimeout(loadWSVoices, 300);
-}
-
 
 // ═══════════════════════════════════════════════════════════════
 // LESSON CURRICULUM
@@ -3727,8 +3456,6 @@ function renderLandingLessons() {
   });
 
   list.innerHTML = html;
-  // Refresh voice card state (key may have been saved since last render)
-  if (typeof initLandingVoiceCard === 'function') initLandingVoiceCard();
 
   // Update start button text based on progress
   const btn = document.getElementById('landingStartBtn');
@@ -3998,7 +3725,451 @@ document.addEventListener('keydown', function(e) {
   if (e.key === 'ArrowLeft') prevStage();
   if (e.key === 'Escape') hideTooltip(true);
 });
+// ═══════════════════════════════════════════════════════════════
+// TTS ENGINE v2 — ElevenLabs primary + Web Speech fallback
+// ElevenLabs: human-quality AI voice, free tier 10k chars/month
+// Fallback: improved Web Speech API (slower, lower pitch)
+// Audio responses cached in memory — no repeat API calls
+// ═══════════════════════════════════════════════════════════════
 
+const TTS = {
+  enabled:    localStorage.getItem('s2_tts') !== 'off',
+  apiKey:     localStorage.getItem('s2_el_key') || '',
+  voiceId:    localStorage.getItem('s2_el_voice') || '21m00Tcm4TlvDq8ikWAM', // Rachel — warm, clear
+  model:      'eleven_turbo_v2_5',   // fastest + natural, low latency
+  rate:       parseFloat(localStorage.getItem('s2_rate') || '0.9'),
+  speaking:   false,
+  audioEl:    null,   // active <audio> element
+  cache:      new Map(), // text → blob URL cache (clears on page reload)
+  wsVoice:    null,   // Web Speech fallback voice
+};
+
+// ── ELEVENLABS VOICES the user can choose from ────────────────
+const EL_VOICES = [
+  { id:'21m00Tcm4TlvDq8ikWAM', name:'Rachel',  desc:'Calm, warm — best for teaching' },
+  { id:'AZnzlk1XvdvUeBnXmlld', name:'Domi',    desc:'Confident, clear — professional' },
+  { id:'ErXwobaYiN019PkySvjV', name:'Antoni',  desc:'Well-rounded male — friendly' },
+  { id:'VR6AewLTigWG4xSOukaG', name:'Arnold',  desc:'Crisp, authoritative male' },
+  { id:'pNInz6obpgDQGcFmaJgB', name:'Adam',    desc:'Deep, confident male — premium' },
+  { id:'yoZ06aMxZJJ28mfd3POQ', name:'Sam',     desc:'Raspy, casual male' },
+];
+
+// ── WEB SPEECH FALLBACK: pick best voice ─────────────────────
+function initWSVoice() {
+  if (TTS.wsVoice) return;
+  const voices = window.speechSynthesis?.getVoices() || [];
+  // Priority: most natural-sounding voices on each platform
+  const order = [
+    'Samantha','Karen','Daniel','Moira',        // macOS/iOS — best quality
+    'Google UK English Female',                  // Chrome — very natural
+    'Microsoft Aria Online (Natural)',           // Edge — best
+    'Microsoft Jenny Online (Natural)',
+    'Google US English',
+  ];
+  for (const name of order) {
+    const v = voices.find(v => v.name === name);
+    if (v) { TTS.wsVoice = v; return; }
+  }
+  TTS.wsVoice = voices.find(v => v.lang.startsWith('en-')) || voices[0] || null;
+}
+if (window.speechSynthesis) {
+  window.speechSynthesis.onvoiceschanged = initWSVoice;
+  setTimeout(initWSVoice, 200);
+}
+
+// ── SCRIPT BUILDER — stage data → clean spoken text ──────────
+function buildSpeechScript(stage, lessonTitle) {
+  if (!stage) return '';
+  // Strip HTML tags, emojis, bullet chars
+  const clean = s => (s||'')
+    .replace(/<[^>]+>/g, ' ')
+    .replace(/[\u{1F300}-\u{1FAFF}|\u{2600}-\u{27BF}]/gu, '')
+    .replace(/[›»•·→←↑↓⚡📊📌💡⚖↩↗🔄🚀🏁🎯🔍🔗]/g, '')
+    .replace(/&[a-z]+;/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  switch (stage.type) {
+    case 'hook':
+      return [
+        `Lesson: ${lessonTitle}.`,
+        clean(stage.scenario),
+        `The problem. ${clean(stage.problem)}`,
+        `In this lesson you will learn: ${clean(stage.skill)}`,
+      ].join(' ');
+
+    case 'concept':
+      return `The concept for this lesson is: ${stage.wordA} ${stage.wordB}. ${clean(stage.summary)}`;
+
+    case 'explain':
+      return [
+        clean(stage.headline) + '.',
+        clean(stage.text),
+        clean(stage.analogy),
+        `Some examples: ${stage.examples.slice(0,3).map(clean).join('. ')}`,
+      ].join(' ');
+
+    case 'terms':
+      return stage.terms.map(t =>
+        `${t.term}. ${clean(t.def)} Example: ${clean(t.ex)}`
+      ).join('. Next term. ');
+
+    case 'locate':
+      return [
+        clean(stage.headline) + '.',
+        `Follow these steps. ${stage.steps.map(clean).join('. ')}`,
+        `Tip: ${clean(stage.tip)}`,
+      ].join(' ');
+
+    case 'practice':
+      return `Your task. ${clean(stage.task)}${stage.hint ? ' If you need help: ' + clean(stage.hint) : ''}`;
+
+    case 'report':
+      return `Final project. Explore the dashboard and answer these five questions. ${stage.questions.map(q=>q.label).join('. ')}.`;
+
+    default: return '';
+  }
+}
+
+// ── ELEVENLABS: fetch audio, return blob URL (cached) ────────
+async function fetchElevenLabsAudio(text) {
+  if (!TTS.apiKey) return null;
+  const cacheKey = TTS.voiceId + '|' + text.substring(0, 80);
+  if (TTS.cache.has(cacheKey)) return TTS.cache.get(cacheKey);
+
+  try {
+    const res = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${TTS.voiceId}/stream`, {
+      method: 'POST',
+      headers: {
+        'xi-api-key':   TTS.apiKey,
+        'Content-Type': 'application/json',
+        'Accept':       'audio/mpeg',
+      },
+      body: JSON.stringify({
+        text,
+        model_id: TTS.model,
+        voice_settings: {
+          stability:        0.45,   // slight variation = more natural
+          similarity_boost: 0.82,   // close to voice character
+          style:            0.30,   // some expressiveness
+          use_speaker_boost: true,
+        },
+      }),
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      console.warn('ElevenLabs error:', res.status, err);
+      return null;
+    }
+
+    const blob    = await res.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    TTS.cache.set(cacheKey, blobUrl);
+    return blobUrl;
+  } catch (e) {
+    console.warn('ElevenLabs fetch failed:', e.message);
+    return null;
+  }
+}
+
+// ── SPEAK via ElevenLabs (plays full audio) ───────────────────
+async function speakWithElevenLabs(text) {
+  showWaveform(true);
+  const url = await fetchElevenLabsAudio(text);
+  if (!url) return false; // signal fallback needed
+
+  stopSpeaking(true); // stop any current audio but keep state
+
+  const audio = new Audio(url);
+  TTS.audioEl = audio;
+  TTS.speaking = true;
+
+  audio.playbackRate = TTS.rate;
+
+  audio.onended   = () => { TTS.speaking = false; showWaveform(false); clearHighlights(); };
+  audio.onerror   = () => { TTS.speaking = false; showWaveform(false); clearHighlights(); };
+  audio.onplay    = () => showWaveform(true);
+
+  try {
+    await audio.play();
+    return true;
+  } catch(e) {
+    console.warn('Audio play failed:', e);
+    return false;
+  }
+}
+
+// ── SPEAK via improved Web Speech fallback ────────────────────
+function speakWithWebSpeech(text) {
+  if (!window.speechSynthesis) return;
+  stopSpeaking(true);
+  initWSVoice();
+
+  // Split into sentences for sequential speaking + highlighting
+  const sentences = text
+    .split(/(?<=[.!?])\s+/)
+    .map(s => s.trim())
+    .filter(s => s.length > 4);
+
+  TTS.speaking = true;
+  let idx = 0;
+  showWaveform(true);
+
+  function next() {
+    if (!TTS.enabled || !TTS.speaking || idx >= sentences.length) {
+      TTS.speaking = false;
+      showWaveform(false);
+      clearHighlights();
+      return;
+    }
+    const s = sentences[idx++];
+    highlightSentenceInCoach(s);
+
+    const utt = new SpeechSynthesisUtterance(s);
+    utt.rate   = TTS.rate * 0.88;  // slower than user setting for clearer speech
+    utt.pitch  = 0.88;             // lower pitch = less robotic
+    utt.volume = 1;
+    if (TTS.wsVoice) utt.voice = TTS.wsVoice;
+    utt.onend   = () => { clearHighlights(); next(); };
+    utt.onerror = () => { clearHighlights(); next(); };
+    window.speechSynthesis.speak(utt);
+  }
+  next();
+}
+
+// ── MAIN ENTRY POINT: speak a stage ───────────────────────────
+async function speakStage(stage, lessonTitle) {
+  if (!TTS.enabled) return;
+  stopSpeaking(true);
+
+  const text = buildSpeechScript(stage, lessonTitle);
+  if (!text || text.length < 10) return;
+
+  // Try ElevenLabs first, fall back to Web Speech
+  if (TTS.apiKey) {
+    const ok = await speakWithElevenLabs(text);
+    if (!ok) speakWithWebSpeech(text); // fallback on error
+  } else {
+    speakWithWebSpeech(text);
+  }
+}
+
+// ── STOP all audio ────────────────────────────────────────────
+function stopSpeaking(keepState) {
+  if (!keepState) TTS.speaking = false;
+  if (TTS.audioEl) {
+    TTS.audioEl.pause();
+    TTS.audioEl.src = '';
+    TTS.audioEl = null;
+  }
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  if (!keepState) {
+    showWaveform(false);
+    clearHighlights();
+  }
+}
+
+// ── UI HELPERS ────────────────────────────────────────────────
+function showWaveform(active) {
+  const wf = document.getElementById('coachWaveform');
+  if (wf) wf.style.display = active ? 'flex' : 'none';
+}
+
+function highlightSentenceInCoach(sentence) {
+  const body = document.getElementById('coachBody');
+  if (!body || !sentence || sentence.length < 8) return;
+  clearHighlights();
+  const fragment = sentence.substring(0, 22).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT);
+  let node;
+  while ((node = walker.nextNode())) {
+    if (node.textContent.includes(sentence.substring(0, 18))) {
+      const p = node.parentElement;
+      if (p && !p.classList.contains('tts-highlight')) {
+        p.classList.add('tts-highlight');
+        p.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+      break;
+    }
+  }
+}
+
+function clearHighlights() {
+  document.querySelectorAll('.tts-highlight').forEach(el => el.classList.remove('tts-highlight'));
+}
+
+// ── TOGGLE VOICE ON / OFF ─────────────────────────────────────
+function toggleTTS() {
+  TTS.enabled = !TTS.enabled;
+  localStorage.setItem('s2_tts', TTS.enabled ? 'on' : 'off');
+  updateTTSBtn();
+  const controls = document.getElementById('ttsControls');
+  if (TTS.enabled) {
+    if (controls) controls.classList.add('visible');
+    const lesson = LESSONS[S.currentLesson];
+    if (lesson) speakStage(lesson.stages[S.currentStage], lesson.title);
+  } else {
+    stopSpeaking();
+    if (controls) controls.classList.remove('visible');
+  }
+}
+
+function updateTTSBtn() {
+  const btn = document.getElementById('coachSpeakBtn');
+  if (!btn) return;
+  if (TTS.enabled) {
+    btn.textContent = TTS.apiKey ? '🔊' : '🔈';
+    btn.title = TTS.apiKey ? 'Voice on (ElevenLabs)' : 'Voice on (browser — click ⚙ for HD voice)';
+    btn.style.cssText += 'color:#00d4ff;background:rgba(0,212,255,.12);border-color:rgba(0,212,255,.3)';
+  } else {
+    btn.textContent = '🔇';
+    btn.title = 'Voice off';
+    btn.style.cssText += 'color:var(--teach-muted);background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.1)';
+  }
+}
+
+// ── SPEED CONTROL ─────────────────────────────────────────────
+function setTTSRate(rate) {
+  TTS.rate = rate;
+  localStorage.setItem('s2_rate', rate);
+  if (TTS.audioEl) TTS.audioEl.playbackRate = rate;
+  document.querySelectorAll('.tts-rate-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.rate) === rate);
+  });
+}
+
+function replaySpeech() {
+  const lesson = LESSONS[S.currentLesson];
+  if (lesson && TTS.enabled) speakStage(lesson.stages[S.currentStage], lesson.title);
+}
+
+// ── API KEY SETTINGS PANEL ────────────────────────────────────
+function showVoiceSettings() {
+  const existing = document.getElementById('voiceSettingsPanel');
+  if (existing) { existing.remove(); return; }
+
+  const panel = document.createElement('div');
+  panel.id = 'voiceSettingsPanel';
+  panel.style.cssText = `
+    position:fixed; right:16px; bottom:80px; z-index:20001;
+    width:340px;
+    background:rgba(15,15,28,0.96); backdrop-filter:blur(24px);
+    border:1px solid rgba(0,212,255,.3); border-radius:12px;
+    padding:20px; box-shadow:0 8px 40px rgba(0,0,0,.6);
+    font-family:'DM Sans','Plus Jakarta Sans',sans-serif;
+  `;
+
+  const currentVoice = EL_VOICES.find(v => v.id === TTS.voiceId) || EL_VOICES[0];
+
+  panel.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:700;color:#00d4ff;letter-spacing:.05em">🎙 VOICE SETTINGS</div>
+      <button onclick="document.getElementById('voiceSettingsPanel').remove()"
+        style="background:none;border:none;color:#94a3b8;cursor:pointer;font-size:16px;line-height:1">×</button>
+    </div>
+
+    <!-- ElevenLabs Key -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">
+        ElevenLabs API Key <span style="color:#34d399;font-size:10px">(Free tier: 10,000 chars/month)</span>
+      </div>
+      <div style="display:flex;gap:6px">
+        <input id="elKeyInput" type="password" value="${TTS.apiKey}"
+          placeholder="xi-...  paste your key here"
+          style="flex:1;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:6px;
+                 padding:8px 10px;color:#e2e8f0;font-size:12px;font-family:monospace;outline:none"
+          onfocus="this.style.borderColor='rgba(0,212,255,.5)'"
+          onblur="this.style.borderColor='rgba(255,255,255,.1)'"
+        />
+        <button onclick="saveELKey()" style="
+          padding:8px 14px;background:#1a73e8;color:white;border:none;border-radius:6px;
+          font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap">Save</button>
+      </div>
+      <div style="font-size:11px;color:#64748b;margin-top:5px">
+        Get free key at <a href="https://elevenlabs.io" target="_blank" style="color:#00d4ff">elevenlabs.io</a> → My Account → API Keys
+      </div>
+      <div id="elKeyStatus" style="font-size:11px;margin-top:4px;color:${TTS.apiKey?'#34d399':'#94a3b8'}">
+        ${TTS.apiKey ? '✓ Key saved — using ElevenLabs HD voice' : '○ No key — using browser voice (lower quality)'}
+      </div>
+    </div>
+
+    <!-- Voice selector -->
+    <div style="margin-bottom:14px">
+      <div style="font-size:11px;color:#94a3b8;margin-bottom:6px;text-transform:uppercase;letter-spacing:.08em">Voice Character</div>
+      <div style="display:flex;flex-direction:column;gap:5px">
+        ${EL_VOICES.map(v => `
+          <label style="display:flex;align-items:center;gap:8px;padding:7px 10px;
+            background:${v.id===TTS.voiceId?'rgba(0,212,255,.1)':'rgba(255,255,255,.03)'};
+            border:1px solid ${v.id===TTS.voiceId?'rgba(0,212,255,.4)':'rgba(255,255,255,.08)'};
+            border-radius:6px;cursor:pointer;transition:all .15s"
+            onmouseenter="this.style.background='rgba(0,212,255,.06)'"
+            onmouseleave="this.style.background='${v.id===TTS.voiceId?'rgba(0,212,255,.1)':'rgba(255,255,255,.03)'}'"
+          >
+            <input type="radio" name="elVoice" value="${v.id}" ${v.id===TTS.voiceId?'checked':''}
+              onchange="setELVoice('${v.id}')" style="accent-color:#00d4ff"/>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#e2e8f0">${v.name}</div>
+              <div style="font-size:10px;color:#64748b">${v.desc}</div>
+            </div>
+          </label>`).join('')}
+      </div>
+    </div>
+
+    <!-- Test button -->
+    <button onclick="testVoice()" style="
+      width:100%;padding:9px;background:rgba(0,212,255,.1);
+      border:1px solid rgba(0,212,255,.35);border-radius:6px;
+      color:#00d4ff;font-size:12px;font-weight:600;cursor:pointer;
+      font-family:inherit;transition:all .15s"
+      onmouseenter="this.style.background='rgba(0,212,255,.2)'"
+      onmouseleave="this.style.background='rgba(0,212,255,.1)'"
+    >▶ Preview this voice</button>
+  `;
+
+  document.body.appendChild(panel);
+}
+
+function saveELKey() {
+  const key = document.getElementById('elKeyInput')?.value.trim() || '';
+  TTS.apiKey = key;
+  localStorage.setItem('s2_el_key', key);
+  TTS.cache.clear(); // clear cache — new key may access different voices
+  const status = document.getElementById('elKeyStatus');
+  if (status) {
+    status.style.color = key ? '#34d399' : '#94a3b8';
+    status.textContent = key
+      ? '✓ Key saved — using ElevenLabs HD voice'
+      : '○ No key — using browser voice (lower quality)';
+  }
+  updateTTSBtn();
+}
+
+function setELVoice(id) {
+  TTS.voiceId = id;
+  localStorage.setItem('s2_el_voice', id);
+  TTS.cache.clear(); // clear cache so next play uses new voice
+}
+
+async function testVoice() {
+  const testText = "Hello! I'm your SkillOS coach. I'll be guiding you through every lesson. Let's get started.";
+  if (TTS.apiKey) {
+    const ok = await speakWithElevenLabs(testText);
+    if (!ok) speakWithWebSpeech(testText);
+  } else {
+    speakWithWebSpeech(testText);
+  }
+}
+
+// ── INIT ──────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  updateTTSBtn();
+  const controls = document.getElementById('ttsControls');
+  if (TTS.enabled && controls) controls.classList.add('visible');
+  document.querySelectorAll('.tts-rate-btn').forEach(b => {
+    b.classList.toggle('active', parseFloat(b.dataset.rate) === TTS.rate);
+  });
+});
 
 </script>
 </body>
