@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-<title>SkillOS — GA4 Masterclass: TechMart Case</title>
+<title>SkillOS — GA4 TechMart Masterclass</title>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -12,6 +12,7 @@
    GA4 DESIGN TOKENS
 ═══════════════════════════════════════ */
 :root {
+  /* GA4 exact colors */
   --ga-bg:         #f1f3f4;
   --ga-surface:    #ffffff;
   --ga-sidebar-bg: #ffffff;
@@ -25,9 +26,14 @@
   --ga-green:      #1e8e3e;
   --ga-red:        #d93025;
   --ga-orange:     #f29900;
+  --ga-teal:       #129eaf;
+  --ga-purple:     #7627bb;
   --ga-hover:      #f8f9fa;
   --ga-selected:   #e8f0fe;
   --ga-chart-1:    #4285f4;
+  --ga-chart-2:    #34a853;
+  --ga-chart-3:    #fbbc04;
+  --ga-chart-4:    #ea4335;
 
   /* Teaching layer */
   --teach-bg:      #1e1e2e;
@@ -40,6 +46,7 @@
   --teach-text:    #e2e8f0;
   --teach-muted:   #94a3b8;
 
+  /* Layout */
   --sidebar-w: 256px;
   --header-h:  64px;
   --subnav-h:  48px;
@@ -60,128 +67,377 @@
 /* ═══════════════════════════════════════
    RESET
 ═══════════════════════════════════════ */
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--ga-bg);color:var(--ga-text);font-size:14px;line-height:1.5;overflow:hidden;height:100vh}
-button{cursor:pointer;border:none;background:none;font-family:inherit}
-svg{display:block}
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+body {
+  background: var(--ga-bg);
+  color: var(--ga-text);
+  font-size: 14px;
+  line-height: 1.5;
+  overflow: hidden;
+  height: 100vh;
+}
+button {
+  cursor: pointer;
+  border: none;
+  background: none;
+  font-family: inherit;
+}
+svg {
+  display: block;
+}
 
 /* ═══════════════════════════════════════
    GA4 SHELL LAYOUT
 ═══════════════════════════════════════ */
-#ga-shell { display:grid; grid-template-columns: var(--sidebar-w) 1fr; grid-template-rows: var(--header-h) 1fr; height:100vh; width:100vw; }
+#ga-shell {
+  display: grid;
+  grid-template-columns: var(--sidebar-w) 1fr;
+  grid-template-rows: var(--header-h) 1fr;
+  height: 100vh;
+  width: 100vw;
+}
 
-/* ─── TOP HEADER ─────────────────────────────── */
-#ga-header { grid-column: 1 / -1; background: var(--ga-surface); border-bottom: 1px solid var(--ga-border); display: flex; align-items: center; padding: 0 16px 0 0; gap: 8px; z-index: 100; position: relative; }
-.ga-logo-area { width: var(--sidebar-w); display: flex; align-items: center; padding: 0 16px; gap: 10px; flex-shrink: 0; }
-.ga-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc04 75%, #ea4335 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; }
-.ga-logo-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 400; color: var(--ga-text-2); white-space: nowrap; }
+/* TOP HEADER */
+#ga-header {
+  grid-column: 1 / -1;
+  background: var(--ga-surface);
+  border-bottom: 1px solid var(--ga-border);
+  display: flex;
+  align-items: center;
+  padding: 0 16px 0 0;
+  gap: 8px;
+  z-index: 100;
+  position: relative;
+}
+.ga-logo-area {
+  width: var(--sidebar-w);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 10px;
+  flex-shrink: 0;
+}
+.ga-logo-icon {
+  width: 32px; height: 32px;
+  background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc04 75%, #ea4335 100%);
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; font-weight: 700; color: white;
+}
+.ga-logo-text {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 16px; font-weight: 400; color: var(--ga-text-2);
+  white-space: nowrap;
+}
 .ga-logo-text strong { color: var(--ga-text); font-weight: 500; }
-.ga-search-bar { flex: 1; max-width: 600px; background: var(--ga-hover); border: 1px solid var(--ga-border); border-radius: 24px; display: flex; align-items: center; padding: 0 16px; gap: 8px; height: 40px; }
-.ga-search-bar input { border: none; background: transparent; font-size: 14px; color: var(--ga-text); flex: 1; outline: none; }
-.ga-header-spacer { flex: 1; }
-.ga-property-chip { display: flex; align-items: center; gap: 6px; background: var(--ga-hover); border: 1px solid var(--ga-border); border-radius: 20px; padding: 6px 12px; font-size: 13px; color: var(--ga-text); white-space: nowrap; }
-.ga-property-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ga-blue); }
-.ga-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #1a73e8, #34a853); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white; }
 
-/* ─── LEFT SIDEBAR ───────────────────────────── */
-#ga-sidebar { background: var(--ga-sidebar-bg); border-right: 1px solid var(--ga-border); overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
+.ga-search-bar {
+  flex: 1; max-width: 600px;
+  background: var(--ga-hover);
+  border: 1px solid var(--ga-border);
+  border-radius: 24px;
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 8px; height: 40px;
+}
+.ga-search-bar input {
+  border: none; background: transparent; font-size: 14px; color: var(--ga-text);
+  flex: 1; outline: none; font-family: inherit;
+}
+.ga-header-spacer { flex: 1; }
+.ga-header-actions { display: flex; align-items: center; gap: 4px; }
+.ga-avatar {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: linear-gradient(135deg, #1a73e8, #34a853);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Plus Jakarta Sans', sans-serif; font-size: 12px; font-weight: 500; color: white;
+}
+
+/* Property chip */
+.ga-property-chip {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--ga-hover); border: 1px solid var(--ga-border);
+  border-radius: 20px; padding: 6px 12px; cursor: pointer;
+  font-size: 13px; color: var(--ga-text); white-space: nowrap;
+}
+.ga-property-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ga-blue); }
+
+/* LEFT SIDEBAR */
+#ga-sidebar {
+  background: var(--ga-sidebar-bg);
+  border-right: 1px solid var(--ga-border);
+  overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
+}
 .sidebar-section { padding: 8px 0; }
 .sidebar-section + .sidebar-section { border-top: 1px solid var(--ga-border); }
-.sidebar-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; border-radius: 0 20px 20px 0; margin-right: 8px; font-size: 13px; color: var(--ga-text-2); font-weight: 400; transition: background .15s, color .15s; }
+
+.sidebar-item {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 16px; cursor: pointer;
+  border-radius: 0 20px 20px 0;
+  margin-right: 8px;
+  font-size: 13px; color: var(--ga-text-2); font-weight: 400;
+  transition: background .15s, color .15s;
+}
 .sidebar-item:hover { background: var(--ga-hover); color: var(--ga-text); }
 .sidebar-item.active { background: var(--ga-blue-light); color: var(--ga-blue); font-weight: 500; }
 .sidebar-item .si-icon { width: 18px; height: 18px; flex-shrink: 0; }
-.sidebar-sub { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
-.sidebar-sub.open { max-height: 600px; }
-.sidebar-subitem { display: flex; align-items: center; gap: 8px; padding: 8px 16px 8px 46px; cursor: pointer; font-size: 13px; color: var(--ga-text-2); border-radius: 0 20px 20px 0; margin-right: 8px; transition: background .15s, color .15s; }
+
+.sidebar-subitem {
+  display: flex; align-items: center; gap: 8px;
+  padding: 8px 16px 8px 46px;
+  cursor: pointer; font-size: 13px; color: var(--ga-text-2);
+  border-radius: 0 20px 20px 0; margin-right: 8px;
+  transition: background .15s, color .15s;
+}
 .sidebar-subitem:hover { background: var(--ga-hover); color: var(--ga-text); }
 .sidebar-subitem.active { background: var(--ga-blue-light); color: var(--ga-blue); font-weight: 500; }
 .sidebar-spacer { flex: 1; }
 
-/* ─── MAIN CONTENT ────────────────────────────── */
-#ga-main { overflow-y: auto; overflow-x: hidden; background: var(--ga-bg); display: flex; flex-direction: column; position: relative; }
-#ga-subnav { background: var(--ga-surface); border-bottom: 1px solid var(--ga-border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; min-height: var(--subnav-h); flex-shrink: 0; position: sticky; top: 0; z-index: 50; }
-.ga-breadcrumb { font-size: 13px; color: var(--ga-text-2); }
+/* MAIN CONTENT */
+#ga-main {
+  overflow-y: auto; overflow-x: hidden;
+  background: var(--ga-bg);
+  display: flex; flex-direction: column;
+}
+
+#ga-subnav {
+  background: var(--ga-surface);
+  border-bottom: 1px solid var(--ga-border);
+  padding: 0 24px;
+  display: flex; align-items: center; justify-content: space-between;
+  min-height: var(--subnav-h); flex-shrink: 0;
+  position: sticky; top: 0; z-index: 50;
+}
+.ga-breadcrumb {
+  display: flex; align-items: center; gap: 4px;
+  font-size: 13px; color: var(--ga-text-2);
+}
 .ga-breadcrumb .current { color: var(--ga-text); font-weight: 500; }
 
-.ga-report-view { display: none; padding: 24px; flex-direction: column; gap: 16px; }
+.ga-report-view {
+  display: none; padding: 24px; flex-direction: column; gap: 16px;
+}
 .ga-report-view.active { display: flex; }
-.ga-report-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 400; color: var(--ga-text); margin-bottom: 4px; }
+
+.ga-report-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 22px; font-weight: 400; color: var(--ga-text);
+  margin-bottom: 4px;
+}
 .ga-report-subtitle { font-size: 13px; color: var(--ga-text-2); }
 
-/* Common UI Elements */
-.ga-card { background: var(--ga-surface); border: 1px solid var(--ga-border); border-radius: var(--radius); padding: 16px; }
-.ga-metric-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--ga-border); border: 1px solid var(--ga-border); border-radius: var(--radius); overflow: hidden; }
-.ga-metric-card { background: var(--ga-surface); padding: 20px 16px; position: relative; }
-.ga-metric-label { font-size: 11px; font-weight: 500; color: var(--ga-text-2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
-.ga-metric-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 400; color: var(--ga-text); line-height: 1; margin-bottom: 6px; }
-.ga-chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+/* Common UI Components */
+.ga-card {
+  background: var(--ga-surface);
+  border: 1px solid var(--ga-border);
+  border-radius: var(--radius); padding: 16px;
+}
+.ga-metric-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 1px; background: var(--ga-border);
+  border: 1px solid var(--ga-border); border-radius: var(--radius);
+  overflow: hidden; background-clip: padding-box;
+}
+.ga-metric-card {
+  background: var(--ga-surface);
+  padding: 20px 16px; position: relative;
+}
+.ga-metric-label {
+  font-size: 11px; font-weight: 500; color: var(--ga-text-2);
+  text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px;
+}
+.ga-metric-value {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 28px; font-weight: 400; color: var(--ga-text);
+  line-height: 1; margin-bottom: 6px;
+}
+.ga-chart-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 16px;
+}
 .ga-chart-title { font-size: 13px; font-weight: 500; color: var(--ga-text); }
 .ga-linechart-wrap { width: 100%; overflow: hidden; position: relative; }
-.ga-btn-primary { background: var(--ga-blue); color: white; padding: 8px 16px; border-radius: 4px; font-weight: 500; border: none; font-size: 13px; cursor: pointer; transition: background .15s; }
-.ga-btn-primary:hover { background: var(--ga-blue-dark); }
-.ga-btn-secondary { background: white; color: var(--ga-text); padding: 8px 16px; border-radius: 4px; font-weight: 500; border: 1px solid var(--ga-border); font-size: 13px; cursor: pointer; }
 
-/* Tables */
-.ga-table-card { background: var(--ga-surface); border: 1px solid var(--ga-border); border-radius: var(--radius); overflow: hidden; }
+.ga-table-card {
+  background: var(--ga-surface);
+  border: 1px solid var(--ga-border);
+  border-radius: var(--radius); overflow: hidden;
+}
 table.ga-table { width: 100%; border-collapse: collapse; }
-table.ga-table th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 500; color: var(--ga-text-2); text-transform: uppercase; border-bottom: 2px solid var(--ga-border); background: var(--ga-hover); }
-table.ga-table td { padding: 10px 16px; font-size: 13px; color: var(--ga-text); border-bottom: 1px solid var(--ga-border); }
-table.ga-table tr:hover td { background: var(--ga-hover); }
+table.ga-table th {
+  padding: 10px 16px; text-align: left;
+  font-size: 11px; font-weight: 500; color: var(--ga-text-2);
+  text-transform: uppercase; border-bottom: 2px solid var(--ga-border);
+  background: var(--ga-hover);
+}
+table.ga-table td {
+  padding: 10px 16px;
+  font-size: 13px; color: var(--ga-text);
+  border-bottom: 1px solid var(--ga-border);
+}
 
-/* Custom Toggle */
-.ga-toggle { width: 36px; height: 20px; border-radius: 10px; background: var(--ga-border); position: relative; cursor: pointer; transition: background 0.3s; }
-.ga-toggle::after { content: ''; width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.ga-btn-primary {
+  background: var(--ga-blue); color: white;
+  padding: 8px 16px; border-radius: 4px; font-weight: 500;
+  border: none; font-size: 13px; cursor: pointer; transition: background .15s;
+}
+.ga-btn-primary:hover { background: var(--ga-blue-dark); }
+.ga-btn-secondary {
+  background: white; color: var(--ga-text);
+  padding: 8px 16px; border-radius: 4px; font-weight: 500;
+  border: 1px solid var(--ga-border); font-size: 13px; cursor: pointer;
+}
+
+/* Custom UI Toggles */
+.ga-toggle {
+  width: 36px; height: 20px; border-radius: 10px;
+  background: var(--ga-border); position: relative;
+  cursor: pointer; transition: background 0.3s;
+}
+.ga-toggle::after {
+  content: ''; width: 16px; height: 16px;
+  background: white; border-radius: 50%;
+  position: absolute; top: 2px; left: 2px;
+  transition: left 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
 .ga-toggle.on { background: var(--ga-blue); }
 .ga-toggle.on::after { left: 18px; }
 
 /* ═══════════════════════════════════════
-   TEACHING LAYER (V6 Architecture)
+   TEACHING LAYER (V6 Fully Restored)
 ═══════════════════════════════════════ */
-/* 4-Panel Spotlight Masking */
-.sp-panel { position: fixed; background: rgba(0,0,0,.55); pointer-events: none; z-index: var(--spot-z); display: none; transition: all 0.2s; }
 
-.spotlight-ring { position: fixed; border: 2px solid var(--ga-blue); border-radius: var(--radius-sm); pointer-events: none; z-index: calc(var(--spot-z) + 1); box-shadow: 0 0 0 4px rgba(26,115,232,.2), 0 0 20px rgba(26,115,232,.3); transition: all .3s cubic-bezier(.4,0,.2,1); animation: ring-pulse 2s ease-in-out infinite; }
-@keyframes ring-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(26,115,232,.2), 0 0 20px rgba(26,115,232,.3); } 50% { box-shadow: 0 0 0 8px rgba(26,115,232,.1), 0 0 30px rgba(26,115,232,.4); } }
-.spotlight-ring.click-target { border-color: #34a853; animation: click-pulse 1.2s ease-in-out infinite; }
-@keyframes click-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(52,168,83,.2), 0 0 20px rgba(52,168,83,.3); transform: scale(1); } 50% { box-shadow: 0 0 0 10px rgba(52,168,83,.1), 0 0 30px rgba(52,168,83,.4); transform: scale(1.01); } }
+/* Spotlight mask panels (Absolute 4-panel approach) */
+.sp-panel {
+  position: fixed;
+  background: rgba(0,0,0,.55);
+  pointer-events: none;
+  z-index: var(--spot-z);
+  display: none;
+}
+
+/* Spotlight Ring */
+.spotlight-ring {
+  position: fixed;
+  border: 2px solid var(--ga-blue);
+  border-radius: var(--radius-sm);
+  pointer-events: none;
+  z-index: calc(var(--spot-z) + 1);
+  box-shadow: 0 0 0 4px rgba(26,115,232,.2), 0 0 20px rgba(26,115,232,.3);
+  transition: all .3s cubic-bezier(.4,0,.2,1);
+  animation: ring-pulse 2s ease-in-out infinite;
+}
+@keyframes ring-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(26,115,232,.2), 0 0 20px rgba(26,115,232,.3); }
+  50% { box-shadow: 0 0 0 8px rgba(26,115,232,.1), 0 0 30px rgba(26,115,232,.4); }
+}
+.spotlight-ring.click-target {
+  border-color: #34a853;
+  animation: click-pulse 1.2s ease-in-out infinite;
+}
+@keyframes click-pulse {
+  0%, 100% { box-shadow: 0 0 0 4px rgba(52,168,83,.2), 0 0 20px rgba(52,168,83,.3); transform: scale(1); }
+  50% { box-shadow: 0 0 0 10px rgba(52,168,83,.1), 0 0 30px rgba(52,168,83,.4); transform: scale(1.01); }
+}
 
 /* Coach Bubble */
-#coach-bubble { position: fixed; z-index: var(--coach-z); width: 360px; background: rgba(15, 15, 28, 0.62); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); box-shadow: 0 8px 40px rgba(0,0,0,.45); overflow: hidden; transition: opacity .3s, transform .3s cubic-bezier(.4,0,.2,1); transform-origin: center top; user-select: none; }
+#coach-bubble {
+  position: fixed;
+  z-index: var(--coach-z);
+  width: 360px;
+  background: rgba(15, 15, 28, 0.62);
+  backdrop-filter: blur(24px) saturate(180%);
+  -webkit-backdrop-filter: blur(24px) saturate(180%);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 8px 40px rgba(0,0,0,.45);
+  overflow: hidden;
+  transition: opacity .3s, transform .3s cubic-bezier(.4,0,.2,1);
+  transform-origin: center top;
+  user-select: none;
+}
 #coach-bubble.hidden { opacity: 0; transform: scale(.95) translateY(-8px); pointer-events: none; }
 #coach-bubble.dragging { transition: none; opacity: 0.95; }
-.coach-header { background: linear-gradient(135deg, rgba(20,20,40,0.9), rgba(18,24,52,0.9)); padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: grab; position: relative; }
+
+.coach-header {
+  background: linear-gradient(135deg, rgba(20,20,40,0.9), rgba(18,24,52,0.9));
+  padding: 10px 14px; display: flex; align-items: center; gap: 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08); cursor: grab; position: relative;
+}
 .coach-header:active { cursor: grabbing; }
-.coach-header::before { content: '⋮⋮'; position: absolute; right: 44px; top: 50%; transform: translateY(-50%); font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 2px; pointer-events: none; }
-.coach-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--teach-cyan), var(--teach-purple)); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.coach-header::before {
+  content: '⋮⋮'; position: absolute; right: 44px; top: 50%; transform: translateY(-50%);
+  font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 2px; pointer-events: none;
+}
+.coach-avatar {
+  width: 36px; height: 36px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teach-cyan), var(--teach-purple));
+  display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0;
+}
 .coach-name { font-size: 12px; font-weight: 600; color: var(--teach-cyan); letter-spacing: .05em; }
 .coach-stage { font-size: 11px; color: var(--teach-muted); }
-.coach-close { margin-left: auto; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.35); cursor: pointer; transition: background .15s; flex-shrink: 0; }
+.coach-close {
+  margin-left: auto; width: 24px; height: 24px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.35); cursor: pointer; transition: background .15s; flex-shrink: 0;
+}
 .coach-close:hover { background: rgba(255,255,255,.12); color: white; }
 
 .coach-body { padding: 16px; max-height: calc(100vh - 260px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(0,212,255,.3) transparent; }
-.coach-stage-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,212,255,.1); color: var(--teach-cyan); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; border: 1px solid rgba(0,212,255,.3); margin-bottom: 12px; }
-.coach-headline { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 500; color: var(--teach-text); line-height: 1.3; margin-bottom: 10px; }
+.coach-stage-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  background: rgba(0,212,255,.1); color: var(--teach-cyan);
+  font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+  padding: 3px 10px; border-radius: 100px; border: 1px solid rgba(0,212,255,.3); margin-bottom: 12px;
+}
+.coach-headline {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 17px; font-weight: 500; color: var(--teach-text);
+  line-height: 1.3; margin-bottom: 10px;
+}
 .coach-text { font-size: 13px; color: var(--teach-muted); line-height: 1.65; }
 .coach-text strong { color: var(--teach-text); font-weight: 500; }
-.coach-analogy { background: rgba(251,191,36,.08); border-left: 3px solid var(--teach-amber); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 10px 14px; margin: 12px 0; font-size: 13px; color: var(--teach-text); line-height: 1.5; }
-.coach-task-box { background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.3); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 12px; }
+.coach-analogy {
+  background: rgba(251,191,36,.08); border-left: 3px solid var(--teach-amber);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 10px 14px;
+  margin: 12px 0; font-size: 13px; color: var(--teach-text); line-height: 1.5;
+}
+
+.coach-task-box {
+  background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.3);
+  border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 12px;
+}
 .coach-task-label { font-size: 10px; font-weight: 700; color: var(--teach-green); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
 .coach-task-text { font-size: 13px; color: var(--teach-text); line-height: 1.5; }
+
 .coach-input-row { display: flex; gap: 8px; margin-top: 12px; }
-.coach-input { flex: 1; background: var(--teach-surface); border: 1px solid var(--teach-border); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--teach-text); font-size: 13px; outline: none; transition: border-color .15s; }
+.coach-input {
+  flex: 1; background: var(--teach-surface); border: 1px solid var(--teach-border);
+  border-radius: var(--radius-sm); padding: 8px 12px;
+  color: var(--teach-text); font-size: 13px; font-family: inherit; outline: none; transition: border-color .15s;
+}
 .coach-input:focus { border-color: var(--teach-cyan); }
-.coach-feedback { display: none; margin-top: 10px; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; }
+.coach-feedback { display: none; margin-top: 10px; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; line-height: 1.5; }
 .coach-feedback.wrong { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; display: block; }
 .coach-feedback.right { background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.3); color: var(--teach-green); display: block; }
 
-.coach-footer { padding: 12px 16px; border-top: 1px solid var(--teach-border); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.15); }
+.coach-footer {
+  padding: 12px 16px; border-top: 1px solid var(--teach-border);
+  display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.15);
+}
 .coach-progress-dots { display: flex; gap: 5px; }
 .coach-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teach-border); transition: background .2s, transform .2s; }
 .coach-dot.done { background: var(--teach-green); }
 .coach-dot.active { background: var(--teach-cyan); transform: scale(1.4); }
+
 .coach-btns { display: flex; gap: 8px; }
-.coach-btn { padding: 7px 16px; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; border: none; }
+.coach-btn { padding: 7px 16px; border-radius: 4px; font-size: 13px; font-weight: 500; font-family: inherit; cursor: pointer; transition: all .15s; }
 .coach-btn-primary { background: var(--ga-blue); color: white; }
 .coach-btn-primary:hover { background: var(--ga-blue-dark); }
 .coach-btn-secondary { background: transparent; color: var(--teach-muted); border: 1px solid var(--teach-border); }
@@ -189,65 +445,131 @@ table.ga-table tr:hover td { background: var(--ga-hover); }
 .coach-btn-success { background: var(--teach-green); color: #0a0a0a; font-weight: 600; }
 .coach-btn-success:hover { background: #2ecc87; }
 
-/* TTS & Waveform */
-.wave-bar { width: 3px; background: var(--teach-cyan); border-radius: 2px; animation: waveAnim 0.8s ease-in-out infinite; animation-delay: var(--d, 0s); min-height: 4px; }
-@keyframes waveAnim { 0%, 100% { height: 4px; opacity: .5; } 50% { height: 16px; opacity: 1; } }
+/* TTS Waveform & Controls */
+.wave-bar {
+  width: 3px; background: var(--teach-cyan); border-radius: 2px;
+  animation: waveAnim 0.8s ease-in-out infinite; animation-delay: var(--d, 0s); min-height: 4px;
+}
+@keyframes waveAnim {
+  0%, 100% { height: 4px; opacity: .5; }
+  50%       { height: 16px; opacity: 1; }
+}
 .tts-highlight { background: rgba(0,212,255,.15); border-radius: 3px; transition: background .2s; }
 #ttsControls { display: none; align-items: center; gap: 8px; padding: 6px 0 0; border-top: 1px solid rgba(255,255,255,.06); margin-top: 8px; }
 #ttsControls.visible { display: flex; }
-.tts-rate-btn { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; color: var(--teach-muted); cursor: pointer; transition: all .15s; }
-.tts-rate-btn.active { background: rgba(0,212,255,.12); border-color: rgba(0,212,255,.4); color: var(--teach-cyan); }
+.tts-rate-btn { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; color: var(--teach-muted); cursor: pointer; transition: all .15s; font-family: inherit; }
+.tts-rate-btn:hover, .tts-rate-btn.active { background: rgba(0,212,255,.12); border-color: rgba(0,212,255,.4); color: var(--teach-cyan); }
 
-/* ─── HUD & LANDING ─────────────────────────── */
-#lesson-hud { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: var(--teach-bg); border-bottom: 2px solid var(--teach-cyan); display: none; align-items: center; padding: 0 20px; gap: 16px; z-index: calc(var(--coach-z) + 1); box-shadow: 0 4px 20px rgba(0,0,0,.4); }
+/* ─── LESSON HUD (Top Nav) ─────────────── */
+#lesson-hud {
+  position: fixed; top: 0; left: 0; right: 0; height: var(--header-h);
+  background: var(--teach-bg); border-bottom: 2px solid var(--teach-cyan);
+  display: none; align-items: center; padding: 0 20px; gap: 16px;
+  z-index: calc(var(--coach-z) + 1); box-shadow: 0 4px 20px rgba(0,0,0,.4);
+}
 #lesson-hud.visible { display: flex; }
-.hud-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; color: white; }
+.hud-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; color: white; white-space: nowrap; }
 .hud-logo span { color: var(--teach-cyan); }
 .hud-divider { width: 1px; height: 28px; background: var(--teach-border); }
-.hud-lesson-name { font-size: 13px; color: var(--teach-text); }
+.hud-lesson-name { font-size: 13px; color: var(--teach-text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 300px; }
 .hud-lesson-num { font-size: 11px; color: var(--teach-muted); margin-bottom: 2px; }
 .hud-spacer { flex: 1; }
-.hud-exit-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 4px; font-size: 13px; color: var(--teach-muted); border: 1px solid var(--teach-border); cursor: pointer; transition: all .15s; }
+.hud-exit-btn {
+  display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 4px;
+  font-size: 13px; color: var(--teach-muted); border: 1px solid var(--teach-border);
+  cursor: pointer; transition: all .15s; white-space: nowrap;
+}
 .hud-exit-btn:hover { color: var(--teach-text); border-color: var(--teach-text); }
 
-#landing-screen { position: fixed; inset: 0; z-index: 20000; background: var(--teach-bg); display: flex; align-items: center; justify-content: center; padding: 24px; }
+/* ─── LANDING SCREEN ─────────────────────────── */
+#landing-screen {
+  position: fixed; inset: 0; z-index: 20000; background: var(--teach-bg);
+  display: flex; align-items: center; justify-content: center; padding: 24px;
+}
 #landing-screen.hidden { display: none; }
-.landing-card { max-width: 1100px; width: 100%; display: grid; grid-template-columns: 1fr 1.2fr; background: var(--teach-surface); border-radius: 20px; border: 1px solid var(--teach-border); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,.5); }
-.landing-left { background: linear-gradient(160deg, #0f0f1a, #1a1a2e, #16213e); padding: 48px 40px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--teach-border); }
+.landing-card {
+  max-width: 1100px; width: 100%; display: grid; grid-template-columns: 1fr 1.2fr; gap: 0;
+  background: var(--teach-surface); border-radius: 20px; border: 1px solid var(--teach-border);
+  overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,.5);
+}
+.landing-left {
+  background: linear-gradient(160deg, #0f0f1a 0%, #1a1a2e 60%, #16213e 100%);
+  padding: 48px 40px; display: flex; flex-direction: column; justify-content: space-between;
+  border-right: 1px solid var(--teach-border);
+}
 .landing-eyebrow { font-size: 11px; font-weight: 700; color: var(--teach-cyan); text-transform: uppercase; letter-spacing: .15em; margin-bottom: 20px; }
-.landing-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 42px; color: white; line-height: 1.15; margin-bottom: 16px; }
+.landing-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 42px; font-weight: 400; color: white; line-height: 1.15; margin-bottom: 16px; }
 .landing-title em { color: var(--teach-cyan); font-style: normal; }
 .landing-desc { font-size: 14px; color: var(--teach-muted); line-height: 1.7; margin-bottom: 32px; }
-.landing-right { padding: 32px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: calc(90vh - 40px); }
+.landing-right { padding: 32px 32px 24px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: calc(90vh - 40px); }
 .landing-right-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 500; color: var(--teach-text); margin-bottom: 12px; }
-.lesson-list-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--teach-bg); border: 1px solid var(--teach-border); border-radius: var(--radius); cursor: pointer; transition: all .15s; }
+.lesson-list-item {
+  display: flex; align-items: center; gap: 14px; padding: 14px 16px;
+  background: var(--teach-bg); border: 1px solid var(--teach-border);
+  border-radius: var(--radius); cursor: pointer; transition: all .15s;
+}
 .lesson-list-item:hover { border-color: var(--teach-cyan); background: rgba(0,212,255,.04); }
 .lesson-list-item.completed { border-color: rgba(52,211,153,.3); }
-.lesson-list-num { width: 28px; height: 28px; border-radius: 50%; background: var(--teach-surface); border: 1.5px solid var(--teach-border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--teach-muted); flex-shrink: 0; }
+.lesson-list-num {
+  width: 28px; height: 28px; border-radius: 50%;
+  background: var(--teach-surface); border: 1.5px solid var(--teach-border);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 11px; font-weight: 600; color: var(--teach-muted); flex-shrink: 0;
+}
 .lesson-list-num.done { background: rgba(52,211,153,.15); border-color: var(--teach-green); color: var(--teach-green); }
 .lesson-list-num.active { background: rgba(0,212,255,.15); border-color: var(--teach-cyan); color: var(--teach-cyan); }
 .lesson-list-info { flex: 1; }
 .lesson-list-title { font-size: 13px; font-weight: 500; color: var(--teach-text); margin-bottom: 2px; }
-.landing-start-btn { width: 100%; padding: 14px; border-radius: var(--radius); background: var(--ga-blue); color: white; font-size: 15px; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; border: none; margin-top: 8px; }
+.landing-start-btn {
+  width: 100%; padding: 14px; border-radius: var(--radius);
+  background: var(--ga-blue); color: white;
+  font-size: 15px; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif;
+  cursor: pointer; transition: background .15s; margin-top: 8px; border: none;
+}
+.landing-start-btn:hover { background: var(--ga-blue-dark); }
 
-/* ─── SUCCESS & CERTIFICATE ────────────────────────── */
-#success-overlay { position: fixed; inset: 0; z-index: calc(var(--coach-z) + 10); background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center; }
+/* ─── SUCCESS OVERLAY ────────────────────────── */
+#success-overlay {
+  position: fixed; inset: 0; z-index: calc(var(--coach-z) + 10);
+  background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center;
+}
 #success-overlay.show { display: flex; animation: fadeIn .3s ease; }
-.success-card { background: var(--teach-bg); border: 1px solid var(--teach-green); border-radius: var(--radius-lg); padding: 40px; text-align: center; max-width: 440px; width: 90%; box-shadow: 0 0 60px rgba(52,211,153,.2); animation: popIn .4s cubic-bezier(.34,1.56,.64,1); }
+.success-card {
+  background: var(--teach-bg); border: 1px solid var(--teach-green);
+  border-radius: var(--radius-lg); padding: 40px; text-align: center;
+  max-width: 440px; width: 90%; box-shadow: 0 0 60px rgba(52,211,153,.2);
+  animation: popIn .4s cubic-bezier(.34,1.56,.64,1);
+}
 @keyframes popIn { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 .success-icon { font-size: 48px; margin-bottom: 16px; }
 .success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 500; color: var(--teach-text); margin-bottom: 8px; }
 .success-text { font-size: 14px; color: var(--teach-muted); line-height: 1.6; margin-bottom: 24px; }
-.success-btn { width: 100%; padding: 12px; border-radius: var(--radius-sm); background: var(--ga-blue); color: white; font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
+.success-btn { width: 100%; padding: 12px; border-radius: var(--radius-sm); background: var(--ga-blue); color: white; font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; transition: background .15s; border: none; }
+.success-btn:hover { background: var(--ga-blue-dark); }
 
-#cert-screen { position: fixed; inset: 0; z-index: 30000; background: var(--teach-bg); display: none; align-items: center; justify-content: center; padding: 24px; }
+/* ─── CERTIFICATE ─────────────────────────────── */
+#cert-screen {
+  position: fixed; inset: 0; z-index: 30000; background: var(--teach-bg); display: none;
+  align-items: center; justify-content: center; padding: 24px;
+}
 #cert-screen.show { display: flex; }
-.cert-card { background: var(--teach-surface); border: 2px solid var(--teach-amber); border-radius: 20px; padding: 60px 48px; text-align: center; max-width: 560px; width: 100%; box-shadow: 0 0 80px rgba(251,191,36,.15); animation: fadeIn .5s ease; }
+.cert-card {
+  background: var(--teach-surface); border: 2px solid var(--teach-amber);
+  border-radius: 20px; padding: 60px 48px; text-align: center;
+  max-width: 560px; width: 100%; box-shadow: 0 0 80px rgba(251,191,36,.15);
+  animation: fadeIn .5s ease;
+}
 .cert-badge { font-size: 56px; margin-bottom: 12px; }
 .cert-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; color: var(--teach-text); margin-bottom: 6px; }
 .cert-name { font-size: 16px; color: var(--teach-cyan); font-family: 'Plus Jakarta Sans', sans-serif; margin: 16px 0 28px; }
-.cert-btn-primary { padding: 10px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: var(--teach-amber); color: #0a0a0a; }
+.cert-btn-primary { background: var(--teach-amber); color: #0a0a0a; padding: 10px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; font-family: inherit; cursor: pointer; border: none; }
+
+/* Custom Anomaly Bounce */
+@keyframes bounceAlert {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
+}
 </style>
 </head>
 <body>
@@ -258,12 +580,13 @@ table.ga-table tr:hover td { background: var(--ga-hover); }
       <div>
         <div class="landing-eyebrow">Interactive Masterclass</div>
         <div class="landing-title">GA4 <em>TechMart</em> Case Study</div>
-        <div class="landing-desc">Learn GA4 entirely by doing. Set up a property, configure tracking, analyse traffic, and diagnose a major drop-off in sales for an e-commerce brand called TechMart. Explain → Demo → Do → Quiz.</div>
+        <div class="landing-desc">Learn GA4 entirely by doing. Set up a property, configure tracking, analyse traffic, and diagnose a major drop-off in sales for an e-commerce brand called TechMart.<br><br>The method is simple:<br><strong>Explain</strong> the concept.<br><strong>Demo</strong> where to find it.<br><strong>Do</strong> the task yourself.<br><strong>Quiz</strong> to prove you learned it.</div>
       </div>
     </div>
     <div class="landing-right">
       <div class="landing-right-title">Curriculum (10 Lessons)</div>
-      <div id="landingLessonList"></div>
+      <div id="landingLessonList">
+        </div>
       <button class="landing-start-btn" id="landingStartBtn" onclick="startCourse()">Begin Course →</button>
     </div>
   </div>
@@ -284,40 +607,54 @@ table.ga-table tr:hover td { background: var(--ga-hover); }
   <header id="ga-header">
     <div class="ga-logo-area">
       <div class="ga-logo-icon">📊</div>
-      <div class="ga-logo-text">Analytics</div>
+      <div class="ga-logo-text">DataFlow <strong>Analytics</strong></div>
     </div>
     <div class="ga-property-chip">
       <div class="ga-property-dot"></div>
       <span id="header-prop-name">No Property Selected</span>
     </div>
-    <div class="ga-search-bar"><input type="text" placeholder="Search reports and insights"/></div>
+    <div class="ga-search-bar">
+      <input type="text" placeholder="Search reports and insights"/>
+    </div>
     <div class="ga-header-spacer"></div>
     <div class="ga-avatar">U</div>
   </header>
 
   <aside id="ga-sidebar">
     <div class="sidebar-section">
-      <div class="sidebar-item" id="nav-home" onclick="navTo('home')"><span class="si-icon">🏠</span> <span class="si-label">Home</span></div>
+      <div class="sidebar-item" id="nav-home" onclick="navTo('home')">
+        <span class="si-icon">🏠</span> <span class="si-label">Home</span>
+      </div>
       
-      <div class="sidebar-item" id="nav-reports-toggle"><span class="si-icon">📈</span> <span class="si-label">Reports</span></div>
+      <div class="sidebar-item" id="nav-reports-toggle">
+        <span class="si-icon">📈</span> <span class="si-label">Reports</span>
+      </div>
       <div class="sidebar-sub open" id="reports-sub">
         <div class="sidebar-subitem" id="nav-traffic-acq" onclick="navTo('traffic-acq')">Traffic acquisition</div>
         <div class="sidebar-subitem" id="nav-events" onclick="navTo('events')">Events & Conversions</div>
       </div>
 
-      <div class="sidebar-item" id="nav-explore" onclick="navTo('explore')"><span class="si-icon">🔬</span> <span class="si-label">Explore</span></div>
-      <div class="sidebar-item" id="nav-advertising" onclick="navTo('advertising')"><span class="si-icon">📣</span> <span class="si-label">Advertising</span></div>
+      <div class="sidebar-item" id="nav-explore" onclick="navTo('explore')">
+        <span class="si-icon">🔬</span> <span class="si-label">Explore</span>
+      </div>
+      <div class="sidebar-item" id="nav-advertising" onclick="navTo('advertising')">
+        <span class="si-icon">📣</span> <span class="si-label">Advertising</span>
+      </div>
     </div>
     <div class="sidebar-spacer"></div>
     <div class="sidebar-section">
-      <div class="sidebar-item" id="nav-admin" onclick="navTo('admin')"><span class="si-icon">⚙️</span> <span class="si-label">Admin</span></div>
+      <div class="sidebar-item" id="nav-admin" onclick="navTo('admin')">
+        <span class="si-icon">⚙️</span> <span class="si-label">Admin</span>
+      </div>
     </div>
   </aside>
 
   <main id="ga-main">
-    <div id="ga-subnav"><div class="ga-breadcrumb"><span class="current" id="bc-text">Admin</span></div></div>
+    <div id="ga-subnav">
+      <div class="ga-breadcrumb"><span class="current" id="bc-text">Admin</span></div>
+    </div>
 
-    <div class="ga-report-view" id="view-admin">
+    <div class="ga-report-view active" id="view-admin">
       <div class="ga-report-title">Admin</div>
       <div class="ga-report-subtitle">Manage your account and property settings</div>
       <div style="display:flex; gap:24px; margin-top:10px;">
@@ -382,7 +719,7 @@ table.ga-table tr:hover td { background: var(--ga-hover); }
         <div class="ga-chart-header"><div class="ga-chart-title">Sessions Trend</div></div>
         <div class="ga-linechart-wrap" id="homeLineChart" style="height:160px; position:relative;">
            <div id="anomaly-indicator" style="display:none; position:absolute; right:60px; top:60px; cursor:pointer;">
-             <div style="color:#d93025; font-size:24px; font-weight:bold; text-shadow:0 2px 4px rgba(0,0,0,0.2); animation:bounce 1.5s infinite;">📉 ▼</div>
+             <div style="color:#d93025; font-size:24px; font-weight:bold; text-shadow:0 2px 4px rgba(0,0,0,0.2); animation:bounceAlert 1.5s infinite;">📉 ▼</div>
              <div style="background:#fce8e6; color:#d93025; font-size:10px; font-weight:600; padding:2px 6px; border-radius:10px; border:1px solid #fad2cf; white-space:nowrap; position:absolute; left:-10px; top:-20px;">Anomaly</div>
            </div>
         </div>
@@ -439,6 +776,7 @@ table.ga-table tr:hover td { background: var(--ga-hover); }
         <button id="btn-link-ads" class="ga-btn-primary" style="padding:12px 24px; margin-top:24px;">🔗 Link Google Ads</button>
       </div>
     </div>
+
   </main>
 </div>
 
@@ -447,7 +785,11 @@ table.ga-table tr:hover td { background: var(--ga-hover); }
 <div id="coach-bubble" class="hidden">
   <div class="coach-header">
     <div class="coach-avatar">🎓</div>
-    <div style="flex:1"><div class="coach-name">GA4 Coach</div><div class="coach-stage" id="coachStageLabel">Stage</div></div>
+    <div style="flex:1">
+      <div class="coach-name">GA4 Coach</div>
+      <div class="coach-stage" id="coachStageLabel">Stage</div>
+    </div>
+    
     <div id="coachWaveform" style="display:none;align-items:center;gap:2px;margin-right:6px;height:18px">
       <div class="wave-bar" style="--d:0s"></div>
       <div class="wave-bar" style="--d:.1s"></div>
@@ -455,18 +797,29 @@ table.ga-table tr:hover td { background: var(--ga-hover); }
       <div class="wave-bar" style="--d:.1s"></div>
       <div class="wave-bar" style="--d:.05s"></div>
     </div>
-    <button id="coachSpeakBtn" onclick="toggleTTS()" title="Toggle voice" style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);cursor:pointer;color:#00d4ff;font-size:13px;transition:all .15s;margin-right:4px;flex-shrink:0">🔊</button>
-    <button class="coach-close" onclick="minimizeCoach()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
+    
+    <button id="coachSpeakBtn" onclick="toggleTTS()" title="Toggle voice" style="
+      width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);cursor:pointer;
+      color:#00d4ff;font-size:13px;transition:all .15s;margin-right:4px;flex-shrink:0
+    ">🔊</button>
+    <button class="coach-close" onclick="minimizeCoach()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
   </div>
+  
   <div class="coach-body" id="coachBody"></div>
+  
   <div class="coach-footer">
     <div class="coach-progress-dots" id="coachDots"></div>
     <div class="coach-btns" id="coachBtns"></div>
   </div>
+  
   <div id="ttsControls">
     <span style="font-size:10px;color:var(--teach-muted);letter-spacing:.05em;margin-left:16px;">SPEED</span>
     <button class="tts-rate-btn active" data-rate="0.9" onclick="setTTSRate(0.9)">0.9×</button>
     <button class="tts-rate-btn" data-rate="1.1" onclick="setTTSRate(1.1)">1.1×</button>
+    <button onclick="replaySpeech()" style="margin-left:auto;background:none;border:none;cursor:pointer;font-size:13px;color:var(--teach-muted)" title="Replay">↺</button>
   </div>
 </div>
 
@@ -489,10 +842,6 @@ table.ga-table tr:hover td { background: var(--ga-hover); }
   </div>
 </div>
 
-<style>
-@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-</style>
-
 <script>
 'use strict';
 
@@ -507,11 +856,11 @@ const S = {
 };
 
 const DB = {
-  weekly:[
-    {d:'Mon',s:4200},{d:'Tue',s:4350},{d:'Wed',s:4600},{d:'Thu',s:4500},
-    {d:'Fri',s:4800},{d:'Sat',s:5100},{d:'Sun',s:3650} // Drop on Sun for Anomaly
+  weekly: [
+    {d:'Mon', s:4200}, {d:'Tue', s:4350}, {d:'Wed', s:4600}, {d:'Thu', s:4500},
+    {d:'Fri', s:4800}, {d:'Sat', s:5100}, {d:'Sun', s:3650} // Deliberate drop on Sunday
   ],
-  channels:[
+  channels: [
     {name:'Organic Search', sessions:15400, users:11200, col:'#4285f4'},
     {name:'Paid Search',    sessions:8200,  users:6500,  col:'#34a853'},
     {name:'Direct',         sessions:5100,  users:4800,  col:'#fbbc04'},
@@ -521,100 +870,106 @@ const DB = {
 
 // ═══════════════════════════════════════════════════════════════
 // TECHMART 10-LESSON CURRICULUM
-// Mapped to V6 Stage Types: explain, locate, practice
+// Using the robust V6 Architecture (explain -> locate -> practice(click) -> practice(input))
 // ═══════════════════════════════════════════════════════════════
 const LESSONS = [
   {
     id: 'l1', num: 1, title: 'Create Property', view: 'admin',
     stages: [
-      { type: 'explain', headline: 'A GA4 Property is your Data Container.', text: 'Every website or app needs its own property to collect data. Think of it as a bucket where all your visitor information goes. Without a property, GA4 cannot collect anything.', analogy: '🪣 It is a bucket for data.', examples: ['TechMart website = 1 Property', 'TechMart iOS app = 1 Property'] },
+      { type: 'explain', headline: 'A GA4 Property is your Data Container.', text: 'Every website or app needs its own property to collect data. Think of it as a bucket where all your visitor information goes. Without a property, GA4 cannot collect anything.', analogy: '🪣 It is a bucket for your data.' },
       { type: 'locate', headline: 'Find the Create Property button.', spotlight: 'btn-create-prop', steps: ['Navigate to the Admin panel.', 'Look in the Property Settings column.', 'Find the blue Create Property button.'] },
-      { type: 'practice', task: 'Click the "+ Create Property" button to create your container for TechMart.', clickTarget: 'btn-create-prop', successTitle: 'Property Created!', successText: 'Great! You have an empty bucket. Now we need to pour data into it.' },
-      { type: 'practice', inputTask: true, task: 'What is the primary purpose of a GA4 property?', hint: 'Type: container', correctAnswer: 'container', successTitle: 'Correct!', successText: 'A property is a container for your data.' }
+      { type: 'practice', inputTask: false, task: 'Click the "+ Create Property" button to create your container for TechMart.', clickTarget: 'btn-create-prop', successTitle: 'Property Created!', successText: 'Great! You have an empty bucket. Now we need to pour data into it.' },
+      { type: 'practice', inputTask: true, task: 'What is the primary purpose of a GA4 property?', hint: 'Type: container', correctAnswer: 'container', altAnswers: ['data container'], successTitle: 'Correct!', successText: 'A property is a container for your data.' }
     ]
   },
   {
     id: 'l2', num: 2, title: 'Install gtag.js', view: 'admin',
-    onStart: () => { document.getElementById('data-streams-panel').style.display = 'block'; document.getElementById('header-prop-name').innerText = 'TechMart'; },
+    onStart: () => { 
+      document.getElementById('data-streams-panel').style.display = 'block'; 
+      document.getElementById('header-prop-name').innerText = 'TechMart'; 
+    },
     stages: [
-      { type: 'explain', headline: 'Sending Visits to GA4.', text: 'To collect data, your website needs instructions. The Google tag (gtag.js) is a snippet of code placed in your website\'s HTML that sends visitor activity to your new GA4 property.', analogy: '📡 It is the transmitter on your website sending signals back to base.', examples: [] },
+      { type: 'explain', headline: 'Sending Visits to GA4.', text: 'To collect data, your website needs instructions. The Google tag (gtag.js) is a snippet of code placed in your website\'s HTML that sends visitor activity to your new GA4 property.', analogy: '📡 It is the transmitter on your website sending signals back to base.' },
       { type: 'locate', headline: 'Find your Tracking Code.', spotlight: 'btn-copy-gtag', steps: ['Inside Admin, look at Data Streams.', 'Select your Web Stream.', 'Find the Google tag code block.'] },
-      { type: 'practice', task: 'Click "Copy Tag" so you can simulate pasting it into the TechMart website HTML.', clickTarget: 'btn-copy-gtag', successTitle: 'Tag Copied!', successText: 'In reality, you would paste this into the <head> of your website code.' },
-      { type: 'practice', inputTask: true, task: 'Where in your website HTML does the gtag snippet go?', hint: 'Type: head', correctAnswer: 'head', successTitle: 'Correct!', successText: 'The code must go in the <head> section to track properly.' }
+      { type: 'practice', inputTask: false, task: 'Click "Copy Tag" so you can simulate pasting it into the TechMart website HTML.', clickTarget: 'btn-copy-gtag', successTitle: 'Tag Copied!', successText: 'In reality, you would paste this into the <head> of your website code.' },
+      { type: 'practice', inputTask: true, task: 'Where in your website HTML does the gtag snippet go?', hint: 'Type: head', correctAnswer: 'head', altAnswers: ['<head>', 'header'], successTitle: 'Correct!', successText: 'The code must go in the <head> section to track properly.' }
     ]
   },
   {
     id: 'l3', num: 3, title: 'Enhanced Measurement', view: 'admin',
-    onStart: () => { document.getElementById('data-streams-panel').style.display = 'block'; document.getElementById('header-prop-name').innerText = 'TechMart'; },
+    onStart: () => { 
+      document.getElementById('data-streams-panel').style.display = 'block'; 
+      document.getElementById('header-prop-name').innerText = 'TechMart'; 
+    },
     stages: [
-      { type: 'explain', headline: 'Auto-tracking Interactions.', text: 'Old analytics tools required custom code to track scrolls, outbound clicks, or file downloads. GA4 has "Enhanced Measurement" which automatically tracks these common events instantly.', analogy: '🎥 It turns on automatic security cameras for specific actions.', examples: ['Page scrolls', 'Outbound clicks', 'Site search', 'Video engagement'] },
+      { type: 'explain', headline: 'Auto-tracking Interactions.', text: 'Old analytics tools required custom code to track scrolls, outbound clicks, or file downloads. GA4 has "Enhanced Measurement" which automatically tracks these common events instantly.', analogy: '🎥 It turns on automatic security cameras for specific actions.' },
       { type: 'locate', headline: 'Find the Toggle Switch.', spotlight: 'toggle-enhanced', steps: ['Still in the Web Stream details.', 'Look for the Enhanced Measurement section at the bottom.', 'Find the toggle switch.'] },
-      { type: 'practice', task: 'Click the toggle switch to turn Enhanced Measurement ON for TechMart.', clickTarget: 'toggle-enhanced', onComplete: () => { document.getElementById('toggle-enhanced').classList.add('on'); }, successTitle: 'Enhanced Measurement Active!', successText: 'You are now automatically tracking scrolls and clicks without any extra coding.' },
-      { type: 'practice', inputTask: true, task: 'Name two things Enhanced Measurement tracks automatically.', hint: 'Type: scrolls and clicks', correctAnswer: 'scrolls and clicks', successTitle: 'Correct!', successText: 'Scrolls and clicks are now tracked.' }
+      { type: 'practice', inputTask: false, task: 'Click the toggle switch to turn Enhanced Measurement ON for TechMart.', clickTarget: 'toggle-enhanced', onComplete: () => { document.getElementById('toggle-enhanced').classList.add('on'); }, successTitle: 'Enhanced Measurement Active!', successText: 'You are now automatically tracking scrolls and clicks without any extra coding.' },
+      { type: 'practice', inputTask: true, task: 'Name two things Enhanced Measurement tracks automatically.', hint: 'Type: scrolls and clicks', correctAnswer: 'scrolls and clicks', altAnswers: ['scrolls, clicks'], successTitle: 'Correct!', successText: 'Scrolls and clicks are now tracked.' }
     ]
   },
   {
     id: 'l4', num: 4, title: 'Dashboard & Metrics', view: 'home',
     stages: [
-      { type: 'explain', headline: 'Users vs Sessions.', text: 'Your dashboard shows key metrics. A "Session" is a visit. A "User" is a unique person. If one person visits TechMart 3 times to look at laptops, that is 1 User and 3 Sessions.', analogy: '👤 User = a unique shopper. Session = entering the store.', examples: [] },
+      { type: 'explain', headline: 'Users vs Sessions.', text: 'Your dashboard shows key metrics. A "Session" is a visit. A "User" is a unique person. If one person visits TechMart 3 times to look at laptops, that is 1 User and 3 Sessions.', analogy: '👤 User = a unique shopper. Session = entering the store.' },
       { type: 'locate', headline: 'Find the Users Metric.', spotlight: 'metric-users', steps: ['Go to the Home snapshot.', 'Look at the top metric cards.', 'Find the one labelled "Users".'] },
-      { type: 'practice', task: 'Click the "Users" metric card to inspect it.', clickTarget: 'metric-users', successTitle: 'Users Metric Selected!', successText: '24,500 unique people visited the site in this period.' },
-      { type: 'practice', inputTask: true, task: 'If John visits your site on Monday and Tuesday, how many Users and how many Sessions is that? (Format: X Users, Y Sessions)', hint: 'Type: 1 user, 2 sessions', correctAnswer: '1 user, 2 sessions', altAnswers:['1 user 2 sessions'], successTitle: 'Exactly right!', successText: 'Users measure people, sessions measure visits.' }
+      { type: 'practice', inputTask: false, task: 'Click the "Users" metric card to inspect it.', clickTarget: 'metric-users', successTitle: 'Users Metric Selected!', successText: '24,500 unique people visited the site in this period.' },
+      { type: 'practice', inputTask: true, task: 'If John visits your site on Monday and Tuesday, how many Users and how many Sessions is that? (Format: X Users, Y Sessions)', hint: 'Type: 1 user, 2 sessions', correctAnswer: '1 user, 2 sessions', altAnswers: ['1 user 2 sessions'], successTitle: 'Exactly right!', successText: 'Users measure people, sessions measure visits.' }
     ]
   },
   {
     id: 'l5', num: 5, title: 'Acquisition Channels', view: 'traffic-acq',
     stages: [
-      { type: 'explain', headline: 'Organic vs Paid.', text: 'Traffic Acquisition shows WHERE visitors come from. "Organic Search" means they found you on Google for free. "Paid Search" means you paid for ads.', analogy: '🛣️ It shows which highway people took to reach your store.', examples: [] },
+      { type: 'explain', headline: 'Organic vs Paid.', text: 'Traffic Acquisition shows WHERE visitors come from. "Organic Search" means they found you on Google for free. "Paid Search" means you paid for ads.', analogy: '🛣️ It shows which highway people took to reach your store.' },
       { type: 'locate', headline: 'Find the Channels Table.', spotlight: 'ta-table-body', steps: ['Go to Reports > Traffic acquisition.', 'Scroll down to the table.', 'Look at the channel rows.'] },
-      { type: 'practice', task: 'Which channel brings the most traffic to TechMart? Click its row.', clickTarget: 'row-organic', successTitle: 'Organic Search is #1!', successText: 'Organic Search brings in 15,400 sessions. SEO is working well.' },
-      { type: 'practice', inputTask: true, task: 'What is unpaid search engine traffic called?', hint: 'Type: organic search', correctAnswer: 'organic search', altAnswers:['organic'], successTitle: 'Correct!', successText: 'Organic traffic is free traffic from search engines.' }
+      { type: 'practice', inputTask: false, task: 'Which channel brings the most traffic to TechMart? Click its row.', clickTarget: 'row-organic', successTitle: 'Organic Search is #1!', successText: 'Organic Search brings in 15,400 sessions. SEO is working well.' },
+      { type: 'practice', inputTask: true, task: 'What is unpaid search engine traffic called?', hint: 'Type: organic search', correctAnswer: 'organic search', altAnswers: ['organic'], successTitle: 'Correct!', successText: 'Organic traffic is free traffic from search engines.' }
     ]
   },
   {
     id: 'l6', num: 6, title: 'Events Tracking', view: 'events',
     stages: [
-      { type: 'explain', headline: 'Everything is an Event.', text: 'In GA4, every action is logged as an Event. A page loading is a `page_view`. Scrolling down is a `scroll`. Buying something is a `purchase`.', analogy: '⚡ Events are the heartbeat of GA4 data.', examples: [] },
+      { type: 'explain', headline: 'Everything is an Event.', text: 'In GA4, every action is logged as an Event. A page loading is a `page_view`. Scrolling down is a `scroll`. Buying something is a `purchase`.', analogy: '⚡ Events are the heartbeat of GA4 data.' },
       { type: 'locate', headline: 'Find the Event List.', spotlight: 'event-scroll', steps: ['Go to Reports > Events.', 'Look at the Event Name column.', 'Find the event related to scrolling a page.'] },
-      { type: 'practice', task: 'Click the `scroll` event row in the table.', clickTarget: 'event-scroll', successTitle: 'Event Found!', successText: 'This event fires automatically because you turned on Enhanced Measurement in Lesson 3!' },
-      { type: 'practice', inputTask: true, task: 'Which event tracks a user viewing a page?', hint: 'Look at the top row of the table.', correctAnswer: 'page_view', successTitle: 'Correct!', successText: 'page_view is the most fundamental event in GA4.' }
+      { type: 'practice', inputTask: false, task: 'Click the `scroll` event row in the table.', clickTarget: 'event-scroll', successTitle: 'Event Found!', successText: 'This event fires automatically because you turned on Enhanced Measurement in Lesson 3!' },
+      { type: 'practice', inputTask: true, task: 'Which event tracks a user viewing a page?', hint: 'Look at the top row of the table.', correctAnswer: 'page_view', altAnswers: ['page view'], successTitle: 'Correct!', successText: 'page_view is the most fundamental event in GA4.' }
     ]
   },
   {
     id: 'l7', num: 7, title: 'Conversions', view: 'events',
     stages: [
-      { type: 'explain', headline: 'Mark Key Events.', text: 'Some events matter more than others. A purchase drives revenue! In GA4, you can mark any event as a "Conversion" (Key Event) to prioritize tracking its ROI.', analogy: '🎯 It tells GA4 "This specific action is our main goal."', examples: [] },
+      { type: 'explain', headline: 'Mark Key Events.', text: 'Some events matter more than others. A purchase drives revenue! In GA4, you can mark any event as a "Conversion" (Key Event) to prioritize tracking its ROI.', analogy: '🎯 It tells GA4 "This specific action is our main goal."' },
       { type: 'locate', headline: 'Find the Conversion Toggle.', spotlight: 'toggle-purchase', steps: ['In the Events table, look at the right column.', 'Find the `purchase` event row.', 'Locate its toggle switch.'] },
-      { type: 'practice', task: 'Click the toggle next to `purchase` to mark it as a conversion.', clickTarget: 'toggle-purchase', onComplete: () => { document.getElementById('toggle-purchase').classList.add('on'); }, successTitle: 'Conversion Tracked!', successText: 'Now, GA4 will highlight purchases in your ROI and Advertising reports.' },
-      { type: 'practice', inputTask: true, task: 'What do you call a highly important event (like a purchase) that you explicitly mark in GA4?', hint: 'Type: conversion', correctAnswer: 'conversion', altAnswers:['key event'], successTitle: 'Correct!', successText: 'Conversions are the ultimate measure of website success.' }
+      { type: 'practice', inputTask: false, task: 'Click the toggle next to `purchase` to mark it as a conversion.', clickTarget: 'toggle-purchase', onComplete: () => { document.getElementById('toggle-purchase').classList.add('on'); }, successTitle: 'Conversion Tracked!', successText: 'Now, GA4 will highlight purchases in your ROI and Advertising reports.' },
+      { type: 'practice', inputTask: true, task: 'What do you call a highly important event (like a purchase) that you explicitly mark in GA4?', hint: 'Type: conversion', correctAnswer: 'conversion', altAnswers: ['key event'], successTitle: 'Correct!', successText: 'Conversions are the ultimate measure of website success.' }
     ]
   },
   {
     id: 'l8', num: 8, title: 'Anomalies (Case Study)', view: 'home',
     onStart: () => { document.getElementById('anomaly-indicator').style.display = 'block'; },
     stages: [
-      { type: 'explain', headline: 'TechMart Traffic Drop.', text: 'SCENARIO: You work for TechMart. The CEO says sales died yesterday. GA4 uses machine learning to flag "Anomalies" — sudden unexpected changes in data, marked with indicators on charts.', analogy: '🚨 Anomaly detection is the fire alarm of analytics.', examples: [] },
+      { type: 'explain', headline: 'TechMart Traffic Drop.', text: 'SCENARIO: You work for TechMart. The CEO says sales died yesterday. GA4 uses machine learning to flag "Anomalies" — sudden unexpected changes in data, marked with indicators on charts.', analogy: '🚨 Anomaly detection is the fire alarm of analytics.' },
       { type: 'locate', headline: 'Spot the Drop.', spotlight: 'anomaly-indicator', steps: ['Go to the Home snapshot.', 'Look at the Sessions trend chart.', 'Find the red anomaly indicator on Sunday.'] },
-      { type: 'practice', task: 'Click the red anomaly indicator on the chart to investigate.', clickTarget: 'anomaly-indicator', successTitle: 'Anomaly Detected!', successText: 'Traffic tanked on Sunday. We need to find out WHY.' },
-      { type: 'practice', inputTask: true, task: 'What does a sudden red indicator in GA4 represent?', hint: 'Type: anomaly', correctAnswer: 'anomaly', altAnswers:['problem', 'drop'], successTitle: 'Correct.', successText: 'Now we must dig deeper to find the root cause.' }
+      { type: 'practice', inputTask: false, task: 'Click the red anomaly indicator on the chart to investigate.', clickTarget: 'anomaly-indicator', successTitle: 'Anomaly Detected!', successText: 'Traffic tanked on Sunday. We need to find out WHY.' },
+      { type: 'practice', inputTask: true, task: 'What does a sudden red indicator in GA4 represent?', hint: 'Type: anomaly', correctAnswer: 'anomaly', altAnswers: ['problem', 'drop'], successTitle: 'Correct.', successText: 'Now we must dig deeper to find the root cause.' }
     ]
   },
   {
     id: 'l9', num: 9, title: 'Explorations (Funnels)', view: 'explore',
     stages: [
-      { type: 'explain', headline: 'Where are they leaving?', text: 'To find out WHY sales dropped, we build a Funnel Exploration. A funnel shows the exact step-by-step path users take to buy, and highlights exactly where they abandon the process.', analogy: '🔻 Like pouring water into a leaky pipe to see where it spills.', examples: [] },
+      { type: 'explain', headline: 'Where are they leaving?', text: 'To find out WHY sales dropped, we build a Funnel Exploration. A funnel shows the exact step-by-step path users take to buy, and highlights exactly where they abandon the process.', analogy: '🔻 Like pouring water into a leaky pipe to see where it spills.' },
       { type: 'locate', headline: 'Find the Funnel Template.', spotlight: 'btn-funnel', steps: ['Go to Explore in the sidebar.', 'Look at the template gallery.', 'Find the Funnel Exploration card.'] },
-      { type: 'practice', task: 'Click the "Funnel Exploration" card to build your dropout report.', clickTarget: 'btn-funnel', successTitle: 'Funnel Built!', successText: 'The funnel reveals that 90% of mobile users dropped off at the "payment" step yesterday due to a broken button.' },
-      { type: 'practice', inputTask: true, task: 'Which tool shows exact drop-off points in a multi-step journey?', hint: 'Type: funnel', correctAnswer: 'funnel', altAnswers:['funnel exploration'], successTitle: 'Correct!', successText: 'Funnels are the best diagnostic tool in GA4.' }
+      { type: 'practice', inputTask: false, task: 'Click the "Funnel Exploration" card to build your dropout report.', clickTarget: 'btn-funnel', successTitle: 'Funnel Built!', successText: 'The funnel reveals that 90% of mobile users dropped off at the "payment" step yesterday due to a broken button.' },
+      { type: 'practice', inputTask: true, task: 'Which tool shows exact drop-off points in a multi-step journey?', hint: 'Type: funnel', correctAnswer: 'funnel', altAnswers: ['funnel exploration'], successTitle: 'Correct!', successText: 'Funnels are the best diagnostic tool in GA4.' }
     ]
   },
   {
     id: 'l10', num: 10, title: 'Ads + Report', view: 'advertising',
     stages: [
-      { type: 'explain', headline: 'Tracking ROI.', text: 'You found the funnel drop-off! Now, the CEO wants to know if the Google Ads budget is being wasted. You must link Google Ads to GA4 to see post-click conversion data and cost.', analogy: '🔗 It bridges the gap between ad spend and website revenue.', examples: [] },
+      { type: 'explain', headline: 'Tracking ROI.', text: 'You found the funnel drop-off! Now, the CEO wants to know if the Google Ads budget is being wasted. You must link Google Ads to GA4 to see post-click conversion data and cost.', analogy: '🔗 It bridges the gap between ad spend and website revenue.' },
       { type: 'locate', headline: 'Find the Link Button.', spotlight: 'btn-link-ads', steps: ['Go to the Advertising section.', 'Look for the integration tools.', 'Find the Link Google Ads button.'] },
-      { type: 'practice', task: 'Click "Link Google Ads" to connect your spend data.', clickTarget: 'btn-link-ads', successTitle: 'Ads Linked!', successText: 'Data will now flow between platforms.' },
-      { type: 'practice', inputTask: true, task: 'Final task! Type this exact phrase to summarise your fix to the CEO: "linked ads to track roi"', hint: 'Type exactly: linked ads to track roi', correctAnswer: 'linked ads to track roi', successTitle: 'Masterclass Complete!', successText: 'You have solved the case and mastered the fundamentals of GA4.' }
+      { type: 'practice', inputTask: false, task: 'Click "Link Google Ads" to connect your spend data.', clickTarget: 'btn-link-ads', successTitle: 'Ads Linked!', successText: 'Data will now flow between platforms.' },
+      { type: 'practice', inputTask: true, task: 'Final task! Type this exact phrase to summarise your fix to the CEO: "linked ads to track roi"', hint: 'Type exactly: linked ads to track roi', correctAnswer: 'linked ads to track roi', altAnswers: [], successTitle: 'Masterclass Complete!', successText: 'You have solved the case and mastered the fundamentals of GA4.' }
     ]
   }
 ];
@@ -636,6 +991,10 @@ function buildAcqTable() {
 function buildLineChart(containerId, data, color) {
   const el = document.getElementById(containerId);
   if (!el) return;
+  
+  // Preserve existing indicator if it exists
+  const existingIndicator = el.querySelector('#anomaly-indicator');
+  
   const vals = data.map(d => d.s);
   const max = Math.max(...vals) * 1.1;
   const W = 700, H = 160;
@@ -645,10 +1004,6 @@ function buildLineChart(containerId, data, color) {
   const pathD = pts.map((p, i) => `${i?'L':'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
   const areaD = pathD + ` L${pts[pts.length-1].x},${pad.t+ch} L${pts[0].x},${pad.t+ch} Z`;
   const labels = data.map((d, i) => `<text x="${pts[i].x.toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#80868b">${d.d}</text>`).join('');
-  
-  // Create SVG string but preserve existing child nodes (like the anomaly indicator div)
-  const existingIndicator = el.querySelector('#anomaly-indicator');
-  const indicatorHTML = existingIndicator ? existingIndicator.outerHTML : '';
   
   el.innerHTML = `
     <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:${H}px;position:absolute;top:0;left:0;">
@@ -663,34 +1018,48 @@ function buildLineChart(containerId, data, color) {
       ${pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="${color}" opacity=".7"/>`).join('')}
       ${labels}
     </svg>
-    ${indicatorHTML}
   `;
+  
+  if (existingIndicator) {
+    el.appendChild(existingIndicator);
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
 // DASHBOARD NAVIGATION
 // ═══════════════════════════════════════════════════════════════
 function navTo(id) {
+  // Hide all views
   document.querySelectorAll('.ga-report-view').forEach(v => v.classList.remove('active'));
   const view = document.getElementById(`view-${id}`);
-  if (view) view.classList.add('active');
+  if (view) { view.classList.add('active'); view.scrollTop = 0; }
 
+  // Update sidebar active states
   document.querySelectorAll('.sidebar-item, .sidebar-subitem').forEach(el => el.classList.remove('active'));
   const navEl = document.getElementById(`nav-${id}`);
   if (navEl) navEl.classList.add('active');
 
-  const titles = {'home':'Reports snapshot','admin':'Admin','traffic-acq':'Traffic acquisition','events':'Events','explore':'Explorations','advertising':'Advertising'};
-  document.getElementById('bc-text').innerText = titles[id] || id;
+  // Update Breadcrumb Text
+  const titles = {
+    'home': 'Reports snapshot',
+    'admin': 'Admin',
+    'traffic-acq': 'Traffic acquisition',
+    'events': 'Events',
+    'explore': 'Explorations',
+    'advertising': 'Advertising'
+  };
+  const bc = document.getElementById('bc-text');
+  if (bc) bc.innerText = titles[id] || id;
 }
 
 // ═══════════════════════════════════════════════════════════════
-// TEACHING LAYER — SPOTLIGHT (4-Panel robust masking)
+// TEACHING LAYER — SPOTLIGHT (Absolute 4-Panel System)
 // ═══════════════════════════════════════════════════════════════
 let _spotTarget = null;
 function spotlight(targetId, isClickable) {
   _spotTarget = targetId || null;
 
-  // Ensure panels exist
+  // Create masking panels if they don't exist
   if (!document.getElementById('spotlight-panels')) {
     const panels = document.createElement('div');
     panels.id = 'spotlight-panels';
@@ -701,14 +1070,21 @@ function spotlight(targetId, isClickable) {
   const ring = document.getElementById('spotlight-ring');
   
   if (!targetId) {
-    ['top','right','bottom','left'].forEach(s => { document.getElementById(`sp-${s}`).style.display = 'none'; });
+    ['top','right','bottom','left'].forEach(s => { 
+      const p = document.getElementById(`sp-${s}`);
+      if (p) p.style.display = 'none'; 
+    });
     if (ring) ring.style.display = 'none';
     return;
   }
 
   const el = document.getElementById(targetId);
-  if (!el) return;
+  if (!el) {
+    spotlight(null);
+    return;
+  }
 
+  // Scroll target into view then position spotlight
   el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   setTimeout(() => _positionSpotlight(isClickable), 160);
 }
@@ -717,23 +1093,28 @@ function _positionSpotlight(isClickable) {
   if (!_spotTarget) return;
   const el = document.getElementById(_spotTarget);
   if (!el) return;
+  
   const ring = document.getElementById('spotlight-ring');
-
   const rect = el.getBoundingClientRect();
   const pad  = 8;
-  const vw   = window.innerWidth, vh = window.innerHeight;
+  const vw   = window.innerWidth;
+  const vh   = window.innerHeight;
 
   const x1 = Math.max(0, Math.round(rect.left - pad));
   const y1 = Math.max(0, Math.round(rect.top - pad));
   const x2 = Math.min(vw, Math.round(rect.right + pad));
   const y2 = Math.min(vh, Math.round(rect.bottom + pad));
 
-  const pTop = document.getElementById('sp-top'), pBot = document.getElementById('sp-bottom'), pLeft = document.getElementById('sp-left'), pRight = document.getElementById('sp-right');
+  const pTop = document.getElementById('sp-top');
+  const pBot = document.getElementById('sp-bottom');
+  const pLeft = document.getElementById('sp-left');
+  const pRight = document.getElementById('sp-right');
   
-  pTop.style.cssText = `top:0;left:0;right:0;height:${y1}px;display:${y1>0?'block':'none'}`;
-  pBot.style.cssText = `top:${y2}px;left:0;right:0;bottom:0;display:block`;
-  pLeft.style.cssText = `top:${y1}px;left:0;width:${x1}px;height:${y2-y1}px;display:${x1>0?'block':'none'}`;
-  pRight.style.cssText = `top:${y1}px;left:${x2}px;right:0;height:${y2-y1}px;display:block`;
+  // Create the "hole" by positioning the 4 dark panels around the target
+  if (pTop) pTop.style.cssText = `top:0;left:0;right:0;height:${y1}px;display:${y1>0?'block':'none'}`;
+  if (pBot) pBot.style.cssText = `top:${y2}px;left:0;right:0;bottom:0;display:block`;
+  if (pLeft) pLeft.style.cssText = `top:${y1}px;left:0;width:${x1}px;height:${y2-y1}px;display:${x1>0?'block':'none'}`;
+  if (pRight) pRight.style.cssText = `top:${y1}px;left:${x2}px;right:0;height:${y2-y1}px;display:block`;
 
   ring.className = isClickable ? 'spotlight-ring click-target' : 'spotlight-ring';
   ring.style.cssText = `display:block;left:${x1}px;top:${y1}px;width:${x2-x1}px;height:${y2-y1}px;`;
@@ -742,21 +1123,28 @@ function _positionSpotlight(isClickable) {
 function positionCoach() {
   const bubble = document.getElementById('coach-bubble');
   bubble.classList.remove('hidden');
-  // Fixed positioning logic to ensure dashboard remains visible
+  
+  // Anchor coach to the left side, vertically centered
   bubble.style.left = '24px';
   const hudH = document.getElementById('lesson-hud').classList.contains('visible') ? 72 : 8;
   const vh = window.innerHeight;
-  const bh = bubble.offsetHeight || 380;
-  bubble.style.top = `${Math.max(hudH, vh/2 - bh/2)}px`;
+  
+  // Wait a tick for height to calculate
+  requestAnimationFrame(() => {
+    const bh = bubble.offsetHeight || 380;
+    bubble.style.top = `${Math.max(hudH, vh/2 - bh/2)}px`;
+  });
 }
 
 function minimizeCoach() {
-  document.getElementById('coach-bubble').classList.add('hidden');
-  setTimeout(() => { document.getElementById('coach-bubble').classList.remove('hidden'); }, 3000); // Auto return for demo
+  const bubble = document.getElementById('coach-bubble');
+  bubble.classList.add('hidden');
+  // Auto-restore after 3 seconds for demo purposes
+  setTimeout(() => { bubble.classList.remove('hidden'); }, 3000); 
 }
 
 // ═══════════════════════════════════════════════════════════════
-// DRAGGABLE COACH
+// DRAGGABLE COACH LOGIC
 // ═══════════════════════════════════════════════════════════════
 (function initDraggableCoach() {
   let isDragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
@@ -766,26 +1154,35 @@ function minimizeCoach() {
     if (e.target.closest('.coach-close') || e.target.closest('.coach-btn')) return;
     const coach = getCoach();
     if (!coach || coach.classList.contains('hidden')) return;
+    
     isDragging = true;
     coach.classList.add('dragging');
     startX = e.touches ? e.touches[0].clientX : e.clientX;
     startY = e.touches ? e.touches[0].clientY : e.clientY;
+    
     const rect = coach.getBoundingClientRect();
-    origLeft = rect.left; origTop = rect.top;
+    origLeft = rect.left; 
+    origTop = rect.top;
     e.preventDefault();
   }
 
   function onDragMove(e) {
     if (!isDragging) return;
     const coach = getCoach();
-    const cx = e.touches ? e.touches[0].clientX : e.clientX, cy = e.touches ? e.touches[0].clientY : e.clientY;
+    const cx = e.touches ? e.touches[0].clientX : e.clientX;
+    const cy = e.touches ? e.touches[0].clientY : e.clientY;
     const dx = cx - startX, dy = cy - startY;
+    
     coach.style.left = `${Math.max(0, Math.min(origLeft + dx, window.innerWidth - coach.offsetWidth))}px`;
     coach.style.top = `${Math.max(0, Math.min(origTop + dy, window.innerHeight - coach.offsetHeight))}px`;
     e.preventDefault();
   }
 
-  function onDragEnd() { isDragging = false; const coach = getCoach(); if (coach) coach.classList.remove('dragging'); }
+  function onDragEnd() { 
+    isDragging = false; 
+    const coach = getCoach(); 
+    if (coach) coach.classList.remove('dragging'); 
+  }
 
   document.addEventListener('mousedown', (e) => { if (e.target.closest('.coach-header')) onDragStart(e); });
   document.addEventListener('mousemove', onDragMove);
@@ -797,26 +1194,32 @@ function minimizeCoach() {
 // ═══════════════════════════════════════════════════════════════
 function renderStage() {
   const lesson = LESSONS[S.currentLesson];
+  if (!lesson) return;
   const stage = lesson.stages[S.currentStage];
+  if (!stage) return;
   
-  // HUD
+  // 1. Update HUD
   document.getElementById('hudLessonNum').textContent = `Lesson ${lesson.num} of 10`;
   document.getElementById('hudLessonName').textContent = lesson.title;
   document.getElementById('coachStageLabel').textContent = `Stage ${S.currentStage+1} · ${lesson.title}`;
   
-  document.getElementById('coachDots').innerHTML = lesson.stages.map((_, i) => `<div class="coach-dot ${i < S.currentStage ? 'done' : i === S.currentStage ? 'active' : ''}"></div>`).join('');
+  // 2. Coach Progress Dots
+  document.getElementById('coachDots').innerHTML = lesson.stages.map((_, i) => 
+    `<div class="coach-dot ${i < S.currentStage ? 'done' : i === S.currentStage ? 'active' : ''}"></div>`
+  ).join('');
 
-  // Setup View
+  // 3. Navigate the Dashboard to correct view
   navTo(lesson.view);
   
-  // Handle Lesson Specific Setup Hooks
+  // 4. Trigger specific Lesson UI setup (like showing the anomaly indicator)
   if (S.currentStage === 0 && lesson.onStart) lesson.onStart();
 
+  // 5. Render Coach Body
   const body = document.getElementById('coachBody');
   let html = '', btns = '';
 
   if (stage.type === 'explain') {
-    spotlight(null);
+    spotlight(null); // Clear spotlight
     html = `
       <div class="coach-stage-tag">📖 Explain</div>
       <div class="coach-headline">${stage.headline}</div>
@@ -826,7 +1229,7 @@ function renderStage() {
     btns = `<button class="coach-btn coach-btn-primary" onclick="nextStage()">Next →</button>`;
   } 
   else if (stage.type === 'locate') {
-    spotlight(stage.spotlight, false);
+    spotlight(stage.spotlight, false); // Target, but not clickable
     html = `
       <div class="coach-stage-tag">🖥️ Demo</div>
       <div class="coach-headline">${stage.headline}</div>
@@ -843,28 +1246,36 @@ function renderStage() {
     S.practiceAnswered = false;
     
     if (stage.inputTask) {
+      // It's a Text Input Quiz
       spotlight(null);
       html = `
         <div class="coach-stage-tag">🧠 Quiz</div>
-        <div class="coach-task-box"><div class="coach-task-label">Your Task</div><div class="coach-task-text">${stage.task}</div></div>
+        <div class="coach-task-box">
+          <div class="coach-task-label">Your Task</div>
+          <div class="coach-task-text">${stage.task}</div>
+        </div>
         <div class="coach-input-row" style="margin-top:16px">
           <input class="coach-input" id="practiceInput" placeholder="Your answer…" onkeydown="if(event.key==='Enter')checkInput()"/>
           <button class="coach-btn coach-btn-primary" onclick="checkInput()">Check</button>
         </div>
         <div style="margin-top:8px;font-size:11px;color:#fbbf24;">💡 Hint: ${stage.hint}</div>
         <div class="coach-feedback" id="coachFeedback"></div>`;
-      btns = ``; // Unlocked on correct answer
+      btns = ``; // Button appears after correct answer
     } else {
-      spotlight(stage.clickTarget, true);
+      // It's a Click Target Task
+      spotlight(stage.clickTarget, true); // Target AND clickable
       html = `
         <div class="coach-stage-tag">⚡ Do</div>
-        <div class="coach-task-box"><div class="coach-task-label">Your Task</div><div class="coach-task-text">${stage.task}</div></div>
+        <div class="coach-task-box">
+          <div class="coach-task-label">Your Task</div>
+          <div class="coach-task-text">${stage.task}</div>
+        </div>
         <div style="margin-top:12px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--teach-green)">
           <div style="width:8px;height:8px;border-radius:50%;background:var(--teach-green);animation:click-pulse 1.2s infinite;flex-shrink:0"></div>
           <span>Click the highlighted target in the dashboard.</span>
         </div>
         <div class="coach-feedback" id="coachFeedback"></div>`;
-      btns = ``; // Click handles progression
+      btns = ``; // Global click listener handles progression
     }
   }
 
@@ -872,8 +1283,10 @@ function renderStage() {
   document.getElementById('coachBtns').innerHTML = btns;
   positionCoach();
 
-  // TTS
-  if (TTS.enabled) setTimeout(() => speakStage(stage), 120);
+  // Trigger Audio
+  if (TTS.enabled) {
+    setTimeout(() => speakStage(stage), 120);
+  }
 }
 
 function nextStage() {
@@ -883,6 +1296,7 @@ function nextStage() {
     S.currentStage++;
     renderStage();
   } else {
+    // Lesson Complete
     finishLesson();
   }
 }
@@ -895,77 +1309,124 @@ function checkInput() {
 
   const raw = inp.value.trim().toLowerCase();
   const correct = stage.correctAnswer.toLowerCase();
-  const alts = (stage.altAnswers||[]).map(a => a.toLowerCase());
+  const alts = (stage.altAnswers || []).map(a => a.toLowerCase());
 
+  // String match logic
   if (raw === correct || alts.includes(raw)) {
     S.practiceAnswered = true;
     inp.style.borderColor = 'var(--teach-green)';
     const fb = document.getElementById('coachFeedback');
-    fb.className = 'coach-feedback right'; fb.textContent = '✓ Correct!';
+    if (fb) {
+      fb.className = 'coach-feedback right'; 
+      fb.textContent = '✓ Correct!';
+    }
     setTimeout(() => showSuccess(stage.successTitle, stage.successText), 500);
   } else {
     inp.style.borderColor = '#ef4444';
     const fb = document.getElementById('coachFeedback');
-    fb.className = 'coach-feedback wrong'; fb.textContent = 'Incorrect. Try again using the hint.';
+    if (fb) {
+      fb.className = 'coach-feedback wrong'; 
+      fb.textContent = 'Incorrect. Try again using the hint.';
+    }
   }
 }
 
-// Global click listener for UI Practice stages
+// Global click listener for UI Click Practice stages
 document.addEventListener('click', (e) => {
+  // Only process if the landing screen is hidden (course is active)
   if (!document.getElementById('landing-screen').classList.contains('hidden')) return;
-  const stage = LESSONS[S.currentLesson].stages[S.currentStage];
+  
+  const lesson = LESSONS[S.currentLesson];
+  if (!lesson) return;
+  const stage = lesson.stages[S.currentStage];
   
   if (stage && stage.type === 'practice' && !stage.inputTask && !S.practiceAnswered) {
+    // Walk up the DOM to see if the clicked element matches the target
     let el = e.target;
     let clickedTarget = false;
     for (let i=0; i<5 && el; i++) {
-      if (el.id === stage.clickTarget) { clickedTarget = true; break; }
+      if (el.id === stage.clickTarget) { 
+        clickedTarget = true; 
+        break; 
+      }
       el = el.parentElement;
     }
+    
     if (clickedTarget) {
       S.practiceAnswered = true;
       if (stage.onComplete) stage.onComplete();
-      spotlight(null);
+      
+      spotlight(null); // Remove highlight
+      
       const fb = document.getElementById('coachFeedback');
-      if (fb) { fb.className = 'coach-feedback right'; fb.textContent = '✓ Correct!'; }
+      if (fb) { 
+        fb.className = 'coach-feedback right'; 
+        fb.textContent = '✓ Correct!'; 
+      }
       setTimeout(() => showSuccess(stage.successTitle, stage.successText), 500);
     }
   }
 }, true);
 
 // ═══════════════════════════════════════════════════════════════
-// SUCCESS & COMPLETION
+// SUCCESS & COMPLETION OVERLAYS
 // ═══════════════════════════════════════════════════════════════
+function finishLesson() {
+  const isFinalLesson = S.currentLesson === LESSONS.length - 1;
+  const overlay = document.getElementById('success-overlay');
+  
+  // Mark lesson as complete in localStorage
+  if (!S.completed.includes(LESSONS[S.currentLesson].id)) {
+    S.completed.push(LESSONS[S.currentLesson].id);
+    localStorage.setItem('techmart_done', JSON.stringify(S.completed));
+  }
+
+  // Set up the overlay UI
+  document.getElementById('successTitle').textContent = 'Lesson Complete!';
+  document.getElementById('successText').textContent  = 'You have successfully completed this lesson.';
+  
+  const btn = document.getElementById('successBtn');
+  if (isFinalLesson) {
+    document.getElementById('successIcon').textContent = '🏆';
+    btn.textContent = 'Get Certificate →';
+    btn.onclick = () => { 
+      overlay.classList.remove('show'); 
+      showCertificate(); 
+    };
+  } else {
+    document.getElementById('successIcon').textContent = '✅';
+    btn.textContent = `Start Lesson ${LESSONS[S.currentLesson].num + 1} →`;
+    btn.onclick = () => { 
+      overlay.classList.remove('show'); 
+      S.currentLesson++; 
+      S.currentStage = 0; 
+      renderStage(); 
+    };
+  }
+  
+  overlay.classList.add('show');
+}
+
 function showSuccess(title, text) {
   const overlay = document.getElementById('success-overlay');
   document.getElementById('successTitle').textContent = title;
   document.getElementById('successText').textContent = text;
   
   const isFinalStage = S.currentStage === LESSONS[S.currentLesson].stages.length - 1;
-  const isFinalLesson = S.currentLesson === LESSONS.length - 1;
   const btn = document.getElementById('successBtn');
   
   if (isFinalStage) {
-    if (!S.completed.includes(LESSONS[S.currentLesson].id)) {
-      S.completed.push(LESSONS[S.currentLesson].id);
-      localStorage.setItem('techmart_done', JSON.stringify(S.completed));
-    }
-    if (isFinalLesson) {
-      document.getElementById('successIcon').textContent = '🏆';
-      btn.textContent = 'Get Certificate →';
-      btn.onclick = () => { overlay.classList.remove('show'); showCertificate(); };
-    } else {
-      document.getElementById('successIcon').textContent = '✅';
-      btn.textContent = `Start Lesson ${LESSONS[S.currentLesson].num + 1} →`;
-      btn.onclick = () => { overlay.classList.remove('show'); S.currentLesson++; S.currentStage=0; renderStage(); };
-    }
+    // Handled by finishLesson wrapper
+    finishLesson();
   } else {
     document.getElementById('successIcon').textContent = '⚡';
     btn.textContent = 'Next Step →';
-    btn.onclick = () => { overlay.classList.remove('show'); nextStage(); };
+    btn.onclick = () => { 
+      overlay.classList.remove('show'); 
+      nextStage(); 
+    };
+    overlay.classList.add('show');
   }
-  
-  overlay.classList.add('show');
 }
 
 function showCertificate() {
@@ -988,28 +1449,37 @@ function exitToMenu() {
 function startCourse() {
   document.getElementById('landing-screen').classList.add('hidden');
   document.getElementById('lesson-hud').classList.add('visible');
+  
+  // Find first uncompleted lesson, or default to 0
   S.currentLesson = S.completed.length < LESSONS.length ? S.completed.length : 0;
   S.currentStage = 0;
+  
   renderStage();
 }
 
 function renderLandingLessons() {
   const list = document.getElementById('landingLessonList');
   if (!list) return;
+  
   list.innerHTML = LESSONS.map((l, i) => {
-    const done = S.completed.includes(l.id);
-    const active = i === (S.completed.length < LESSONS.length ? S.completed.length : 0);
+    const isDone = S.completed.includes(l.id);
+    const isActive = i === (S.completed.length < LESSONS.length ? S.completed.length : 0);
     return `
-      <div class="lesson-list-item ${done?'completed':''}" onclick="S.currentLesson=${i};S.currentStage=0;startCourse();">
-        <div class="lesson-list-num ${done?'done':active?'active':''}">${done?'✓':l.num}</div>
+      <div class="lesson-list-item ${isDone ? 'completed' : ''}" onclick="S.currentLesson=${i};S.currentStage=0;startCourse();">
+        <div class="lesson-list-num ${isDone ? 'done' : isActive ? 'active' : ''}">${isDone ? '✓' : l.num}</div>
         <div class="lesson-list-info"><div class="lesson-list-title">${l.title}</div></div>
       </div>`;
   }).join('');
   
   const btn = document.getElementById('landingStartBtn');
-  if (S.completed.length === 0) btn.textContent = 'Begin Course →';
-  else if (S.completed.length >= LESSONS.length) { btn.textContent = '🏆 View Certificate →'; btn.onclick = showCertificate; }
-  else btn.textContent = `Continue Lesson ${S.completed.length + 1} →`;
+  if (S.completed.length === 0) {
+    btn.textContent = 'Begin Course →';
+  } else if (S.completed.length >= LESSONS.length) { 
+    btn.textContent = '🏆 View Certificate →'; 
+    btn.onclick = showCertificate; 
+  } else {
+    btn.textContent = `Continue Lesson ${S.completed.length + 1} →`;
+  }
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -1018,58 +1488,84 @@ function renderLandingLessons() {
 const TTS = {
   enabled: localStorage.getItem('s2_tts') !== 'off',
   rate: parseFloat(localStorage.getItem('s2_rate') || '0.9'),
-  voice: null, current: null, speaking: false,
+  voice: null, 
+  current: null, 
+  speaking: false,
 };
 
 function initTTSVoice() {
   if (TTS.voice) return;
   const voices = window.speechSynthesis?.getVoices() || [];
-  const preferred = ['Google UK English Female','Google US English','Samantha','Alex','en-GB-Neural2-C'];
-  for (const name of preferred) { const v = voices.find(v => v.name === name); if (v) { TTS.voice = v; return; } }
+  const preferred = ['Google UK English Female', 'Google US English', 'Samantha', 'Alex', 'en-GB-Neural2-C'];
+  for (const name of preferred) { 
+    const v = voices.find(v => v.name === name); 
+    if (v) { TTS.voice = v; return; } 
+  }
   TTS.voice = voices.find(v => v.lang.startsWith('en')) || voices[0] || null;
 }
-if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = initTTSVoice; setTimeout(initTTSVoice, 300); }
+
+if (window.speechSynthesis) { 
+  window.speechSynthesis.onvoiceschanged = initTTSVoice; 
+  setTimeout(initTTSVoice, 300); 
+}
 
 function buildSpeechScript(stage) {
   if (!stage) return '';
   const clean = s => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  
   switch (stage.type) {
-    case 'explain': return [stage.headline, stage.text, stage.analogy ? stage.analogy.replace(/[\u{1F300}-\u{1FAFF}]/gu, '') : ''].map(clean).join('. ');
-    case 'locate': return [stage.headline, stage.steps.join('. ')].map(clean).join('. ');
-    case 'practice': return clean(`Your task: ${stage.task} ${stage.hint ? 'Hint: '+stage.hint : ''}`);
-    default: return '';
+    case 'explain': 
+      return [stage.headline, stage.text, stage.analogy ? stage.analogy.replace(/[\u{1F300}-\u{1FAFF}]/gu, '') : ''].map(clean).join('. ');
+    case 'locate': 
+      return [stage.headline, stage.steps.join('. ')].map(clean).join('. ');
+    case 'practice': 
+      return clean(`Your task: ${stage.task} ${stage.hint ? 'Hint: '+stage.hint : ''}`);
+    default: 
+      return '';
   }
 }
 
 function speakStage(stage) {
   if (!TTS.enabled || !window.speechSynthesis) return;
   stopSpeaking();
+  
   const script = buildSpeechScript(stage);
   if (!script) return;
   
   const sentences = script.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(s => s.length > 3);
-  let idx = 0; TTS.speaking = true;
+  let idx = 0; 
+  TTS.speaking = true;
   document.getElementById('coachWaveform').style.display = 'flex';
 
   function speakNext() {
-    if (!TTS.enabled || !TTS.speaking || idx >= sentences.length) { stopSpeaking(); return; }
+    if (!TTS.enabled || !TTS.speaking || idx >= sentences.length) { 
+      stopSpeaking(); 
+      return; 
+    }
     const sentence = sentences[idx++];
     
     // Highlight Text
     document.querySelectorAll('.tts-highlight').forEach(el => el.classList.remove('tts-highlight'));
-    const walker = document.createTreeWalker(document.getElementById('coachBody'), NodeFilter.SHOW_TEXT);
-    let node;
-    while ((node = walker.nextNode())) {
-      if (node.textContent.includes(sentence.substring(0, 15))) {
-        node.parentElement.classList.add('tts-highlight'); break;
+    const bodyEl = document.getElementById('coachBody');
+    if (bodyEl) {
+      const walker = document.createTreeWalker(bodyEl, NodeFilter.SHOW_TEXT);
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.textContent.includes(sentence.substring(0, 15))) {
+          if (node.parentElement) node.parentElement.classList.add('tts-highlight'); 
+          break;
+        }
       }
     }
 
     initTTSVoice();
     window.speechSynthesis.cancel();
+    
     const utt = new SpeechSynthesisUtterance(sentence);
-    utt.rate = TTS.rate; utt.pitch = 1.05;
+    utt.rate = TTS.rate; 
+    utt.pitch = 1.05;
     if (TTS.voice) utt.voice = TTS.voice;
+    
     utt.onend = () => { setTimeout(speakNext, 100); };
     utt.onerror = () => { speakNext(); };
     window.speechSynthesis.speak(utt);
@@ -1080,41 +1576,93 @@ function speakStage(stage) {
 function stopSpeaking() {
   TTS.speaking = false;
   if (window.speechSynthesis) window.speechSynthesis.cancel();
+  
   const wf = document.getElementById('coachWaveform');
   if (wf) wf.style.display = 'none';
+  
   document.querySelectorAll('.tts-highlight').forEach(el => el.classList.remove('tts-highlight'));
 }
 
 function toggleTTS() {
   TTS.enabled = !TTS.enabled;
   localStorage.setItem('s2_tts', TTS.enabled ? 'on' : 'off');
+  
   const btn = document.getElementById('coachSpeakBtn');
+  const controls = document.getElementById('ttsControls');
+  
   if (TTS.enabled) {
-    btn.textContent = '🔊'; btn.style.color = '#00d4ff'; btn.style.background = 'rgba(0,212,255,.12)';
-    speakStage(LESSONS[S.currentLesson].stages[S.currentStage]);
+    if (btn) {
+      btn.textContent = '🔊'; 
+      btn.style.color = '#00d4ff'; 
+      btn.style.background = 'rgba(0,212,255,.12)';
+    }
+    if (controls) controls.classList.add('visible');
+    const lesson = LESSONS[S.currentLesson];
+    if (lesson) speakStage(lesson.stages[S.currentStage]);
   } else {
     stopSpeaking();
-    btn.textContent = '🔇'; btn.style.color = 'var(--teach-muted)'; btn.style.background = 'rgba(255,255,255,.04)';
+    if (btn) {
+      btn.textContent = '🔇'; 
+      btn.style.color = 'var(--teach-muted)'; 
+      btn.style.background = 'rgba(255,255,255,.04)';
+    }
+    if (controls) controls.classList.remove('visible');
   }
 }
 
 function setTTSRate(rate) {
-  TTS.rate = rate; localStorage.setItem('s2_rate', rate);
-  document.querySelectorAll('.tts-rate-btn').forEach(btn => btn.classList.toggle('active', parseFloat(btn.dataset.rate) === rate));
-  if (TTS.enabled && TTS.speaking) speakStage(LESSONS[S.currentLesson].stages[S.currentStage]);
+  TTS.rate = rate; 
+  localStorage.setItem('s2_rate', rate);
+  
+  document.querySelectorAll('.tts-rate-btn').forEach(btn => {
+    btn.classList.toggle('active', parseFloat(btn.dataset.rate) === rate);
+  });
+  
+  if (TTS.enabled && TTS.speaking) {
+    speakStage(LESSONS[S.currentLesson].stages[S.currentStage]);
+  }
+}
+
+function replaySpeech() {
+  const lesson = LESSONS[S.currentLesson];
+  if (lesson && TTS.enabled) speakStage(lesson.stages[S.currentStage]);
 }
 
 // ═══════════════════════════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════════════════════════
 (function init() {
+  // Build dashboard elements
   buildAcqTable();
   buildLineChart('homeLineChart', DB.weekly, '#4285f4');
   renderLandingLessons();
+  
+  // Set initial TTS button state
   if (!TTS.enabled) {
     const btn = document.getElementById('coachSpeakBtn');
-    if (btn) { btn.textContent = '🔇'; btn.style.color = 'var(--teach-muted)'; btn.style.background = 'rgba(255,255,255,.04)'; }
+    const controls = document.getElementById('ttsControls');
+    if (btn) { 
+      btn.textContent = '🔇'; 
+      btn.style.color = 'var(--teach-muted)'; 
+      btn.style.background = 'rgba(255,255,255,.04)'; 
+    }
+    if (controls) controls.classList.remove('visible');
   }
+  
+  // Re-run spotlight positioning on window resize
+  window.addEventListener('resize', () => {
+    if (!document.getElementById('lesson-hud').classList.contains('visible')) return;
+    const lesson = LESSONS[S.currentLesson];
+    if (!lesson) return;
+    const stage = lesson.stages[S.currentStage];
+    if (!stage) return;
+    
+    if (stage.type === 'practice' && !stage.inputTask && stage.clickTarget) {
+      spotlight(stage.clickTarget, true);
+    } else if (stage.spotlight) {
+      spotlight(stage.spotlight, false);
+    }
+  });
 })();
 
 </script>
