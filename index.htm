@@ -27,6 +27,7 @@
   --ga-orange:     #f29900;
   --ga-hover:      #f8f9fa;
   --ga-selected:   #e8f0fe;
+  --ga-chart-1:    #4285f4;
 
   /* Teaching layer */
   --teach-bg:      #1e1e2e;
@@ -49,7 +50,9 @@
   --radius-sm: 4px;
   --radius:    8px;
   --radius-lg: 12px;
+  --shadow-sm: 0 1px 2px rgba(60,64,67,.3), 0 1px 3px rgba(60,64,67,.15);
   --shadow:    0 1px 3px rgba(60,64,67,.3), 0 4px 8px rgba(60,64,67,.15);
+  --shadow-lg: 0 2px 6px rgba(60,64,67,.3), 0 8px 20px rgba(60,64,67,.2);
 
   font-family: 'DM Sans', 'Plus Jakarta Sans', sans-serif;
 }
@@ -65,125 +68,186 @@ svg{display:block}
 /* ═══════════════════════════════════════
    GA4 SHELL LAYOUT
 ═══════════════════════════════════════ */
-#ga-shell {
-  display:grid;
-  grid-template-columns: var(--sidebar-w) 1fr;
-  grid-template-rows: var(--header-h) 1fr;
-  height:100vh;
-  width:100vw;
-}
+#ga-shell { display:grid; grid-template-columns: var(--sidebar-w) 1fr; grid-template-rows: var(--header-h) 1fr; height:100vh; width:100vw; }
 
 /* ─── TOP HEADER ─────────────────────────────── */
-#ga-header {
-  grid-column: 1 / -1;
-  background: var(--ga-surface);
-  border-bottom: 1px solid var(--ga-border);
-  display: flex; align-items: center; padding: 0 16px 0 0; gap: 8px;
-  z-index: 100; position: relative;
-}
+#ga-header { grid-column: 1 / -1; background: var(--ga-surface); border-bottom: 1px solid var(--ga-border); display: flex; align-items: center; padding: 0 16px 0 0; gap: 8px; z-index: 100; position: relative; }
 .ga-logo-area { width: var(--sidebar-w); display: flex; align-items: center; padding: 0 16px; gap: 10px; flex-shrink: 0; }
-.ga-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #4285f4, #34a853, #fbbc04, #ea4335); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; color: white; }
+.ga-logo-icon { width: 32px; height: 32px; background: linear-gradient(135deg, #4285f4 0%, #34a853 50%, #fbbc04 75%, #ea4335 100%); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px; font-weight: 700; color: white; }
 .ga-logo-text { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 400; color: var(--ga-text-2); white-space: nowrap; }
 .ga-logo-text strong { color: var(--ga-text); font-weight: 500; }
 .ga-search-bar { flex: 1; max-width: 600px; background: var(--ga-hover); border: 1px solid var(--ga-border); border-radius: 24px; display: flex; align-items: center; padding: 0 16px; gap: 8px; height: 40px; }
-.ga-search-bar input { border: none; background: transparent; font-size: 14px; flex: 1; outline: none; }
+.ga-search-bar input { border: none; background: transparent; font-size: 14px; color: var(--ga-text); flex: 1; outline: none; }
 .ga-header-spacer { flex: 1; }
-.ga-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #1a73e8, #34a853); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white; }
-.ga-property-chip { display: flex; align-items: center; gap: 6px; background: var(--ga-hover); border: 1px solid var(--ga-border); border-radius: 20px; padding: 6px 12px; font-size: 13px; color: var(--ga-text); }
+.ga-property-chip { display: flex; align-items: center; gap: 6px; background: var(--ga-hover); border: 1px solid var(--ga-border); border-radius: 20px; padding: 6px 12px; font-size: 13px; color: var(--ga-text); white-space: nowrap; }
 .ga-property-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--ga-blue); }
+.ga-avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, #1a73e8, #34a853); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 500; color: white; }
 
 /* ─── LEFT SIDEBAR ───────────────────────────── */
-#ga-sidebar { background: var(--ga-sidebar-bg); border-right: 1px solid var(--ga-border); overflow-y: auto; display: flex; flex-direction: column; }
-.sidebar-section { padding: 8px 0; border-bottom: 1px solid var(--ga-border); }
-.sidebar-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; border-radius: 0 20px 20px 0; margin-right: 8px; font-size: 13px; color: var(--ga-text-2); }
+#ga-sidebar { background: var(--ga-sidebar-bg); border-right: 1px solid var(--ga-border); overflow-y: auto; overflow-x: hidden; display: flex; flex-direction: column; }
+.sidebar-section { padding: 8px 0; }
+.sidebar-section + .sidebar-section { border-top: 1px solid var(--ga-border); }
+.sidebar-item { display: flex; align-items: center; gap: 12px; padding: 10px 16px; cursor: pointer; border-radius: 0 20px 20px 0; margin-right: 8px; font-size: 13px; color: var(--ga-text-2); font-weight: 400; transition: background .15s, color .15s; }
 .sidebar-item:hover { background: var(--ga-hover); color: var(--ga-text); }
 .sidebar-item.active { background: var(--ga-blue-light); color: var(--ga-blue); font-weight: 500; }
 .sidebar-item .si-icon { width: 18px; height: 18px; flex-shrink: 0; }
-.sidebar-subitem { display: flex; align-items: center; gap: 8px; padding: 8px 16px 8px 46px; cursor: pointer; font-size: 13px; color: var(--ga-text-2); border-radius: 0 20px 20px 0; margin-right: 8px; }
+.sidebar-sub { overflow: hidden; max-height: 0; transition: max-height .3s ease; }
+.sidebar-sub.open { max-height: 600px; }
+.sidebar-subitem { display: flex; align-items: center; gap: 8px; padding: 8px 16px 8px 46px; cursor: pointer; font-size: 13px; color: var(--ga-text-2); border-radius: 0 20px 20px 0; margin-right: 8px; transition: background .15s, color .15s; }
 .sidebar-subitem:hover { background: var(--ga-hover); color: var(--ga-text); }
 .sidebar-subitem.active { background: var(--ga-blue-light); color: var(--ga-blue); font-weight: 500; }
+.sidebar-spacer { flex: 1; }
 
 /* ─── MAIN CONTENT ────────────────────────────── */
-#ga-main { overflow-y: auto; background: var(--ga-bg); display: flex; flex-direction: column; }
-#ga-subnav { background: var(--ga-surface); border-bottom: 1px solid var(--ga-border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; min-height: var(--subnav-h); }
+#ga-main { overflow-y: auto; overflow-x: hidden; background: var(--ga-bg); display: flex; flex-direction: column; position: relative; }
+#ga-subnav { background: var(--ga-surface); border-bottom: 1px solid var(--ga-border); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; min-height: var(--subnav-h); flex-shrink: 0; position: sticky; top: 0; z-index: 50; }
 .ga-breadcrumb { font-size: 13px; color: var(--ga-text-2); }
 .ga-breadcrumb .current { color: var(--ga-text); font-weight: 500; }
 
-/* ─── REPORT VIEWS ────────────────────────────── */
 .ga-report-view { display: none; padding: 24px; flex-direction: column; gap: 16px; }
 .ga-report-view.active { display: flex; }
 .ga-report-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 22px; font-weight: 400; color: var(--ga-text); margin-bottom: 4px; }
-.ga-card { background: var(--ga-surface); border: 1px solid var(--ga-border); border-radius: var(--radius); padding: 16px; }
+.ga-report-subtitle { font-size: 13px; color: var(--ga-text-2); }
 
-/* Custom elements for lessons */
-.ga-metric-card { background: var(--ga-surface); border: 1px solid var(--ga-border); padding: 20px; border-radius: 8px; cursor: pointer; transition: background .15s; }
-.ga-metric-card:hover { background: #fafafa; }
-.ga-table { width: 100%; border-collapse: collapse; }
-.ga-table th { padding: 10px 16px; text-align: left; font-size: 11px; text-transform: uppercase; border-bottom: 2px solid var(--ga-border); background: var(--ga-hover); }
-.ga-table td { padding: 10px 16px; font-size: 13px; border-bottom: 1px solid var(--ga-border); }
-.ga-table tr:hover td { background: var(--ga-hover); cursor: pointer; }
-.toggle-switch { width: 36px; height: 20px; border-radius: 10px; background: #ccc; position: relative; cursor: pointer; transition: 0.3s; }
-.toggle-switch::after { content: ''; width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: 0.3s; }
-.toggle-switch.on { background: var(--ga-blue); }
-.toggle-switch.on::after { left: 18px; }
+/* Common UI Elements */
+.ga-card { background: var(--ga-surface); border: 1px solid var(--ga-border); border-radius: var(--radius); padding: 16px; }
+.ga-metric-strip { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1px; background: var(--ga-border); border: 1px solid var(--ga-border); border-radius: var(--radius); overflow: hidden; }
+.ga-metric-card { background: var(--ga-surface); padding: 20px 16px; position: relative; }
+.ga-metric-label { font-size: 11px; font-weight: 500; color: var(--ga-text-2); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 8px; }
+.ga-metric-value { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; font-weight: 400; color: var(--ga-text); line-height: 1; margin-bottom: 6px; }
+.ga-chart-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.ga-chart-title { font-size: 13px; font-weight: 500; color: var(--ga-text); }
+.ga-linechart-wrap { width: 100%; overflow: hidden; position: relative; }
+.ga-btn-primary { background: var(--ga-blue); color: white; padding: 8px 16px; border-radius: 4px; font-weight: 500; border: none; font-size: 13px; cursor: pointer; transition: background .15s; }
+.ga-btn-primary:hover { background: var(--ga-blue-dark); }
+.ga-btn-secondary { background: white; color: var(--ga-text); padding: 8px 16px; border-radius: 4px; font-weight: 500; border: 1px solid var(--ga-border); font-size: 13px; cursor: pointer; }
+
+/* Tables */
+.ga-table-card { background: var(--ga-surface); border: 1px solid var(--ga-border); border-radius: var(--radius); overflow: hidden; }
+table.ga-table { width: 100%; border-collapse: collapse; }
+table.ga-table th { padding: 10px 16px; text-align: left; font-size: 11px; font-weight: 500; color: var(--ga-text-2); text-transform: uppercase; border-bottom: 2px solid var(--ga-border); background: var(--ga-hover); }
+table.ga-table td { padding: 10px 16px; font-size: 13px; color: var(--ga-text); border-bottom: 1px solid var(--ga-border); }
+table.ga-table tr:hover td { background: var(--ga-hover); }
+
+/* Custom Toggle */
+.ga-toggle { width: 36px; height: 20px; border-radius: 10px; background: var(--ga-border); position: relative; cursor: pointer; transition: background 0.3s; }
+.ga-toggle::after { content: ''; width: 16px; height: 16px; background: white; border-radius: 50%; position: absolute; top: 2px; left: 2px; transition: left 0.3s; box-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+.ga-toggle.on { background: var(--ga-blue); }
+.ga-toggle.on::after { left: 18px; }
 
 /* ═══════════════════════════════════════
-   TEACHING LAYER
+   TEACHING LAYER (V6 Architecture)
 ═══════════════════════════════════════ */
-#spotlight-overlay { position: fixed; inset: 0; pointer-events: none; z-index: var(--spot-z); opacity: 0; background: rgba(0,0,0,.55); transition: opacity .3s; }
-#spotlight-overlay.active { opacity: 1; mask-image: radial-gradient(ellipse var(--sw, 200px) var(--sh, 80px) at var(--sx, 50%) var(--sy, 50%), transparent 95%, black 100%); -webkit-mask-image: radial-gradient(ellipse var(--sw, 200px) var(--sh, 80px) at var(--sx, 50%) var(--sy, 50%), transparent 95%, black 100%); }
-.spotlight-ring { position: fixed; border: 2px solid var(--ga-blue); border-radius: var(--radius-sm); pointer-events: none; z-index: calc(var(--spot-z) + 1); box-shadow: 0 0 0 4px rgba(26,115,232,.2), 0 0 20px rgba(26,115,232,.3); animation: ring-pulse 2s ease-in-out infinite; }
+/* 4-Panel Spotlight Masking */
+.sp-panel { position: fixed; background: rgba(0,0,0,.55); pointer-events: none; z-index: var(--spot-z); display: none; transition: all 0.2s; }
+
+.spotlight-ring { position: fixed; border: 2px solid var(--ga-blue); border-radius: var(--radius-sm); pointer-events: none; z-index: calc(var(--spot-z) + 1); box-shadow: 0 0 0 4px rgba(26,115,232,.2), 0 0 20px rgba(26,115,232,.3); transition: all .3s cubic-bezier(.4,0,.2,1); animation: ring-pulse 2s ease-in-out infinite; }
 @keyframes ring-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(26,115,232,.2), 0 0 20px rgba(26,115,232,.3); } 50% { box-shadow: 0 0 0 8px rgba(26,115,232,.1), 0 0 30px rgba(26,115,232,.4); } }
 .spotlight-ring.click-target { border-color: #34a853; animation: click-pulse 1.2s ease-in-out infinite; }
 @keyframes click-pulse { 0%, 100% { box-shadow: 0 0 0 4px rgba(52,168,83,.2), 0 0 20px rgba(52,168,83,.3); transform: scale(1); } 50% { box-shadow: 0 0 0 10px rgba(52,168,83,.1), 0 0 30px rgba(52,168,83,.4); transform: scale(1.01); } }
 
-#coach-bubble { position: fixed; z-index: var(--coach-z); width: 360px; background: rgba(15, 15, 28, 0.62); backdrop-filter: blur(24px); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); box-shadow: 0 8px 40px rgba(0,0,0,.45); transition: opacity .3s, transform .3s; user-select: none; }
+/* Coach Bubble */
+#coach-bubble { position: fixed; z-index: var(--coach-z); width: 360px; background: rgba(15, 15, 28, 0.62); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%); border: 1px solid rgba(255,255,255,0.1); border-radius: var(--radius-lg); box-shadow: 0 8px 40px rgba(0,0,0,.45); overflow: hidden; transition: opacity .3s, transform .3s cubic-bezier(.4,0,.2,1); transform-origin: center top; user-select: none; }
 #coach-bubble.hidden { opacity: 0; transform: scale(.95) translateY(-8px); pointer-events: none; }
-.coach-header { background: linear-gradient(135deg, rgba(20,20,40,0.9), rgba(18,24,52,0.9)); padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: grab; }
-.coach-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--teach-cyan), var(--teach-purple)); display: flex; align-items: center; justify-content: center; font-size: 16px; }
-.coach-name { font-size: 12px; font-weight: 600; color: var(--teach-cyan); }
+#coach-bubble.dragging { transition: none; opacity: 0.95; }
+.coach-header { background: linear-gradient(135deg, rgba(20,20,40,0.9), rgba(18,24,52,0.9)); padding: 10px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(255,255,255,0.08); cursor: grab; position: relative; }
+.coach-header:active { cursor: grabbing; }
+.coach-header::before { content: '⋮⋮'; position: absolute; right: 44px; top: 50%; transform: translateY(-50%); font-size: 12px; color: rgba(255,255,255,0.2); letter-spacing: 2px; pointer-events: none; }
+.coach-avatar { width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--teach-cyan), var(--teach-purple)); display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+.coach-name { font-size: 12px; font-weight: 600; color: var(--teach-cyan); letter-spacing: .05em; }
 .coach-stage { font-size: 11px; color: var(--teach-muted); }
-.coach-body { padding: 16px; background: transparent; }
-.coach-stage-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,212,255,.1); color: var(--teach-cyan); font-size: 10px; font-weight: 700; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; border: 1px solid rgba(0,212,255,.3); margin-bottom: 12px; }
+.coach-close { margin-left: auto; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.35); cursor: pointer; transition: background .15s; flex-shrink: 0; }
+.coach-close:hover { background: rgba(255,255,255,.12); color: white; }
+
+.coach-body { padding: 16px; max-height: calc(100vh - 260px); overflow-y: auto; scrollbar-width: thin; scrollbar-color: rgba(0,212,255,.3) transparent; }
+.coach-stage-tag { display: inline-flex; align-items: center; gap: 6px; background: rgba(0,212,255,.1); color: var(--teach-cyan); font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; padding: 3px 10px; border-radius: 100px; border: 1px solid rgba(0,212,255,.3); margin-bottom: 12px; }
 .coach-headline { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 17px; font-weight: 500; color: var(--teach-text); line-height: 1.3; margin-bottom: 10px; }
 .coach-text { font-size: 13px; color: var(--teach-muted); line-height: 1.65; }
+.coach-text strong { color: var(--teach-text); font-weight: 500; }
+.coach-analogy { background: rgba(251,191,36,.08); border-left: 3px solid var(--teach-amber); border-radius: 0 var(--radius-sm) var(--radius-sm) 0; padding: 10px 14px; margin: 12px 0; font-size: 13px; color: var(--teach-text); line-height: 1.5; }
+.coach-task-box { background: rgba(52,211,153,.08); border: 1px solid rgba(52,211,153,.3); border-radius: var(--radius-sm); padding: 12px 14px; margin-top: 12px; }
+.coach-task-label { font-size: 10px; font-weight: 700; color: var(--teach-green); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 6px; }
+.coach-task-text { font-size: 13px; color: var(--teach-text); line-height: 1.5; }
 .coach-input-row { display: flex; gap: 8px; margin-top: 12px; }
-.coach-input { flex: 1; background: var(--teach-surface); border: 1px solid var(--teach-border); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--teach-text); outline: none; }
+.coach-input { flex: 1; background: var(--teach-surface); border: 1px solid var(--teach-border); border-radius: var(--radius-sm); padding: 8px 12px; color: var(--teach-text); font-size: 13px; outline: none; transition: border-color .15s; }
+.coach-input:focus { border-color: var(--teach-cyan); }
 .coach-feedback { display: none; margin-top: 10px; border-radius: var(--radius-sm); padding: 10px 12px; font-size: 13px; }
 .coach-feedback.wrong { background: rgba(239,68,68,.1); border: 1px solid rgba(239,68,68,.3); color: #fca5a5; display: block; }
 .coach-feedback.right { background: rgba(52,211,153,.1); border: 1px solid rgba(52,211,153,.3); color: var(--teach-green); display: block; }
-.coach-footer { padding: 12px 16px; border-top: 1px solid var(--teach-border); display: flex; justify-content: space-between; align-items: center; }
+
+.coach-footer { padding: 12px 16px; border-top: 1px solid var(--teach-border); display: flex; align-items: center; justify-content: space-between; background: rgba(0,0,0,0.15); }
+.coach-progress-dots { display: flex; gap: 5px; }
+.coach-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teach-border); transition: background .2s, transform .2s; }
+.coach-dot.done { background: var(--teach-green); }
+.coach-dot.active { background: var(--teach-cyan); transform: scale(1.4); }
 .coach-btns { display: flex; gap: 8px; }
-.coach-btn { padding: 7px 16px; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; border: none; }
+.coach-btn { padding: 7px 16px; border-radius: 4px; font-size: 13px; font-weight: 500; cursor: pointer; transition: all .15s; border: none; }
 .coach-btn-primary { background: var(--ga-blue); color: white; }
+.coach-btn-primary:hover { background: var(--ga-blue-dark); }
 .coach-btn-secondary { background: transparent; color: var(--teach-muted); border: 1px solid var(--teach-border); }
+.coach-btn-secondary:hover { color: var(--teach-text); border-color: var(--teach-text); }
+.coach-btn-success { background: var(--teach-green); color: #0a0a0a; font-weight: 600; }
+.coach-btn-success:hover { background: #2ecc87; }
+
+/* TTS & Waveform */
+.wave-bar { width: 3px; background: var(--teach-cyan); border-radius: 2px; animation: waveAnim 0.8s ease-in-out infinite; animation-delay: var(--d, 0s); min-height: 4px; }
+@keyframes waveAnim { 0%, 100% { height: 4px; opacity: .5; } 50% { height: 16px; opacity: 1; } }
+.tts-highlight { background: rgba(0,212,255,.15); border-radius: 3px; transition: background .2s; }
+#ttsControls { display: none; align-items: center; gap: 8px; padding: 6px 0 0; border-top: 1px solid rgba(255,255,255,.06); margin-top: 8px; }
+#ttsControls.visible { display: flex; }
+.tts-rate-btn { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.1); border-radius: 4px; padding: 3px 8px; font-size: 10px; font-weight: 700; color: var(--teach-muted); cursor: pointer; transition: all .15s; }
+.tts-rate-btn.active { background: rgba(0,212,255,.12); border-color: rgba(0,212,255,.4); color: var(--teach-cyan); }
 
 /* ─── HUD & LANDING ─────────────────────────── */
 #lesson-hud { position: fixed; top: 0; left: 0; right: 0; height: var(--header-h); background: var(--teach-bg); border-bottom: 2px solid var(--teach-cyan); display: none; align-items: center; padding: 0 20px; gap: 16px; z-index: calc(var(--coach-z) + 1); box-shadow: 0 4px 20px rgba(0,0,0,.4); }
 #lesson-hud.visible { display: flex; }
-.hud-logo { font-size: 16px; font-weight: 700; color: white; }
+.hud-logo { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 16px; font-weight: 700; color: white; }
+.hud-logo span { color: var(--teach-cyan); }
+.hud-divider { width: 1px; height: 28px; background: var(--teach-border); }
 .hud-lesson-name { font-size: 13px; color: var(--teach-text); }
-.hud-exit-btn { padding: 6px 14px; border-radius: 4px; font-size: 13px; color: var(--teach-muted); border: 1px solid var(--teach-border); cursor: pointer; margin-left: auto; }
+.hud-lesson-num { font-size: 11px; color: var(--teach-muted); margin-bottom: 2px; }
+.hud-spacer { flex: 1; }
+.hud-exit-btn { display: flex; align-items: center; gap: 6px; padding: 6px 14px; border-radius: 4px; font-size: 13px; color: var(--teach-muted); border: 1px solid var(--teach-border); cursor: pointer; transition: all .15s; }
+.hud-exit-btn:hover { color: var(--teach-text); border-color: var(--teach-text); }
 
 #landing-screen { position: fixed; inset: 0; z-index: 20000; background: var(--teach-bg); display: flex; align-items: center; justify-content: center; padding: 24px; }
 #landing-screen.hidden { display: none; }
-.landing-card { max-width: 1100px; width: 100%; display: grid; grid-template-columns: 1fr 1.2fr; background: var(--teach-surface); border-radius: 20px; border: 1px solid var(--teach-border); overflow: hidden; }
-.landing-left { background: linear-gradient(160deg, #0f0f1a, #1a1a2e); padding: 48px 40px; border-right: 1px solid var(--teach-border); }
-.landing-title { font-size: 42px; color: white; margin-bottom: 16px; font-family: 'Plus Jakarta Sans'; }
-.landing-right { padding: 32px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: 80vh; }
-.lesson-list-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--teach-bg); border: 1px solid var(--teach-border); border-radius: var(--radius); cursor: pointer; }
+.landing-card { max-width: 1100px; width: 100%; display: grid; grid-template-columns: 1fr 1.2fr; background: var(--teach-surface); border-radius: 20px; border: 1px solid var(--teach-border); overflow: hidden; box-shadow: 0 24px 80px rgba(0,0,0,.5); }
+.landing-left { background: linear-gradient(160deg, #0f0f1a, #1a1a2e, #16213e); padding: 48px 40px; display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--teach-border); }
+.landing-eyebrow { font-size: 11px; font-weight: 700; color: var(--teach-cyan); text-transform: uppercase; letter-spacing: .15em; margin-bottom: 20px; }
+.landing-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 42px; color: white; line-height: 1.15; margin-bottom: 16px; }
+.landing-title em { color: var(--teach-cyan); font-style: normal; }
+.landing-desc { font-size: 14px; color: var(--teach-muted); line-height: 1.7; margin-bottom: 32px; }
+.landing-right { padding: 32px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; max-height: calc(90vh - 40px); }
+.landing-right-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 18px; font-weight: 500; color: var(--teach-text); margin-bottom: 12px; }
+.lesson-list-item { display: flex; align-items: center; gap: 14px; padding: 14px 16px; background: var(--teach-bg); border: 1px solid var(--teach-border); border-radius: var(--radius); cursor: pointer; transition: all .15s; }
+.lesson-list-item:hover { border-color: var(--teach-cyan); background: rgba(0,212,255,.04); }
 .lesson-list-item.completed { border-color: rgba(52,211,153,.3); }
-.landing-start-btn { width: 100%; padding: 14px; border-radius: var(--radius); background: var(--ga-blue); color: white; font-size: 15px; font-weight: 500; cursor: pointer; border: none; margin-top: 10px; }
+.lesson-list-num { width: 28px; height: 28px; border-radius: 50%; background: var(--teach-surface); border: 1.5px solid var(--teach-border); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: var(--teach-muted); flex-shrink: 0; }
+.lesson-list-num.done { background: rgba(52,211,153,.15); border-color: var(--teach-green); color: var(--teach-green); }
+.lesson-list-num.active { background: rgba(0,212,255,.15); border-color: var(--teach-cyan); color: var(--teach-cyan); }
+.lesson-list-info { flex: 1; }
+.lesson-list-title { font-size: 13px; font-weight: 500; color: var(--teach-text); margin-bottom: 2px; }
+.landing-start-btn { width: 100%; padding: 14px; border-radius: var(--radius); background: var(--ga-blue); color: white; font-size: 15px; font-weight: 500; font-family: 'Plus Jakarta Sans', sans-serif; cursor: pointer; border: none; margin-top: 8px; }
 
 /* ─── SUCCESS & CERTIFICATE ────────────────────────── */
 #success-overlay { position: fixed; inset: 0; z-index: calc(var(--coach-z) + 10); background: rgba(0,0,0,.7); display: none; align-items: center; justify-content: center; }
-#success-overlay.show { display: flex; }
-.success-card { background: var(--teach-bg); border: 1px solid var(--teach-green); border-radius: var(--radius-lg); padding: 40px; text-align: center; max-width: 440px; width: 90%; }
-.success-btn { width: 100%; padding: 12px; border-radius: var(--radius-sm); background: var(--ga-blue); color: white; font-weight: 500; cursor: pointer; border: none; margin-top: 20px; }
+#success-overlay.show { display: flex; animation: fadeIn .3s ease; }
+.success-card { background: var(--teach-bg); border: 1px solid var(--teach-green); border-radius: var(--radius-lg); padding: 40px; text-align: center; max-width: 440px; width: 90%; box-shadow: 0 0 60px rgba(52,211,153,.2); animation: popIn .4s cubic-bezier(.34,1.56,.64,1); }
+@keyframes popIn { from { transform: scale(.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.success-icon { font-size: 48px; margin-bottom: 16px; }
+.success-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 24px; font-weight: 500; color: var(--teach-text); margin-bottom: 8px; }
+.success-text { font-size: 14px; color: var(--teach-muted); line-height: 1.6; margin-bottom: 24px; }
+.success-btn { width: 100%; padding: 12px; border-radius: var(--radius-sm); background: var(--ga-blue); color: white; font-size: 14px; font-weight: 500; cursor: pointer; border: none; }
 
-#cert-screen { position: fixed; inset: 0; z-index: 30000; background: var(--teach-bg); display: none; align-items: center; justify-content: center; }
+#cert-screen { position: fixed; inset: 0; z-index: 30000; background: var(--teach-bg); display: none; align-items: center; justify-content: center; padding: 24px; }
 #cert-screen.show { display: flex; }
-.cert-card { background: var(--teach-surface); border: 2px solid var(--teach-amber); border-radius: 20px; padding: 60px 48px; text-align: center; color: white; }
+.cert-card { background: var(--teach-surface); border: 2px solid var(--teach-amber); border-radius: 20px; padding: 60px 48px; text-align: center; max-width: 560px; width: 100%; box-shadow: 0 0 80px rgba(251,191,36,.15); animation: fadeIn .5s ease; }
+.cert-badge { font-size: 56px; margin-bottom: 12px; }
+.cert-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 28px; color: var(--teach-text); margin-bottom: 6px; }
+.cert-name { font-size: 16px; color: var(--teach-cyan); font-family: 'Plus Jakarta Sans', sans-serif; margin: 16px 0 28px; }
+.cert-btn-primary { padding: 10px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 500; cursor: pointer; border: none; background: var(--teach-amber); color: #0a0a0a; }
 </style>
 </head>
 <body>
@@ -191,12 +255,14 @@ svg{display:block}
 <div id="landing-screen">
   <div class="landing-card">
     <div class="landing-left">
-      <div style="font-size:11px; color:var(--teach-cyan); text-transform:uppercase; margin-bottom:20px; font-weight:700;">Interactive Masterclass</div>
-      <div class="landing-title">GA4 <em>TechMart</em> Case Study</div>
-      <div style="color:var(--teach-muted); line-height:1.7;">Learn GA4 entirely by doing. Set up a property, configure tracking, analyse traffic, and diagnose a major drop-off in sales for TechMart. Explain → Demo → Do → Quiz.</div>
+      <div>
+        <div class="landing-eyebrow">Interactive Masterclass</div>
+        <div class="landing-title">GA4 <em>TechMart</em> Case Study</div>
+        <div class="landing-desc">Learn GA4 entirely by doing. Set up a property, configure tracking, analyse traffic, and diagnose a major drop-off in sales for an e-commerce brand called TechMart. Explain → Demo → Do → Quiz.</div>
+      </div>
     </div>
     <div class="landing-right">
-      <div style="font-size:18px; font-weight:500; color:white; margin-bottom:10px;">Curriculum</div>
+      <div class="landing-right-title">Curriculum (10 Lessons)</div>
       <div id="landingLessonList"></div>
       <button class="landing-start-btn" id="landingStartBtn" onclick="startCourse()">Begin Course →</button>
     </div>
@@ -205,12 +271,13 @@ svg{display:block}
 
 <div id="lesson-hud">
   <div class="hud-logo">Skill<span>OS</span></div>
-  <div style="width:1px;height:28px;background:var(--teach-border);"></div>
+  <div class="hud-divider"></div>
   <div>
-    <div style="font-size:11px;color:var(--teach-muted);" id="hudLessonNum">Lesson 1 of 10</div>
+    <div class="hud-lesson-num" id="hudLessonNum">Lesson 1 of 10</div>
     <div class="hud-lesson-name" id="hudLessonName">Create Property</div>
   </div>
-  <button class="hud-exit-btn" onclick="exitToMenu()">← Lessons</button>
+  <div class="hud-spacer"></div>
+  <button class="hud-exit-btn" onclick="exitToMenu()">← Exit to Lessons</button>
 </div>
 
 <div id="ga-shell">
@@ -221,7 +288,7 @@ svg{display:block}
     </div>
     <div class="ga-property-chip">
       <div class="ga-property-dot"></div>
-      <span id="prop-name">No Property Selected</span>
+      <span id="header-prop-name">No Property Selected</span>
     </div>
     <div class="ga-search-bar"><input type="text" placeholder="Search reports and insights"/></div>
     <div class="ga-header-spacer"></div>
@@ -230,45 +297,46 @@ svg{display:block}
 
   <aside id="ga-sidebar">
     <div class="sidebar-section">
-      <div class="sidebar-item" id="nav-home" onclick="navTo('home')"><span class="si-icon">🏠</span> Home</div>
-      <div class="sidebar-item" id="nav-reports"><span class="si-icon">📈</span> Reports</div>
-      <div style="padding-left: 20px;">
-        <div class="sidebar-subitem" id="nav-traffic-acq" onclick="navTo('traffic-acq')">Acquisition</div>
+      <div class="sidebar-item" id="nav-home" onclick="navTo('home')"><span class="si-icon">🏠</span> <span class="si-label">Home</span></div>
+      
+      <div class="sidebar-item" id="nav-reports-toggle"><span class="si-icon">📈</span> <span class="si-label">Reports</span></div>
+      <div class="sidebar-sub open" id="reports-sub">
+        <div class="sidebar-subitem" id="nav-traffic-acq" onclick="navTo('traffic-acq')">Traffic acquisition</div>
         <div class="sidebar-subitem" id="nav-events" onclick="navTo('events')">Events & Conversions</div>
       </div>
-      <div class="sidebar-item" id="nav-explore" onclick="navTo('explore')"><span class="si-icon">🔬</span> Explore</div>
-      <div class="sidebar-item" id="nav-advertising" onclick="navTo('advertising')"><span class="si-icon">📣</span> Advertising</div>
+
+      <div class="sidebar-item" id="nav-explore" onclick="navTo('explore')"><span class="si-icon">🔬</span> <span class="si-label">Explore</span></div>
+      <div class="sidebar-item" id="nav-advertising" onclick="navTo('advertising')"><span class="si-icon">📣</span> <span class="si-label">Advertising</span></div>
     </div>
-    <div style="flex:1"></div>
+    <div class="sidebar-spacer"></div>
     <div class="sidebar-section">
-      <div class="sidebar-item" id="nav-admin" onclick="navTo('admin')"><span class="si-icon">⚙️</span> Admin</div>
+      <div class="sidebar-item" id="nav-admin" onclick="navTo('admin')"><span class="si-icon">⚙️</span> <span class="si-label">Admin</span></div>
     </div>
   </aside>
 
   <main id="ga-main">
-    <div id="ga-subnav">
-      <div class="ga-breadcrumb"><span class="current" id="bc-text">Admin</span></div>
-    </div>
+    <div id="ga-subnav"><div class="ga-breadcrumb"><span class="current" id="bc-text">Admin</span></div></div>
 
     <div class="ga-report-view" id="view-admin">
       <div class="ga-report-title">Admin</div>
-      <div style="display:flex; gap:20px;">
+      <div class="ga-report-subtitle">Manage your account and property settings</div>
+      <div style="display:flex; gap:24px; margin-top:10px;">
         <div class="ga-card" style="flex:1;">
-          <h3>Account Settings</h3>
-          <p style="color:var(--ga-text-2);font-size:13px;">Manage account details.</p>
+          <div class="ga-chart-title">Account Settings</div>
+          <p style="color:var(--ga-text-2);font-size:13px;margin-top:8px;">Manage account details and user access.</p>
         </div>
         <div class="ga-card" style="flex:1;">
-          <h3>Property Settings</h3>
-          <button id="btn-create-prop" class="ga-btn" style="background:var(--ga-blue);color:white;padding:8px 16px;border-radius:4px;margin-top:10px;">+ Create Property</button>
+          <div class="ga-chart-title">Property Settings</div>
+          <button id="btn-create-prop" class="ga-btn-primary" style="margin-top:12px;">+ Create Property</button>
           
-          <div id="data-streams-panel" style="display:none; margin-top:20px; border-top:1px solid var(--ga-border); padding-top:20px;">
-            <h3>Data Streams</h3>
-            <div class="ga-card" style="margin-top:10px; background:var(--ga-hover);">
+          <div id="data-streams-panel" style="display:none; margin-top:24px; border-top:1px solid var(--ga-border); padding-top:20px;">
+            <div class="ga-chart-title">Data Streams</div>
+            <div class="ga-card" style="margin-top:12px; background:var(--ga-hover);">
               <div style="font-weight:500;">TechMart Web Stream</div>
               
-              <div style="margin-top:15px;">
-                <strong>Google tag (gtag.js)</strong>
-                <div style="background:#e8eaed; padding:10px; border-radius:4px; font-family:monospace; margin-top:5px; font-size:12px;">
+              <div style="margin-top:16px;">
+                <div style="font-size:13px; font-weight:500;">Google tag (gtag.js)</div>
+                <div style="background:#e8eaed; padding:12px; border-radius:4px; font-family:monospace; margin-top:8px; font-size:12px; color:var(--ga-text);">
                   &lt;script async src="https://www.googletagmanager.com/gtag/js?id=G-TECHMART"&gt;&lt;/script&gt;<br>
                   &lt;script&gt;<br>
                   &nbsp;&nbsp;window.dataLayer = window.dataLayer || [];<br>
@@ -277,15 +345,15 @@ svg{display:block}
                   &nbsp;&nbsp;gtag('config', 'G-TECHMART');<br>
                   &lt;/script&gt;
                 </div>
-                <button id="btn-copy-gtag" style="border:1px solid var(--ga-border); padding:6px 12px; border-radius:4px; margin-top:8px; background:white;">📋 Copy Tag</button>
+                <button id="btn-copy-gtag" class="ga-btn-secondary" style="margin-top:8px;">📋 Copy Tag</button>
               </div>
 
-              <div style="margin-top:20px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--ga-border); padding-top:15px;">
+              <div style="margin-top:24px; display:flex; justify-content:space-between; align-items:center; border-top:1px solid var(--ga-border); padding-top:16px;">
                 <div>
-                  <strong>Enhanced Measurement</strong>
-                  <div style="font-size:12px; color:var(--ga-text-2);">Automatically measure interactions and content on your sites (scrolls, outbound clicks).</div>
+                  <div style="font-size:13px; font-weight:500;">Enhanced Measurement</div>
+                  <div style="font-size:12px; color:var(--ga-text-2); margin-top:4px;">Automatically measure interactions and content on your sites in addition to standard page views (scrolls, outbound clicks).</div>
                 </div>
-                <div id="toggle-enhanced" class="toggle-switch"></div>
+                <div id="toggle-enhanced" class="ga-toggle"></div>
               </div>
             </div>
           </div>
@@ -294,32 +362,28 @@ svg{display:block}
     </div>
 
     <div class="ga-report-view" id="view-home">
-      <div class="ga-report-title">Home Snapshot</div>
-      <div style="display:flex; gap:10px; margin-top:10px;">
+      <div class="ga-report-title">Reports snapshot</div>
+      <div id="home-metrics-strip" class="ga-metric-strip" style="margin-top:10px;">
         <div class="ga-metric-card" id="metric-users">
-          <div style="font-size:12px;color:var(--ga-text-2);text-transform:uppercase;">Users</div>
-          <div style="font-size:28px;margin-top:5px;">24,500</div>
+          <div class="ga-metric-label">Users</div>
+          <div class="ga-metric-value">24,500</div>
         </div>
         <div class="ga-metric-card" id="metric-sessions">
-          <div style="font-size:12px;color:var(--ga-text-2);text-transform:uppercase;">Sessions</div>
-          <div style="font-size:28px;margin-top:5px;">31,200</div>
+          <div class="ga-metric-label">Sessions</div>
+          <div class="ga-metric-value">31,200</div>
         </div>
         <div class="ga-metric-card">
-          <div style="font-size:12px;color:var(--ga-text-2);text-transform:uppercase;">Revenue</div>
-          <div style="font-size:28px;margin-top:5px;">$142k</div>
+          <div class="ga-metric-label">Revenue</div>
+          <div class="ga-metric-value">$142k</div>
         </div>
       </div>
       
       <div class="ga-card" style="margin-top:20px;">
-        <h3>Sessions Trend</h3>
-        <div id="chart-trend" style="height:150px; background:#f8f9fa; border-radius:4px; margin-top:10px; display:flex; align-items:flex-end; padding:10px; gap:5px;">
-           <div style="width:30px; height:80%; background:var(--ga-blue);"></div>
-           <div style="width:30px; height:85%; background:var(--ga-blue);"></div>
-           <div style="width:30px; height:90%; background:var(--ga-blue);"></div>
-           <div style="width:30px; height:70%; background:var(--ga-blue);"></div>
-           <div style="width:30px; height:88%; background:var(--ga-blue);"></div>
-           <div id="anomaly-bar" style="width:30px; height:30%; background:#d93025; position:relative; cursor:pointer;">
-              <div style="position:absolute; top:-30px; left:-5px; color:#d93025; font-weight:bold; font-size:20px;">📉 ▼</div>
+        <div class="ga-chart-header"><div class="ga-chart-title">Sessions Trend</div></div>
+        <div class="ga-linechart-wrap" id="homeLineChart" style="height:160px; position:relative;">
+           <div id="anomaly-indicator" style="display:none; position:absolute; right:60px; top:60px; cursor:pointer;">
+             <div style="color:#d93025; font-size:24px; font-weight:bold; text-shadow:0 2px 4px rgba(0,0,0,0.2); animation:bounce 1.5s infinite;">📉 ▼</div>
+             <div style="background:#fce8e6; color:#d93025; font-size:10px; font-weight:600; padding:2px 6px; border-radius:10px; border:1px solid #fad2cf; white-space:nowrap; position:absolute; left:-10px; top:-20px;">Anomaly</div>
            </div>
         </div>
       </div>
@@ -327,281 +391,493 @@ svg{display:block}
 
     <div class="ga-report-view" id="view-traffic-acq">
       <div class="ga-report-title">Traffic acquisition</div>
-      <div class="ga-card" style="margin-top:20px;">
+      <div class="ga-report-subtitle">Understand where your users come from</div>
+      <div class="ga-table-card" style="margin-top:10px;">
         <table class="ga-table">
-          <tr><th>Channel Group</th><th>Sessions</th><th>Users</th></tr>
-          <tr id="row-organic"><td>Organic Search</td><td>15,400</td><td>11,200</td></tr>
-          <tr id="row-paid"><td>Paid Search</td><td>8,200</td><td>6,500</td></tr>
-          <tr id="row-direct"><td>Direct</td><td>5,100</td><td>4,800</td></tr>
-          <tr id="row-social"><td>Organic Social</td><td>2,500</td><td>2,000</td></tr>
+          <thead><tr><th>Session default channel group</th><th>Sessions</th><th>Users</th></tr></thead>
+          <tbody id="ta-table-body">
+            </tbody>
         </table>
       </div>
     </div>
 
     <div class="ga-report-view" id="view-events">
       <div class="ga-report-title">Events</div>
-      <div class="ga-card" style="margin-top:20px;">
+      <div class="ga-table-card" style="margin-top:10px;">
         <table class="ga-table">
-          <tr><th>Event Name</th><th>Count</th><th>Mark as conversion</th></tr>
-          <tr id="event-page-view"><td>page_view</td><td>85,000</td><td><div style="opacity:0.3" class="toggle-switch"></div></td></tr>
-          <tr id="event-scroll"><td>scroll</td><td>42,000</td><td><div style="opacity:0.3" class="toggle-switch"></div></td></tr>
-          <tr id="event-add-to-cart"><td>add_to_cart</td><td>8,500</td><td><div class="toggle-switch"></div></td></tr>
-          <tr id="event-purchase"><td>purchase</td><td>1,250</td><td><div id="toggle-purchase" class="toggle-switch"></div></td></tr>
+          <thead><tr><th>Event Name</th><th>Count</th><th>Mark as conversion</th></tr></thead>
+          <tbody>
+            <tr id="event-page-view"><td>page_view</td><td>85,000</td><td><div class="ga-toggle" style="opacity:0.3; cursor:not-allowed;"></div></td></tr>
+            <tr id="event-scroll"><td>scroll</td><td>42,000</td><td><div class="ga-toggle" style="opacity:0.3; cursor:not-allowed;"></div></td></tr>
+            <tr id="event-add-to-cart"><td>add_to_cart</td><td>8,500</td><td><div class="ga-toggle" style="opacity:0.3; cursor:not-allowed;"></div></td></tr>
+            <tr id="event-purchase"><td>purchase</td><td>1,250</td><td><div id="toggle-purchase" class="ga-toggle"></div></td></tr>
+          </tbody>
         </table>
       </div>
     </div>
 
     <div class="ga-report-view" id="view-explore">
       <div class="ga-report-title">Explorations</div>
-      <div style="display:flex; gap:20px; margin-top:20px;">
-        <div class="ga-card" style="width:200px; height:150px; display:flex; flex-direction:column; justify-content:center; align-items:center; cursor:pointer; background:var(--ga-hover);">
-           <div>Blank</div>
+      <div style="display:flex; gap:24px; margin-top:20px;">
+        <div class="ga-card" style="width:200px; height:160px; display:flex; flex-direction:column; justify-content:center; align-items:center; background:var(--ga-hover); cursor:not-allowed; opacity:0.6;">
+           <div style="font-size:24px; color:var(--ga-text-3);">➕</div>
+           <div style="margin-top:12px; font-weight:500;">Blank</div>
         </div>
-        <div id="btn-funnel" class="ga-card" style="width:200px; height:150px; display:flex; flex-direction:column; justify-content:center; align-items:center; cursor:pointer; border:2px solid transparent;">
-           <div style="font-size:30px;">🔻</div>
-           <div style="margin-top:10px; font-weight:500;">Funnel Exploration</div>
+        <div id="btn-funnel" class="ga-card" style="width:200px; height:160px; display:flex; flex-direction:column; justify-content:center; align-items:center; cursor:pointer; transition:all 0.2s;">
+           <div style="font-size:32px;">🔻</div>
+           <div style="margin-top:12px; font-weight:500; color:var(--ga-text);">Funnel Exploration</div>
+           <div style="font-size:11px; color:var(--ga-text-2); margin-top:4px;">Find drop-offs</div>
         </div>
       </div>
     </div>
 
     <div class="ga-report-view" id="view-advertising">
       <div class="ga-report-title">Advertising Workspace</div>
-      <div class="ga-card" style="margin-top:20px; text-align:center; padding:40px;">
-        <h3>Connect your ad spend to GA4</h3>
-        <p style="color:var(--ga-text-2); margin-top:10px;">Link Google Ads to see cost, clicks, and ROI for your campaigns.</p>
-        <button id="btn-link-ads" class="ga-btn" style="background:var(--ga-blue);color:white;padding:10px 20px;border-radius:4px;margin-top:20px;font-weight:bold;">🔗 Link Google Ads</button>
+      <div class="ga-card" style="margin-top:20px; text-align:center; padding:60px 40px;">
+        <div class="ga-chart-title" style="font-size:18px;">Connect your ad spend to GA4</div>
+        <p style="color:var(--ga-text-2); margin-top:12px; font-size:14px;">Link Google Ads to see cost, clicks, and ROI for your campaigns alongside your web conversions.</p>
+        <button id="btn-link-ads" class="ga-btn-primary" style="padding:12px 24px; margin-top:24px;">🔗 Link Google Ads</button>
       </div>
     </div>
-
   </main>
 </div>
 
-<div id="spotlight-overlay"></div>
 <div id="spotlight-ring" class="spotlight-ring" style="display:none"></div>
+
 <div id="coach-bubble" class="hidden">
   <div class="coach-header">
     <div class="coach-avatar">🎓</div>
-    <div><div class="coach-name">GA4 Coach</div><div class="coach-stage" id="coachStageLabel">Stage</div></div>
+    <div style="flex:1"><div class="coach-name">GA4 Coach</div><div class="coach-stage" id="coachStageLabel">Stage</div></div>
+    <div id="coachWaveform" style="display:none;align-items:center;gap:2px;margin-right:6px;height:18px">
+      <div class="wave-bar" style="--d:0s"></div>
+      <div class="wave-bar" style="--d:.1s"></div>
+      <div class="wave-bar" style="--d:.2s"></div>
+      <div class="wave-bar" style="--d:.1s"></div>
+      <div class="wave-bar" style="--d:.05s"></div>
+    </div>
+    <button id="coachSpeakBtn" onclick="toggleTTS()" title="Toggle voice" style="width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,212,255,.12);border:1px solid rgba(0,212,255,.3);cursor:pointer;color:#00d4ff;font-size:13px;transition:all .15s;margin-right:4px;flex-shrink:0">🔊</button>
+    <button class="coach-close" onclick="minimizeCoach()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="5" y1="12" x2="19" y2="12"/></svg></button>
   </div>
   <div class="coach-body" id="coachBody"></div>
-  <div class="coach-footer" id="coachBtns"></div>
+  <div class="coach-footer">
+    <div class="coach-progress-dots" id="coachDots"></div>
+    <div class="coach-btns" id="coachBtns"></div>
+  </div>
+  <div id="ttsControls">
+    <span style="font-size:10px;color:var(--teach-muted);letter-spacing:.05em;margin-left:16px;">SPEED</span>
+    <button class="tts-rate-btn active" data-rate="0.9" onclick="setTTSRate(0.9)">0.9×</button>
+    <button class="tts-rate-btn" data-rate="1.1" onclick="setTTSRate(1.1)">1.1×</button>
+  </div>
 </div>
+
+<div id="success-overlay">
+  <div class="success-card">
+    <div class="success-icon" id="successIcon">✅</div>
+    <div class="success-title" id="successTitle">Correct!</div>
+    <div class="success-text" id="successText"></div>
+    <button class="success-btn" id="successBtn">Next Lesson →</button>
+  </div>
+</div>
+
+<div id="cert-screen">
+  <div class="cert-card">
+    <div class="cert-badge">🏆</div>
+    <div class="cert-title">Certificate of Completion</div>
+    <div style="font-size:14px;color:var(--teach-muted);margin-bottom:8px">This certifies that you have completed the</div>
+    <div class="cert-name">GA4 TechMart Case Study</div>
+    <button class="cert-btn-primary" onclick="exitToMenu()">Back to Lessons</button>
+  </div>
+</div>
+
+<style>
+@keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+</style>
 
 <script>
 'use strict';
 
-// Application State
+// ═══════════════════════════════════════════════════════════════
+// DATA & STATE
+// ═══════════════════════════════════════════════════════════════
 const S = {
-  completed: JSON.parse(localStorage.getItem('ga4_done') || '[]'),
+  completed: JSON.parse(localStorage.getItem('techmart_done') || '[]'),
   currentLesson: 0,
   currentStage: 0,
+  practiceAnswered: false,
 };
 
-// Curriculum
+const DB = {
+  weekly:[
+    {d:'Mon',s:4200},{d:'Tue',s:4350},{d:'Wed',s:4600},{d:'Thu',s:4500},
+    {d:'Fri',s:4800},{d:'Sat',s:5100},{d:'Sun',s:3650} // Drop on Sun for Anomaly
+  ],
+  channels:[
+    {name:'Organic Search', sessions:15400, users:11200, col:'#4285f4'},
+    {name:'Paid Search',    sessions:8200,  users:6500,  col:'#34a853'},
+    {name:'Direct',         sessions:5100,  users:4800,  col:'#fbbc04'},
+    {name:'Organic Social', sessions:2500,  users:2000,  col:'#ea4335'},
+  ]
+};
+
+// ═══════════════════════════════════════════════════════════════
+// TECHMART 10-LESSON CURRICULUM
+// Mapped to V6 Stage Types: explain, locate, practice
+// ═══════════════════════════════════════════════════════════════
 const LESSONS = [
   {
     id: 'l1', num: 1, title: 'Create Property', view: 'admin',
     stages: [
-      { type: 'explain', headline: 'A Property is your Data Container', text: 'In GA4, a "Property" represents a specific website or app. It acts as the container where all your analytics data for that site will live.' },
-      { type: 'locate', headline: 'Find the Create Button', steps: ['Go to Admin.', 'Look for the Property column.', 'Find the Create Property button.'], spotlight: 'btn-create-prop' },
-      { type: 'practice', task: 'Click the "+ Create Property" button to start tracking TechMart.', clickTarget: 'btn-create-prop' },
-      { type: 'quiz', task: 'What is a GA4 property?', hint: 'Type: container', correct: 'container' }
+      { type: 'explain', headline: 'A GA4 Property is your Data Container.', text: 'Every website or app needs its own property to collect data. Think of it as a bucket where all your visitor information goes. Without a property, GA4 cannot collect anything.', analogy: '🪣 It is a bucket for data.', examples: ['TechMart website = 1 Property', 'TechMart iOS app = 1 Property'] },
+      { type: 'locate', headline: 'Find the Create Property button.', spotlight: 'btn-create-prop', steps: ['Navigate to the Admin panel.', 'Look in the Property Settings column.', 'Find the blue Create Property button.'] },
+      { type: 'practice', task: 'Click the "+ Create Property" button to create your container for TechMart.', clickTarget: 'btn-create-prop', successTitle: 'Property Created!', successText: 'Great! You have an empty bucket. Now we need to pour data into it.' },
+      { type: 'practice', inputTask: true, task: 'What is the primary purpose of a GA4 property?', hint: 'Type: container', correctAnswer: 'container', successTitle: 'Correct!', successText: 'A property is a container for your data.' }
     ]
   },
   {
     id: 'l2', num: 2, title: 'Install gtag.js', view: 'admin',
-    onStart: () => { document.getElementById('data-streams-panel').style.display = 'block'; document.getElementById('prop-name').innerText = 'TechMart'; },
+    onStart: () => { document.getElementById('data-streams-panel').style.display = 'block'; document.getElementById('header-prop-name').innerText = 'TechMart'; },
     stages: [
-      { type: 'explain', headline: 'Sending Visits to GA4', text: 'To collect data, your website needs instructions. The Google tag (gtag.js) is a snippet of code placed in your website\'s HTML that sends visitor activity to your GA4 property.' },
-      { type: 'locate', headline: 'Find your Tag', steps: ['Inside Admin, open Data Streams.', 'Select your Web Stream.', 'Look for the Google tag block.'], spotlight: 'btn-copy-gtag' },
-      { type: 'practice', task: 'Click "Copy Tag" so you can paste it into your website.', clickTarget: 'btn-copy-gtag' },
-      { type: 'quiz', task: 'Where in your website HTML does the gtag snippet go?', hint: 'Type: head', correct: 'head' }
+      { type: 'explain', headline: 'Sending Visits to GA4.', text: 'To collect data, your website needs instructions. The Google tag (gtag.js) is a snippet of code placed in your website\'s HTML that sends visitor activity to your new GA4 property.', analogy: '📡 It is the transmitter on your website sending signals back to base.', examples: [] },
+      { type: 'locate', headline: 'Find your Tracking Code.', spotlight: 'btn-copy-gtag', steps: ['Inside Admin, look at Data Streams.', 'Select your Web Stream.', 'Find the Google tag code block.'] },
+      { type: 'practice', task: 'Click "Copy Tag" so you can simulate pasting it into the TechMart website HTML.', clickTarget: 'btn-copy-gtag', successTitle: 'Tag Copied!', successText: 'In reality, you would paste this into the <head> of your website code.' },
+      { type: 'practice', inputTask: true, task: 'Where in your website HTML does the gtag snippet go?', hint: 'Type: head', correctAnswer: 'head', successTitle: 'Correct!', successText: 'The code must go in the <head> section to track properly.' }
     ]
   },
   {
     id: 'l3', num: 3, title: 'Enhanced Measurement', view: 'admin',
-    onStart: () => { document.getElementById('data-streams-panel').style.display = 'block'; },
+    onStart: () => { document.getElementById('data-streams-panel').style.display = 'block'; document.getElementById('header-prop-name').innerText = 'TechMart'; },
     stages: [
-      { type: 'explain', headline: 'Auto-track Interactions', text: 'Old analytics required custom code to track scrolls, outbound clicks, or file downloads. GA4 has "Enhanced Measurement" which automatically tracks these common events instantly.' },
-      { type: 'locate', headline: 'Find the Toggle', steps: ['Still in the Web Stream details.', 'Look for the Enhanced Measurement section.', 'Find the toggle switch.'], spotlight: 'toggle-enhanced' },
-      { type: 'practice', task: 'Click the toggle switch to turn Enhanced Measurement ON.', clickTarget: 'toggle-enhanced', onComplete: () => { document.getElementById('toggle-enhanced').classList.add('on'); } },
-      { type: 'quiz', task: 'What does Enhanced Measurement auto-track?', hint: 'Type: scrolls and clicks', correct: 'scrolls and clicks' }
+      { type: 'explain', headline: 'Auto-tracking Interactions.', text: 'Old analytics tools required custom code to track scrolls, outbound clicks, or file downloads. GA4 has "Enhanced Measurement" which automatically tracks these common events instantly.', analogy: '🎥 It turns on automatic security cameras for specific actions.', examples: ['Page scrolls', 'Outbound clicks', 'Site search', 'Video engagement'] },
+      { type: 'locate', headline: 'Find the Toggle Switch.', spotlight: 'toggle-enhanced', steps: ['Still in the Web Stream details.', 'Look for the Enhanced Measurement section at the bottom.', 'Find the toggle switch.'] },
+      { type: 'practice', task: 'Click the toggle switch to turn Enhanced Measurement ON for TechMart.', clickTarget: 'toggle-enhanced', onComplete: () => { document.getElementById('toggle-enhanced').classList.add('on'); }, successTitle: 'Enhanced Measurement Active!', successText: 'You are now automatically tracking scrolls and clicks without any extra coding.' },
+      { type: 'practice', inputTask: true, task: 'Name two things Enhanced Measurement tracks automatically.', hint: 'Type: scrolls and clicks', correctAnswer: 'scrolls and clicks', successTitle: 'Correct!', successText: 'Scrolls and clicks are now tracked.' }
     ]
   },
   {
     id: 'l4', num: 4, title: 'Dashboard & Metrics', view: 'home',
     stages: [
-      { type: 'explain', headline: 'Users vs Sessions', text: 'Your dashboard shows key metrics. A "Session" is a visit. A "User" is a unique person. If one person visits 3 times, that is 1 User and 3 Sessions.' },
-      { type: 'locate', headline: 'Find the Users Metric', steps: ['Go to the Home dashboard.', 'Look at the top metric cards.', 'Find the one labelled "Users".'], spotlight: 'metric-users' },
-      { type: 'practice', task: 'Click the "Users" metric card to inspect it.', clickTarget: 'metric-users' },
-      { type: 'quiz', task: 'What does the "Users" metric measure?', hint: 'Type: unique visitors', correct: 'unique visitors', alt: ['unique person', 'people'] }
+      { type: 'explain', headline: 'Users vs Sessions.', text: 'Your dashboard shows key metrics. A "Session" is a visit. A "User" is a unique person. If one person visits TechMart 3 times to look at laptops, that is 1 User and 3 Sessions.', analogy: '👤 User = a unique shopper. Session = entering the store.', examples: [] },
+      { type: 'locate', headline: 'Find the Users Metric.', spotlight: 'metric-users', steps: ['Go to the Home snapshot.', 'Look at the top metric cards.', 'Find the one labelled "Users".'] },
+      { type: 'practice', task: 'Click the "Users" metric card to inspect it.', clickTarget: 'metric-users', successTitle: 'Users Metric Selected!', successText: '24,500 unique people visited the site in this period.' },
+      { type: 'practice', inputTask: true, task: 'If John visits your site on Monday and Tuesday, how many Users and how many Sessions is that? (Format: X Users, Y Sessions)', hint: 'Type: 1 user, 2 sessions', correctAnswer: '1 user, 2 sessions', altAnswers:['1 user 2 sessions'], successTitle: 'Exactly right!', successText: 'Users measure people, sessions measure visits.' }
     ]
   },
   {
     id: 'l5', num: 5, title: 'Acquisition Channels', view: 'traffic-acq',
     stages: [
-      { type: 'explain', headline: 'Organic vs Paid', text: 'Traffic Acquisition shows WHERE visitors come from. "Organic Search" means they found you on Google for free. "Paid Search" means you paid for ads.' },
-      { type: 'locate', headline: 'Find the Channels Table', steps: ['Go to Reports > Acquisition.', 'Scroll to the table.', 'Look for the channel rows.'], spotlight: 'row-organic' },
-      { type: 'practice', task: 'Which channel brings the most traffic? Click its row.', clickTarget: 'row-organic' },
-      { type: 'quiz', task: 'What is unpaid search engine traffic called?', hint: 'Type: organic', correct: 'organic', alt: ['organic search'] }
+      { type: 'explain', headline: 'Organic vs Paid.', text: 'Traffic Acquisition shows WHERE visitors come from. "Organic Search" means they found you on Google for free. "Paid Search" means you paid for ads.', analogy: '🛣️ It shows which highway people took to reach your store.', examples: [] },
+      { type: 'locate', headline: 'Find the Channels Table.', spotlight: 'ta-table-body', steps: ['Go to Reports > Traffic acquisition.', 'Scroll down to the table.', 'Look at the channel rows.'] },
+      { type: 'practice', task: 'Which channel brings the most traffic to TechMart? Click its row.', clickTarget: 'row-organic', successTitle: 'Organic Search is #1!', successText: 'Organic Search brings in 15,400 sessions. SEO is working well.' },
+      { type: 'practice', inputTask: true, task: 'What is unpaid search engine traffic called?', hint: 'Type: organic search', correctAnswer: 'organic search', altAnswers:['organic'], successTitle: 'Correct!', successText: 'Organic traffic is free traffic from search engines.' }
     ]
   },
   {
     id: 'l6', num: 6, title: 'Events Tracking', view: 'events',
     stages: [
-      { type: 'explain', headline: 'Everything is an Event', text: 'In GA4, every action is logged as an Event. A page loading is a `page_view`. Scrolling down is a `scroll`. Buying something is a `purchase`.' },
-      { type: 'locate', headline: 'Find the Event List', steps: ['Go to Reports > Events.', 'Look at the Event Name column.', 'Find the event related to reading a long page.'], spotlight: 'event-scroll' },
-      { type: 'practice', task: 'Click the `scroll` event row.', clickTarget: 'event-scroll' },
-      { type: 'quiz', task: 'Which event tracks a user moving down the page?', hint: 'Type: scroll', correct: 'scroll', alt: ['scroll event'] }
+      { type: 'explain', headline: 'Everything is an Event.', text: 'In GA4, every action is logged as an Event. A page loading is a `page_view`. Scrolling down is a `scroll`. Buying something is a `purchase`.', analogy: '⚡ Events are the heartbeat of GA4 data.', examples: [] },
+      { type: 'locate', headline: 'Find the Event List.', spotlight: 'event-scroll', steps: ['Go to Reports > Events.', 'Look at the Event Name column.', 'Find the event related to scrolling a page.'] },
+      { type: 'practice', task: 'Click the `scroll` event row in the table.', clickTarget: 'event-scroll', successTitle: 'Event Found!', successText: 'This event fires automatically because you turned on Enhanced Measurement in Lesson 3!' },
+      { type: 'practice', inputTask: true, task: 'Which event tracks a user viewing a page?', hint: 'Look at the top row of the table.', correctAnswer: 'page_view', successTitle: 'Correct!', successText: 'page_view is the most fundamental event in GA4.' }
     ]
   },
   {
     id: 'l7', num: 7, title: 'Conversions', view: 'events',
     stages: [
-      { type: 'explain', headline: 'Mark Key Events', text: 'Some events matter more than others. A purchase drives revenue. In GA4, you can mark any event as a "Conversion" (or Key Event) to track ROI.' },
-      { type: 'locate', headline: 'Find the Conversion Toggle', steps: ['In the Events table, look at the right column.', 'Find the `purchase` event.', 'Locate its toggle switch.'], spotlight: 'toggle-purchase' },
-      { type: 'practice', task: 'Click the toggle next to `purchase` to mark it as a conversion.', clickTarget: 'toggle-purchase', onComplete: () => { document.getElementById('toggle-purchase').classList.add('on'); } },
-      { type: 'quiz', task: 'What do you call a highly important event (like a purchase) that you specifically track?', hint: 'Type: conversion', correct: 'conversion', alt: ['key event'] }
+      { type: 'explain', headline: 'Mark Key Events.', text: 'Some events matter more than others. A purchase drives revenue! In GA4, you can mark any event as a "Conversion" (Key Event) to prioritize tracking its ROI.', analogy: '🎯 It tells GA4 "This specific action is our main goal."', examples: [] },
+      { type: 'locate', headline: 'Find the Conversion Toggle.', spotlight: 'toggle-purchase', steps: ['In the Events table, look at the right column.', 'Find the `purchase` event row.', 'Locate its toggle switch.'] },
+      { type: 'practice', task: 'Click the toggle next to `purchase` to mark it as a conversion.', clickTarget: 'toggle-purchase', onComplete: () => { document.getElementById('toggle-purchase').classList.add('on'); }, successTitle: 'Conversion Tracked!', successText: 'Now, GA4 will highlight purchases in your ROI and Advertising reports.' },
+      { type: 'practice', inputTask: true, task: 'What do you call a highly important event (like a purchase) that you explicitly mark in GA4?', hint: 'Type: conversion', correctAnswer: 'conversion', altAnswers:['key event'], successTitle: 'Correct!', successText: 'Conversions are the ultimate measure of website success.' }
     ]
   },
   {
-    id: 'l8', num: 8, title: 'Anomalies (TechMart Case)', view: 'home',
+    id: 'l8', num: 8, title: 'Anomalies (Case Study)', view: 'home',
+    onStart: () => { document.getElementById('anomaly-indicator').style.display = 'block'; },
     stages: [
-      { type: 'explain', headline: 'TechMart Traffic Drop', text: 'SCENARIO: You work for TechMart. The CEO says sales died yesterday. GA4 uses machine learning to flag "Anomalies" — sudden unexpected changes in data, marked with indicators.' },
-      { type: 'locate', headline: 'Spot the Drop', steps: ['Go to the Home dashboard.', 'Look at the Sessions trend chart.', 'Find the red anomaly indicator.'], spotlight: 'anomaly-bar' },
-      { type: 'practice', task: 'Click the red drop indicator on the chart to investigate.', clickTarget: 'anomaly-bar' },
-      { type: 'quiz', task: 'What does a sudden red indicator in GA4 represent?', hint: 'Type: problem', correct: 'problem', alt: ['anomaly', 'drop'] }
+      { type: 'explain', headline: 'TechMart Traffic Drop.', text: 'SCENARIO: You work for TechMart. The CEO says sales died yesterday. GA4 uses machine learning to flag "Anomalies" — sudden unexpected changes in data, marked with indicators on charts.', analogy: '🚨 Anomaly detection is the fire alarm of analytics.', examples: [] },
+      { type: 'locate', headline: 'Spot the Drop.', spotlight: 'anomaly-indicator', steps: ['Go to the Home snapshot.', 'Look at the Sessions trend chart.', 'Find the red anomaly indicator on Sunday.'] },
+      { type: 'practice', task: 'Click the red anomaly indicator on the chart to investigate.', clickTarget: 'anomaly-indicator', successTitle: 'Anomaly Detected!', successText: 'Traffic tanked on Sunday. We need to find out WHY.' },
+      { type: 'practice', inputTask: true, task: 'What does a sudden red indicator in GA4 represent?', hint: 'Type: anomaly', correctAnswer: 'anomaly', altAnswers:['problem', 'drop'], successTitle: 'Correct.', successText: 'Now we must dig deeper to find the root cause.' }
     ]
   },
   {
     id: 'l9', num: 9, title: 'Explorations (Funnels)', view: 'explore',
     stages: [
-      { type: 'explain', headline: 'Where are they leaving?', text: 'To find out WHY sales dropped, we build a Funnel Exploration. A funnel shows the exact step-by-step path users take to buy, and highlights exactly where they abandon the process.' },
-      { type: 'locate', headline: 'Find the Funnel Template', steps: ['Go to Explore in the sidebar.', 'Look at the template gallery.', 'Find the Funnel Exploration.'], spotlight: 'btn-funnel' },
-      { type: 'practice', task: 'Click the "Funnel Exploration" card to build your dropout report.', clickTarget: 'btn-funnel' },
-      { type: 'quiz', task: 'Which tool shows exact drop-off points in a multi-step journey?', hint: 'Type: funnel', correct: 'funnel', alt: ['funnel exploration'] }
+      { type: 'explain', headline: 'Where are they leaving?', text: 'To find out WHY sales dropped, we build a Funnel Exploration. A funnel shows the exact step-by-step path users take to buy, and highlights exactly where they abandon the process.', analogy: '🔻 Like pouring water into a leaky pipe to see where it spills.', examples: [] },
+      { type: 'locate', headline: 'Find the Funnel Template.', spotlight: 'btn-funnel', steps: ['Go to Explore in the sidebar.', 'Look at the template gallery.', 'Find the Funnel Exploration card.'] },
+      { type: 'practice', task: 'Click the "Funnel Exploration" card to build your dropout report.', clickTarget: 'btn-funnel', successTitle: 'Funnel Built!', successText: 'The funnel reveals that 90% of mobile users dropped off at the "payment" step yesterday due to a broken button.' },
+      { type: 'practice', inputTask: true, task: 'Which tool shows exact drop-off points in a multi-step journey?', hint: 'Type: funnel', correctAnswer: 'funnel', altAnswers:['funnel exploration'], successTitle: 'Correct!', successText: 'Funnels are the best diagnostic tool in GA4.' }
     ]
   },
   {
-    id: 'l10', num: 10, title: 'Ads + Report (Final)', view: 'advertising',
+    id: 'l10', num: 10, title: 'Ads + Report', view: 'advertising',
     stages: [
-      { type: 'explain', headline: 'Tracking ROI', text: 'You found the funnel drop-off! Now, the CEO wants to know if the Google Ads budget is being wasted. You must link Google Ads to GA4 to see post-click conversion data.' },
-      { type: 'locate', headline: 'Find the Link Button', steps: ['Go to the Advertising section.', 'Look for the integration tools.', 'Find the Link Google Ads button.'], spotlight: 'btn-link-ads' },
-      { type: 'practice', task: 'Click "Link Google Ads" to connect your spend data.', clickTarget: 'btn-link-ads' },
-      { type: 'quiz', task: 'Final task! Type this exact phrase to summarise your fix to the CEO: linked ads to track roi', hint: 'Type: linked ads to track roi', correct: 'linked ads to track roi' }
+      { type: 'explain', headline: 'Tracking ROI.', text: 'You found the funnel drop-off! Now, the CEO wants to know if the Google Ads budget is being wasted. You must link Google Ads to GA4 to see post-click conversion data and cost.', analogy: '🔗 It bridges the gap between ad spend and website revenue.', examples: [] },
+      { type: 'locate', headline: 'Find the Link Button.', spotlight: 'btn-link-ads', steps: ['Go to the Advertising section.', 'Look for the integration tools.', 'Find the Link Google Ads button.'] },
+      { type: 'practice', task: 'Click "Link Google Ads" to connect your spend data.', clickTarget: 'btn-link-ads', successTitle: 'Ads Linked!', successText: 'Data will now flow between platforms.' },
+      { type: 'practice', inputTask: true, task: 'Final task! Type this exact phrase to summarise your fix to the CEO: "linked ads to track roi"', hint: 'Type exactly: linked ads to track roi', correctAnswer: 'linked ads to track roi', successTitle: 'Masterclass Complete!', successText: 'You have solved the case and mastered the fundamentals of GA4.' }
     ]
   }
 ];
 
-// Core Functions
-function navTo(viewId) {
-  document.querySelectorAll('.ga-report-view').forEach(el => el.classList.remove('active'));
-  document.getElementById('view-' + viewId).classList.add('active');
-  
-  document.querySelectorAll('.sidebar-item, .sidebar-subitem').forEach(el => el.classList.remove('active'));
-  const navEl = document.getElementById('nav-' + viewId);
-  if(navEl) navEl.classList.add('active');
-  
-  const titles = {'home':'Home','admin':'Admin','traffic-acq':'Acquisition','events':'Events','explore':'Explore','advertising':'Advertising'};
-  document.getElementById('bc-text').innerText = titles[viewId] || viewId;
+// ═══════════════════════════════════════════════════════════════
+// UI RENDERING BUILDERS
+// ═══════════════════════════════════════════════════════════════
+function buildAcqTable() {
+  const body = document.getElementById('ta-table-body');
+  if (!body) return;
+  body.innerHTML = DB.channels.map((c, i) => `
+    <tr id="row-${c.name.split(' ')[0].toLowerCase()}">
+      <td><div style="display:flex; align-items:center; gap:8px;"><div style="width:10px;height:10px;border-radius:50%;background:${c.col}"></div>${c.name}</div></td>
+      <td>${c.sessions.toLocaleString()}</td>
+      <td>${c.users.toLocaleString()}</td>
+    </tr>`).join('');
 }
 
-function spotlight(targetId) {
+function buildLineChart(containerId, data, color) {
+  const el = document.getElementById(containerId);
+  if (!el) return;
+  const vals = data.map(d => d.s);
+  const max = Math.max(...vals) * 1.1;
+  const W = 700, H = 160;
+  const pad = {t:10, r:20, b:30, l:40};
+  const cw = W - pad.l - pad.r, ch = H - pad.t - pad.b;
+  const pts = vals.map((v, i) => ({ x: pad.l + (i / (vals.length - 1)) * cw, y: pad.t + ch - (v / max) * ch }));
+  const pathD = pts.map((p, i) => `${i?'L':'M'}${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(' ');
+  const areaD = pathD + ` L${pts[pts.length-1].x},${pad.t+ch} L${pts[0].x},${pad.t+ch} Z`;
+  const labels = data.map((d, i) => `<text x="${pts[i].x.toFixed(1)}" y="${H - 6}" text-anchor="middle" font-size="10" fill="#80868b">${d.d}</text>`).join('');
+  
+  // Create SVG string but preserve existing child nodes (like the anomaly indicator div)
+  const existingIndicator = el.querySelector('#anomaly-indicator');
+  const indicatorHTML = existingIndicator ? existingIndicator.outerHTML : '';
+  
+  el.innerHTML = `
+    <svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:${H}px;position:absolute;top:0;left:0;">
+      <defs>
+        <linearGradient id="grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%" stop-color="${color}" stop-opacity="0.25"/>
+          <stop offset="100%" stop-color="${color}" stop-opacity="0.02"/>
+        </linearGradient>
+      </defs>
+      <path d="${areaD}" fill="url(#grad)"/>
+      <path d="${pathD}" fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      ${pts.map(p => `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="3" fill="${color}" opacity=".7"/>`).join('')}
+      ${labels}
+    </svg>
+    ${indicatorHTML}
+  `;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DASHBOARD NAVIGATION
+// ═══════════════════════════════════════════════════════════════
+function navTo(id) {
+  document.querySelectorAll('.ga-report-view').forEach(v => v.classList.remove('active'));
+  const view = document.getElementById(`view-${id}`);
+  if (view) view.classList.add('active');
+
+  document.querySelectorAll('.sidebar-item, .sidebar-subitem').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById(`nav-${id}`);
+  if (navEl) navEl.classList.add('active');
+
+  const titles = {'home':'Reports snapshot','admin':'Admin','traffic-acq':'Traffic acquisition','events':'Events','explore':'Explorations','advertising':'Advertising'};
+  document.getElementById('bc-text').innerText = titles[id] || id;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TEACHING LAYER — SPOTLIGHT (4-Panel robust masking)
+// ═══════════════════════════════════════════════════════════════
+let _spotTarget = null;
+function spotlight(targetId, isClickable) {
+  _spotTarget = targetId || null;
+
+  // Ensure panels exist
+  if (!document.getElementById('spotlight-panels')) {
+    const panels = document.createElement('div');
+    panels.id = 'spotlight-panels';
+    panels.innerHTML = ['top','right','bottom','left'].map(s => `<div id="sp-${s}" class="sp-panel"></div>`).join('');
+    document.body.appendChild(panels);
+  }
+
   const ring = document.getElementById('spotlight-ring');
-  const overlay = document.getElementById('spotlight-overlay');
   
   if (!targetId) {
-    ring.style.display = 'none';
-    overlay.classList.remove('active');
+    ['top','right','bottom','left'].forEach(s => { document.getElementById(`sp-${s}`).style.display = 'none'; });
+    if (ring) ring.style.display = 'none';
     return;
   }
-  
+
   const el = document.getElementById(targetId);
   if (!el) return;
-  
-  el.scrollIntoView({block: 'nearest', behavior: 'smooth'});
-  setTimeout(() => {
-    const rect = el.getBoundingClientRect();
-    const pad = 8;
-    ring.style.cssText = `display:block; left:${rect.left-pad}px; top:${rect.top-pad}px; width:${rect.width+pad*2}px; height:${rect.height+pad*2}px;`;
-    overlay.classList.add('active');
-    overlay.style.setProperty('--sx', (rect.left + rect.width/2) + 'px');
-    overlay.style.setProperty('--sy', (rect.top + rect.height/2) + 'px');
-    overlay.style.setProperty('--sw', (rect.width/2 + pad) + 'px');
-    overlay.style.setProperty('--sh', (rect.height/2 + pad) + 'px');
-  }, 100);
+
+  el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  setTimeout(() => _positionSpotlight(isClickable), 160);
 }
 
+function _positionSpotlight(isClickable) {
+  if (!_spotTarget) return;
+  const el = document.getElementById(_spotTarget);
+  if (!el) return;
+  const ring = document.getElementById('spotlight-ring');
+
+  const rect = el.getBoundingClientRect();
+  const pad  = 8;
+  const vw   = window.innerWidth, vh = window.innerHeight;
+
+  const x1 = Math.max(0, Math.round(rect.left - pad));
+  const y1 = Math.max(0, Math.round(rect.top - pad));
+  const x2 = Math.min(vw, Math.round(rect.right + pad));
+  const y2 = Math.min(vh, Math.round(rect.bottom + pad));
+
+  const pTop = document.getElementById('sp-top'), pBot = document.getElementById('sp-bottom'), pLeft = document.getElementById('sp-left'), pRight = document.getElementById('sp-right');
+  
+  pTop.style.cssText = `top:0;left:0;right:0;height:${y1}px;display:${y1>0?'block':'none'}`;
+  pBot.style.cssText = `top:${y2}px;left:0;right:0;bottom:0;display:block`;
+  pLeft.style.cssText = `top:${y1}px;left:0;width:${x1}px;height:${y2-y1}px;display:${x1>0?'block':'none'}`;
+  pRight.style.cssText = `top:${y1}px;left:${x2}px;right:0;height:${y2-y1}px;display:block`;
+
+  ring.className = isClickable ? 'spotlight-ring click-target' : 'spotlight-ring';
+  ring.style.cssText = `display:block;left:${x1}px;top:${y1}px;width:${x2-x1}px;height:${y2-y1}px;`;
+}
+
+function positionCoach() {
+  const bubble = document.getElementById('coach-bubble');
+  bubble.classList.remove('hidden');
+  // Fixed positioning logic to ensure dashboard remains visible
+  bubble.style.left = '24px';
+  const hudH = document.getElementById('lesson-hud').classList.contains('visible') ? 72 : 8;
+  const vh = window.innerHeight;
+  const bh = bubble.offsetHeight || 380;
+  bubble.style.top = `${Math.max(hudH, vh/2 - bh/2)}px`;
+}
+
+function minimizeCoach() {
+  document.getElementById('coach-bubble').classList.add('hidden');
+  setTimeout(() => { document.getElementById('coach-bubble').classList.remove('hidden'); }, 3000); // Auto return for demo
+}
+
+// ═══════════════════════════════════════════════════════════════
+// DRAGGABLE COACH
+// ═══════════════════════════════════════════════════════════════
+(function initDraggableCoach() {
+  let isDragging = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
+  function getCoach() { return document.getElementById('coach-bubble'); }
+
+  function onDragStart(e) {
+    if (e.target.closest('.coach-close') || e.target.closest('.coach-btn')) return;
+    const coach = getCoach();
+    if (!coach || coach.classList.contains('hidden')) return;
+    isDragging = true;
+    coach.classList.add('dragging');
+    startX = e.touches ? e.touches[0].clientX : e.clientX;
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    const rect = coach.getBoundingClientRect();
+    origLeft = rect.left; origTop = rect.top;
+    e.preventDefault();
+  }
+
+  function onDragMove(e) {
+    if (!isDragging) return;
+    const coach = getCoach();
+    const cx = e.touches ? e.touches[0].clientX : e.clientX, cy = e.touches ? e.touches[0].clientY : e.clientY;
+    const dx = cx - startX, dy = cy - startY;
+    coach.style.left = `${Math.max(0, Math.min(origLeft + dx, window.innerWidth - coach.offsetWidth))}px`;
+    coach.style.top = `${Math.max(0, Math.min(origTop + dy, window.innerHeight - coach.offsetHeight))}px`;
+    e.preventDefault();
+  }
+
+  function onDragEnd() { isDragging = false; const coach = getCoach(); if (coach) coach.classList.remove('dragging'); }
+
+  document.addEventListener('mousedown', (e) => { if (e.target.closest('.coach-header')) onDragStart(e); });
+  document.addEventListener('mousemove', onDragMove);
+  document.addEventListener('mouseup', onDragEnd);
+})();
+
+// ═══════════════════════════════════════════════════════════════
+// STAGE RENDERING & PROGRESSION
+// ═══════════════════════════════════════════════════════════════
 function renderStage() {
   const lesson = LESSONS[S.currentLesson];
   const stage = lesson.stages[S.currentStage];
   
-  document.getElementById('hudLessonNum').innerText = `Lesson ${lesson.num} of 10`;
-  document.getElementById('hudLessonName').innerText = lesson.title;
-  document.getElementById('coachStageLabel').innerText = `Stage ${S.currentStage + 1}`;
+  // HUD
+  document.getElementById('hudLessonNum').textContent = `Lesson ${lesson.num} of 10`;
+  document.getElementById('hudLessonName').textContent = lesson.title;
+  document.getElementById('coachStageLabel').textContent = `Stage ${S.currentStage+1} · ${lesson.title}`;
   
+  document.getElementById('coachDots').innerHTML = lesson.stages.map((_, i) => `<div class="coach-dot ${i < S.currentStage ? 'done' : i === S.currentStage ? 'active' : ''}"></div>`).join('');
+
+  // Setup View
   navTo(lesson.view);
   
+  // Handle Lesson Specific Setup Hooks
+  if (S.currentStage === 0 && lesson.onStart) lesson.onStart();
+
   const body = document.getElementById('coachBody');
-  const btns = document.getElementById('coachBtns');
-  
-  let html = '', btnHtml = '';
-  
+  let html = '', btns = '';
+
   if (stage.type === 'explain') {
     spotlight(null);
     html = `
       <div class="coach-stage-tag">📖 Explain</div>
       <div class="coach-headline">${stage.headline}</div>
       <div class="coach-text">${stage.text}</div>
+      ${stage.analogy ? `<div class="coach-analogy">${stage.analogy}</div>` : ''}
     `;
-    btnHtml = `<button class="coach-btn coach-btn-primary" onclick="nextStage()">Next →</button>`;
+    btns = `<button class="coach-btn coach-btn-primary" onclick="nextStage()">Next →</button>`;
   } 
   else if (stage.type === 'locate') {
-    spotlight(stage.spotlight);
+    spotlight(stage.spotlight, false);
     html = `
-      <div class="coach-stage-tag">🎯 Demo</div>
+      <div class="coach-stage-tag">🖥️ Demo</div>
       <div class="coach-headline">${stage.headline}</div>
-      <ul style="padding-left:20px; font-size:13px; color:var(--teach-text); margin-top:10px;">
-        ${stage.steps.map(s => `<li style="margin-bottom:5px;">${s}</li>`).join('')}
-      </ul>
-    `;
-    btnHtml = `<button class="coach-btn coach-btn-primary" onclick="nextStage()">Practice →</button>`;
+      <div style="display:flex;flex-direction:column;gap:6px;margin:12px 0">
+        ${stage.steps.map((s, i) => `
+          <div style="display:flex;align-items:flex-start;gap:10px">
+            <div style="width:20px;height:20px;border-radius:50%;background:var(--ga-blue);color:white;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">${i+1}</div>
+            <div class="coach-text" style="font-size:12px">${s}</div>
+          </div>`).join('')}
+      </div>`;
+    btns = `<button class="coach-btn coach-btn-primary" onclick="nextStage()">Practice →</button>`;
   }
   else if (stage.type === 'practice') {
-    spotlight(stage.clickTarget);
-    document.getElementById('spotlight-ring').classList.add('click-target');
-    html = `
-      <div class="coach-stage-tag">⚡ Do</div>
-      <div class="coach-text"><strong>Task:</strong> ${stage.task}</div>
-      <div id="coachFeedback" class="coach-feedback"></div>
-    `;
-    // Wait for click event handling (attached globally below)
-    btnHtml = ``; 
-  }
-  else if (stage.type === 'quiz') {
-    spotlight(null);
-    html = `
-      <div class="coach-stage-tag">🧠 Quiz</div>
-      <div class="coach-text"><strong>Question:</strong> ${stage.task}</div>
-      <div class="coach-input-row">
-        <input type="text" id="quiz-input" class="coach-input" placeholder="Your answer...">
-      </div>
-      <div style="font-size:11px; color:#fbbf24; margin-top:5px;">💡 Hint: ${stage.hint}</div>
-      <div id="coachFeedback" class="coach-feedback"></div>
-    `;
-    btnHtml = `<button class="coach-btn coach-btn-primary" onclick="checkQuiz()">Submit →</button>`;
+    S.practiceAnswered = false;
+    
+    if (stage.inputTask) {
+      spotlight(null);
+      html = `
+        <div class="coach-stage-tag">🧠 Quiz</div>
+        <div class="coach-task-box"><div class="coach-task-label">Your Task</div><div class="coach-task-text">${stage.task}</div></div>
+        <div class="coach-input-row" style="margin-top:16px">
+          <input class="coach-input" id="practiceInput" placeholder="Your answer…" onkeydown="if(event.key==='Enter')checkInput()"/>
+          <button class="coach-btn coach-btn-primary" onclick="checkInput()">Check</button>
+        </div>
+        <div style="margin-top:8px;font-size:11px;color:#fbbf24;">💡 Hint: ${stage.hint}</div>
+        <div class="coach-feedback" id="coachFeedback"></div>`;
+      btns = ``; // Unlocked on correct answer
+    } else {
+      spotlight(stage.clickTarget, true);
+      html = `
+        <div class="coach-stage-tag">⚡ Do</div>
+        <div class="coach-task-box"><div class="coach-task-label">Your Task</div><div class="coach-task-text">${stage.task}</div></div>
+        <div style="margin-top:12px;background:rgba(52,211,153,.08);border:1px solid rgba(52,211,153,.3);border-radius:6px;padding:10px 14px;display:flex;align-items:center;gap:8px;font-size:12px;color:var(--teach-green)">
+          <div style="width:8px;height:8px;border-radius:50%;background:var(--teach-green);animation:click-pulse 1.2s infinite;flex-shrink:0"></div>
+          <span>Click the highlighted target in the dashboard.</span>
+        </div>
+        <div class="coach-feedback" id="coachFeedback"></div>`;
+      btns = ``; // Click handles progression
+    }
   }
 
   body.innerHTML = html;
-  btns.innerHTML = btnHtml;
-  
-  const bubble = document.getElementById('coach-bubble');
-  bubble.classList.remove('hidden');
-  bubble.style.left = '20px';
-  bubble.style.top = '100px';
+  document.getElementById('coachBtns').innerHTML = btns;
+  positionCoach();
+
+  // TTS
+  if (TTS.enabled) setTimeout(() => speakStage(stage), 120);
 }
 
 function nextStage() {
+  stopSpeaking();
   const lesson = LESSONS[S.currentLesson];
   if (S.currentStage < lesson.stages.length - 1) {
     S.currentStage++;
@@ -611,121 +887,235 @@ function nextStage() {
   }
 }
 
-function checkQuiz() {
-  const val = document.getElementById('quiz-input').value.trim().toLowerCase();
+function checkInput() {
+  if (S.practiceAnswered) return;
   const stage = LESSONS[S.currentLesson].stages[S.currentStage];
-  const fb = document.getElementById('coachFeedback');
-  
-  if (val === stage.correct || (stage.alt && stage.alt.includes(val))) {
-    fb.className = 'coach-feedback right';
-    fb.innerText = 'Correct!';
-    setTimeout(nextStage, 800);
+  const inp = document.getElementById('practiceInput');
+  if (!inp) return;
+
+  const raw = inp.value.trim().toLowerCase();
+  const correct = stage.correctAnswer.toLowerCase();
+  const alts = (stage.altAnswers||[]).map(a => a.toLowerCase());
+
+  if (raw === correct || alts.includes(raw)) {
+    S.practiceAnswered = true;
+    inp.style.borderColor = 'var(--teach-green)';
+    const fb = document.getElementById('coachFeedback');
+    fb.className = 'coach-feedback right'; fb.textContent = '✓ Correct!';
+    setTimeout(() => showSuccess(stage.successTitle, stage.successText), 500);
   } else {
-    fb.className = 'coach-feedback wrong';
-    fb.innerText = 'Incorrect. Try again based on the hint.';
+    inp.style.borderColor = '#ef4444';
+    const fb = document.getElementById('coachFeedback');
+    fb.className = 'coach-feedback wrong'; fb.textContent = 'Incorrect. Try again using the hint.';
   }
 }
 
-function finishLesson() {
-  const lesson = LESSONS[S.currentLesson];
-  if (!S.completed.includes(lesson.id)) {
-    S.completed.push(lesson.id);
-    localStorage.setItem('ga4_done', JSON.stringify(S.completed));
-  }
-  
-  const isFinal = S.currentLesson === LESSONS.length - 1;
-  document.getElementById('success-overlay').classList.add('show');
-  
-  if (isFinal) {
-    document.getElementById('success-overlay').innerHTML = `
-      <div class="success-card">
-        <div style="font-size:48px;">🏆</div>
-        <h2 style="color:white; margin:10px 0;">Course Complete!</h2>
-        <p style="color:var(--teach-muted); margin-bottom:20px;">You solved the TechMart case and mastered GA4.</p>
-        <button class="success-btn" onclick="showCert()">Get Certificate</button>
-      </div>`;
-  } else {
-    document.getElementById('success-overlay').innerHTML = `
-      <div class="success-card">
-        <div style="font-size:48px;">✅</div>
-        <h2 style="color:white; margin:10px 0;">Lesson Passed!</h2>
-        <button class="success-btn" onclick="closeSuccessAndNext()">Next Lesson →</button>
-      </div>`;
-  }
-}
-
-function closeSuccessAndNext() {
-  document.getElementById('success-overlay').classList.remove('show');
-  S.currentLesson++;
-  S.currentStage = 0;
-  if(LESSONS[S.currentLesson].onStart) LESSONS[S.currentLesson].onStart();
-  renderStage();
-}
-
-function showCert() {
-  document.getElementById('success-overlay').classList.remove('show');
-  document.getElementById('cert-screen').classList.add('show');
-}
-
-function startCourse() {
-  document.getElementById('landing-screen').classList.add('hidden');
-  document.getElementById('lesson-hud').classList.add('visible');
-  
-  S.currentLesson = S.completed.length < LESSONS.length ? S.completed.length : 0;
-  S.currentStage = 0;
-  if(LESSONS[S.currentLesson].onStart) LESSONS[S.currentLesson].onStart();
-  renderStage();
-}
-
-function exitToMenu() {
-  document.getElementById('lesson-hud').classList.remove('visible');
-  document.getElementById('coach-bubble').classList.add('hidden');
-  spotlight(null);
-  renderLanding();
-  document.getElementById('landing-screen').classList.remove('hidden');
-  document.getElementById('cert-screen').classList.remove('show');
-}
-
-function renderLanding() {
-  const list = document.getElementById('landingLessonList');
-  let html = '';
-  LESSONS.forEach((l, i) => {
-    const done = S.completed.includes(l.id);
-    html += `
-      <div class="lesson-list-item ${done ? 'completed' : ''}" onclick="S.currentLesson=${i};S.currentStage=0;startCourse();">
-        <div style="width:24px;height:24px;border-radius:50%;background:var(--teach-surface);border:1px solid var(--teach-border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--teach-muted);">${done ? '✓' : l.num}</div>
-        <div style="flex:1;font-size:13px;color:var(--teach-text);font-weight:500;">${l.title}</div>
-      </div>
-    `;
-  });
-  list.innerHTML = html;
-}
-
-// Global Click Listener for Practice Stages
+// Global click listener for UI Practice stages
 document.addEventListener('click', (e) => {
-  if (document.getElementById('landing-screen').classList.contains('hidden') === false) return;
+  if (!document.getElementById('landing-screen').classList.contains('hidden')) return;
   const stage = LESSONS[S.currentLesson].stages[S.currentStage];
   
-  if (stage && stage.type === 'practice') {
+  if (stage && stage.type === 'practice' && !stage.inputTask && !S.practiceAnswered) {
     let el = e.target;
     let clickedTarget = false;
     for (let i=0; i<5 && el; i++) {
       if (el.id === stage.clickTarget) { clickedTarget = true; break; }
       el = el.parentElement;
     }
-    
     if (clickedTarget) {
-      if(stage.onComplete) stage.onComplete();
+      S.practiceAnswered = true;
+      if (stage.onComplete) stage.onComplete();
+      spotlight(null);
       const fb = document.getElementById('coachFeedback');
-      fb.className = 'coach-feedback right';
-      fb.innerText = 'Good job!';
-      setTimeout(nextStage, 600);
+      if (fb) { fb.className = 'coach-feedback right'; fb.textContent = '✓ Correct!'; }
+      setTimeout(() => showSuccess(stage.successTitle, stage.successText), 500);
     }
   }
 }, true);
 
-// Init
-renderLanding();
+// ═══════════════════════════════════════════════════════════════
+// SUCCESS & COMPLETION
+// ═══════════════════════════════════════════════════════════════
+function showSuccess(title, text) {
+  const overlay = document.getElementById('success-overlay');
+  document.getElementById('successTitle').textContent = title;
+  document.getElementById('successText').textContent = text;
+  
+  const isFinalStage = S.currentStage === LESSONS[S.currentLesson].stages.length - 1;
+  const isFinalLesson = S.currentLesson === LESSONS.length - 1;
+  const btn = document.getElementById('successBtn');
+  
+  if (isFinalStage) {
+    if (!S.completed.includes(LESSONS[S.currentLesson].id)) {
+      S.completed.push(LESSONS[S.currentLesson].id);
+      localStorage.setItem('techmart_done', JSON.stringify(S.completed));
+    }
+    if (isFinalLesson) {
+      document.getElementById('successIcon').textContent = '🏆';
+      btn.textContent = 'Get Certificate →';
+      btn.onclick = () => { overlay.classList.remove('show'); showCertificate(); };
+    } else {
+      document.getElementById('successIcon').textContent = '✅';
+      btn.textContent = `Start Lesson ${LESSONS[S.currentLesson].num + 1} →`;
+      btn.onclick = () => { overlay.classList.remove('show'); S.currentLesson++; S.currentStage=0; renderStage(); };
+    }
+  } else {
+    document.getElementById('successIcon').textContent = '⚡';
+    btn.textContent = 'Next Step →';
+    btn.onclick = () => { overlay.classList.remove('show'); nextStage(); };
+  }
+  
+  overlay.classList.add('show');
+}
+
+function showCertificate() {
+  document.getElementById('cert-screen').classList.add('show');
+  document.getElementById('lesson-hud').classList.remove('visible');
+  document.getElementById('coach-bubble').classList.add('hidden');
+}
+
+function exitToMenu() {
+  stopSpeaking();
+  spotlight(null);
+  document.getElementById('coach-bubble').classList.add('hidden');
+  document.getElementById('lesson-hud').classList.remove('visible');
+  document.getElementById('cert-screen').classList.remove('show');
+  document.getElementById('success-overlay').classList.remove('show');
+  document.getElementById('landing-screen').classList.remove('hidden');
+  renderLandingLessons();
+}
+
+function startCourse() {
+  document.getElementById('landing-screen').classList.add('hidden');
+  document.getElementById('lesson-hud').classList.add('visible');
+  S.currentLesson = S.completed.length < LESSONS.length ? S.completed.length : 0;
+  S.currentStage = 0;
+  renderStage();
+}
+
+function renderLandingLessons() {
+  const list = document.getElementById('landingLessonList');
+  if (!list) return;
+  list.innerHTML = LESSONS.map((l, i) => {
+    const done = S.completed.includes(l.id);
+    const active = i === (S.completed.length < LESSONS.length ? S.completed.length : 0);
+    return `
+      <div class="lesson-list-item ${done?'completed':''}" onclick="S.currentLesson=${i};S.currentStage=0;startCourse();">
+        <div class="lesson-list-num ${done?'done':active?'active':''}">${done?'✓':l.num}</div>
+        <div class="lesson-list-info"><div class="lesson-list-title">${l.title}</div></div>
+      </div>`;
+  }).join('');
+  
+  const btn = document.getElementById('landingStartBtn');
+  if (S.completed.length === 0) btn.textContent = 'Begin Course →';
+  else if (S.completed.length >= LESSONS.length) { btn.textContent = '🏆 View Certificate →'; btn.onclick = showCertificate; }
+  else btn.textContent = `Continue Lesson ${S.completed.length + 1} →`;
+}
+
+// ═══════════════════════════════════════════════════════════════
+// TTS ENGINE — Web Speech API
+// ═══════════════════════════════════════════════════════════════
+const TTS = {
+  enabled: localStorage.getItem('s2_tts') !== 'off',
+  rate: parseFloat(localStorage.getItem('s2_rate') || '0.9'),
+  voice: null, current: null, speaking: false,
+};
+
+function initTTSVoice() {
+  if (TTS.voice) return;
+  const voices = window.speechSynthesis?.getVoices() || [];
+  const preferred = ['Google UK English Female','Google US English','Samantha','Alex','en-GB-Neural2-C'];
+  for (const name of preferred) { const v = voices.find(v => v.name === name); if (v) { TTS.voice = v; return; } }
+  TTS.voice = voices.find(v => v.lang.startsWith('en')) || voices[0] || null;
+}
+if (window.speechSynthesis) { window.speechSynthesis.onvoiceschanged = initTTSVoice; setTimeout(initTTSVoice, 300); }
+
+function buildSpeechScript(stage) {
+  if (!stage) return '';
+  const clean = s => s.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  switch (stage.type) {
+    case 'explain': return [stage.headline, stage.text, stage.analogy ? stage.analogy.replace(/[\u{1F300}-\u{1FAFF}]/gu, '') : ''].map(clean).join('. ');
+    case 'locate': return [stage.headline, stage.steps.join('. ')].map(clean).join('. ');
+    case 'practice': return clean(`Your task: ${stage.task} ${stage.hint ? 'Hint: '+stage.hint : ''}`);
+    default: return '';
+  }
+}
+
+function speakStage(stage) {
+  if (!TTS.enabled || !window.speechSynthesis) return;
+  stopSpeaking();
+  const script = buildSpeechScript(stage);
+  if (!script) return;
+  
+  const sentences = script.split(/(?<=[.!?])\s+/).map(s => s.trim()).filter(s => s.length > 3);
+  let idx = 0; TTS.speaking = true;
+  document.getElementById('coachWaveform').style.display = 'flex';
+
+  function speakNext() {
+    if (!TTS.enabled || !TTS.speaking || idx >= sentences.length) { stopSpeaking(); return; }
+    const sentence = sentences[idx++];
+    
+    // Highlight Text
+    document.querySelectorAll('.tts-highlight').forEach(el => el.classList.remove('tts-highlight'));
+    const walker = document.createTreeWalker(document.getElementById('coachBody'), NodeFilter.SHOW_TEXT);
+    let node;
+    while ((node = walker.nextNode())) {
+      if (node.textContent.includes(sentence.substring(0, 15))) {
+        node.parentElement.classList.add('tts-highlight'); break;
+      }
+    }
+
+    initTTSVoice();
+    window.speechSynthesis.cancel();
+    const utt = new SpeechSynthesisUtterance(sentence);
+    utt.rate = TTS.rate; utt.pitch = 1.05;
+    if (TTS.voice) utt.voice = TTS.voice;
+    utt.onend = () => { setTimeout(speakNext, 100); };
+    utt.onerror = () => { speakNext(); };
+    window.speechSynthesis.speak(utt);
+  }
+  speakNext();
+}
+
+function stopSpeaking() {
+  TTS.speaking = false;
+  if (window.speechSynthesis) window.speechSynthesis.cancel();
+  const wf = document.getElementById('coachWaveform');
+  if (wf) wf.style.display = 'none';
+  document.querySelectorAll('.tts-highlight').forEach(el => el.classList.remove('tts-highlight'));
+}
+
+function toggleTTS() {
+  TTS.enabled = !TTS.enabled;
+  localStorage.setItem('s2_tts', TTS.enabled ? 'on' : 'off');
+  const btn = document.getElementById('coachSpeakBtn');
+  if (TTS.enabled) {
+    btn.textContent = '🔊'; btn.style.color = '#00d4ff'; btn.style.background = 'rgba(0,212,255,.12)';
+    speakStage(LESSONS[S.currentLesson].stages[S.currentStage]);
+  } else {
+    stopSpeaking();
+    btn.textContent = '🔇'; btn.style.color = 'var(--teach-muted)'; btn.style.background = 'rgba(255,255,255,.04)';
+  }
+}
+
+function setTTSRate(rate) {
+  TTS.rate = rate; localStorage.setItem('s2_rate', rate);
+  document.querySelectorAll('.tts-rate-btn').forEach(btn => btn.classList.toggle('active', parseFloat(btn.dataset.rate) === rate));
+  if (TTS.enabled && TTS.speaking) speakStage(LESSONS[S.currentLesson].stages[S.currentStage]);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════════════════
+(function init() {
+  buildAcqTable();
+  buildLineChart('homeLineChart', DB.weekly, '#4285f4');
+  renderLandingLessons();
+  if (!TTS.enabled) {
+    const btn = document.getElementById('coachSpeakBtn');
+    if (btn) { btn.textContent = '🔇'; btn.style.color = 'var(--teach-muted)'; btn.style.background = 'rgba(255,255,255,.04)'; }
+  }
+})();
 
 </script>
 </body>
